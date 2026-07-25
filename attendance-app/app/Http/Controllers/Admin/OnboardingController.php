@@ -14,7 +14,7 @@ class OnboardingController extends Controller
         $tenant = Auth::user()->tenant;
         
         // If already completed, redirect to dashboard
-        if ($tenant->onboarding_completed) {
+        if ($tenant && $tenant->onboarding_completed) {
             return redirect()->route('dashboard');
         }
 
@@ -25,7 +25,7 @@ class OnboardingController extends Controller
     {
         $tenant = Auth::user()->tenant;
 
-        if ($tenant->onboarding_completed) {
+        if ($tenant && $tenant->onboarding_completed) {
             return redirect()->route('dashboard');
         }
 

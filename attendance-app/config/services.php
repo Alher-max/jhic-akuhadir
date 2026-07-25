@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'otp' => [
+        'driver' => env('OTP_DRIVER', 'email'), // 'email', 'wa', 'dummy'
+        'dummy_code' => env('OTP_DUMMY_CODE', '123456'),
+    ],
+
+    'wa' => [
+        'driver' => env('WA_DRIVER', 'fonnte'),
+        'api_key' => env('WA_API_KEY', ''),
+    ],
+
 ];

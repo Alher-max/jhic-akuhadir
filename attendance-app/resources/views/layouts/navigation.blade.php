@@ -11,9 +11,23 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                @php
+                    $roleLower = strtolower(auth()->user()->role ?? '');
+                    $isOperatorAdmin = in_array($roleLower, ['operator', 'admin', 'admin_dapodik', 'kepala_sekolah', 'manager_teacher', 'manager', 'owner', 'super_admin']);
+                    $roleLabel = match($roleLower) {
+                        'manager_teacher', 'operator', 'admin_dapodik' => 'Operator Sekolah',
+                        'admin', 'super_admin' => 'Administrator',
+                        'kepala_sekolah' => 'Kepala Sekolah',
+                        'wali_kelas' => 'Wali Kelas',
+                        'guru', 'guru_mapel' => 'Guru Mapel',
+                        'siswa', 'student' => 'Siswa',
+                        'ortu', 'parent' => 'Orang Tua',
+                        default => ucwords(str_replace('_', ' ', auth()->user()->role ?? 'User')),
+                    };
+                @endphp
+                <div class="hidden space-x-6 sm:-my-px sm:ms-8 sm:flex">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard')">
+                        {{ __('Dasbor') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -22,20 +36,27 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
+                            @if(Auth::user()->avatar)
+                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-8 w-8 rounded-full object-cover border border-slate-200">
+                            @else
+                                <div class="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-300">
+                                    {{ substr(preg_replace('/[^a-zA-Z]/', '', Auth::user()->name), 0, 1) }}
+                                </div>
+                            @endif
+                            <div class="flex flex-col text-left">
+                                <span class="font-semibold text-gray-800 text-xs">{{ Auth::user()->name }}</span>
+                                <span class="text-[10px] text-gray-500 font-semibold">{{ $roleLabel }}</span>
                             </div>
+                            <svg class="fill-current h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1.061 1.061 0 011.414 0L10 10.586l3.293-3.293a1.061 1.061 0 111.414 1.414l-4 4a1.061 1.061 0 01-1.414 0l-4-4a1.061 1.061 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Profil Saya') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -45,7 +66,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Keluar / Logout') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -67,16 +88,58 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard')">
+                {{ __('Dasbor') }}
             </x-responsive-nav-link>
+
+            @if($isOperatorAdmin)
+                <div class="px-4 py-2 mt-2 text-xs font-bold text-brand-primary uppercase tracking-wider bg-gray-50 border-y border-gray-100">
+                    Menu Manajemen Operator
+                </div>
+                
+                <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Kelola Siswa</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('operator.classes.index')" :active="request()->routeIs('operator.classes.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-school text-gray-400 w-4"></i> Kelola Kelas</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('operator.teachers.index')" :active="request()->routeIs('operator.teachers.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-gray-400 w-4"></i> Kelola Guru</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('attendance-settings.index')" :active="request()->routeIs('attendance-settings.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-fingerprint text-gray-400 w-4"></i> Perangkat / GPS</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('class-schedules.index')" :active="request()->routeIs('class-schedules.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Master Mapel & KBM</div>
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Siswa Kelas Saya</div>
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('class-schedules.index')" :active="request()->routeIs('class-schedules.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Jadwal KBM</div>
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+            <div class="px-4 flex items-center gap-3">
+                @if(Auth::user()->avatar)
+                    <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-10 w-10 rounded-full object-cover border border-slate-200">
+                @else
+                    <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-sm border border-slate-300">
+                        {{ substr(preg_replace('/[^a-zA-Z]/', '', Auth::user()->name), 0, 1) }}
+                    </div>
+                @endif
+                <div>
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
             </div>
 
             <div class="mt-3 space-y-1">

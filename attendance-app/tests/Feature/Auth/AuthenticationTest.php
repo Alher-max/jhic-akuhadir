@@ -19,10 +19,11 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'school_code' => '20102026',
+            'login_id' => $user->email,
             'password' => 'password',
         ]);
 
@@ -35,11 +36,26 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email' => $user->email,
+            'school_code' => '20102026',
+            'login_id' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+    }
+
+    public function test_users_can_not_authenticate_with_invalid_school_code(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('/login', [
+            'school_code' => 'WRONGSCHOOL',
+            'login_id' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
+        $response->assertSessionHasErrors('school_code');
     }
 
     public function test_users_can_logout(): void

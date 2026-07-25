@@ -1,103 +1,161 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Rekapitulasi Laporan Kehadiran') }}
+            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                {{ __('Laporan Kehadiran & Peringkat Terajin') }}
             </h2>
         </div>
     </x-slot>
 
-    <div class="py-12" x-data="{ selectedMonth: '{{ $selectedMonth }}', selectedLocation: '{{ $locationId ?? '' }}' }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-12 bg-brand-bg min-h-screen">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
-            <!-- Control Panel -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                <!-- Filter Form -->
-                <form method="GET" action="{{ route('admin.reports.index') }}" class="flex flex-col md:flex-row items-end gap-4 w-full md:w-auto">
-                    <div class="w-full md:w-48">
-                        <label for="month" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Bulan & Tahun</label>
-                        <input type="month" id="month" name="month" x-model="selectedMonth" 
-                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm bg-gray-50"
-                            @change="$event.target.form.submit()">
+            <!-- FILTER PERIODE & GLOBAL SUMMARY -->
+            <div class="flex flex-col lg:flex-row gap-6">
+                
+                <!-- Period Toggle -->
+                <div class="bg-brand-surface rounded-2xl shadow-sm border border-brand-border p-5 lg:w-1/3 flex flex-col justify-center">
+                    <h3 class="font-bold text-gray-800 mb-4 text-center">Pilih Periode Laporan</h3>
+                    <form method="GET" action="{{ route('admin.reports.index') }}" id="periodForm" class="flex p-1 bg-gray-100 rounded-xl">
+                        @php $periods = ['weekly' => 'Mingguan', 'monthly' => 'Bulanan', 'semesterly' => 'Semesteran']; @endphp
+                        @foreach($periods as $val => $label)
+                            <label class="flex-1 text-center cursor-pointer relative">
+                                <input type="radio" name="period" value="{{ $val }}" class="peer sr-only" onchange="document.getElementById('periodForm').submit()" {{ $period === $val ? 'checked' : '' }}>
+                                <div class="px-3 py-2 text-sm font-semibold rounded-lg transition-all peer-checked:bg-brand-primary peer-checked:text-white peer-checked:shadow-sm text-gray-500 hover:text-gray-700">
+                                    {{ $label }}
+                                </div>
+                            </label>
+                        @endforeach
+                    </form>
+                    <div class="mt-4 text-center text-xs text-gray-500">
+                        {{ \Carbon\Carbon::parse($startDate)->isoFormat('D MMM YYYY') }} - {{ \Carbon\Carbon::parse($endDate)->isoFormat('D MMM YYYY') }}
                     </div>
-                    <div class="w-full md:w-56">
-                        <label for="location_id" class="block text-sm font-semibold text-gray-700 mb-1">Lokasi / Cabang</label>
-                        <select id="location_id" name="location_id" x-model="selectedLocation" 
-                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm bg-gray-50"
-                            @change="$event.target.form.submit()">
-                            <option value="">Semua Cabang / Lokasi</option>
-                            @foreach($locations as $loc)
-                                <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </form>
+                </div>
 
-                <!-- Export Buttons -->
-                <div class="flex gap-3 w-full md:w-auto">
-                    <a :href="`{{ route('admin.reports.export-excel') }}?month=${selectedMonth}&location_id=${selectedLocation}`" 
-                       class="flex-1 md:flex-none inline-flex justify-center items-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition-colors gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Unduh Excel
-                    </a>
+                <!-- Global Summary Cards -->
+                <div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-sm border border-brand-border p-5 text-center flex flex-col justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-10 h-10 mx-auto bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-solid fa-check-double text-lg"></i>
+                            </div>
+                            <div class="text-3xl font-black text-gray-800 mb-1">{{ $globalSummary['present'] }}</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Hadir</div>
+                        </div>
+                    </div>
                     
-                    <a :href="`{{ route('admin.reports.export-pdf') }}?month=${selectedMonth}&location_id=${selectedLocation}`" target="_blank"
-                       class="flex-1 md:flex-none inline-flex justify-center items-center px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-sm transition-colors gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Cetak PDF
-                    </a>
+                    <div class="bg-brand-surface rounded-2xl shadow-sm border border-brand-border p-5 text-center flex flex-col justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-10 h-10 mx-auto bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-solid fa-envelope-open-text text-lg"></i>
+                            </div>
+                            <div class="text-3xl font-black text-gray-800 mb-1">{{ $globalSummary['permission'] }}</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Izin</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-surface rounded-2xl shadow-sm border border-brand-border p-5 text-center flex flex-col justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-yellow-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-10 h-10 mx-auto bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-solid fa-thermometer text-lg"></i>
+                            </div>
+                            <div class="text-3xl font-black text-gray-800 mb-1">{{ $globalSummary['sick'] }}</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Sakit</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-surface rounded-2xl shadow-sm border border-brand-border p-5 text-center flex flex-col justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-rose-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-10 h-10 mx-auto bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-3">
+                                <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                            </div>
+                            <div class="text-3xl font-black text-gray-800 mb-1">{{ $globalSummary['alpha'] }}</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Alpha</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Report Table -->
-            <div class="bg-white overflow-hidden shadow-sm border border-gray-100 sm:rounded-2xl">
+            <!-- PERINGKAT KLASEMEN (PODIUMS) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Siswa Terajin -->
+                @include('admin.reports.partials.podium_card', ['title' => '👨‍🎓 Siswa Terajin', 'data' => $topStudents, 'type' => 'user'])
+                <!-- Kelas Terajin -->
+                @include('admin.reports.partials.podium_card', ['title' => '🏫 Kelas Terajin', 'data' => $topClasses, 'type' => 'class'])
+                <!-- Guru Terajin -->
+                @include('admin.reports.partials.podium_card', ['title' => '👨‍🏫 Guru Terajin', 'data' => $topTeachers, 'type' => 'user'])
+                <!-- Staff Terajin -->
+                @include('admin.reports.partials.podium_card', ['title' => '👨‍💼 Staff Terajin', 'data' => $topStaffs, 'type' => 'user'])
+            </div>
+            
+            <!-- REKAPITULASI TABEL -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mt-8">
+                <div class="px-6 py-5 border-b border-gray-100 flex flex-col md:flex-row md:justify-between md:items-center bg-gray-50/50 rounded-t-2xl gap-4">
+                    <h3 class="font-bold text-gray-800 whitespace-nowrap">Detail Rekapitulasi Kehadiran</h3>
+                    
+                    <div class="flex-1 max-w-md w-full">
+                        <form action="{{ route('admin.reports.index') }}" method="GET">
+                            <input type="hidden" name="period" value="{{ request('period', 'monthly') }}">
+                            <div class="relative flex items-center">
+                                <i class="fa-solid fa-search absolute left-3 text-gray-400"></i>
+                                <input type="text" name="rekap_search" value="{{ request('rekap_search') }}" placeholder="Cari Nama Anggota..." class="w-full rounded-xl border-gray-300 text-sm focus:ring-brand-primary focus:border-brand-primary pl-9 pr-16 shadow-sm">
+                                <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-brand-primary text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors">
+                                    Cari
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="flex gap-2 shrink-0">
+                        <a href="{{ route('admin.reports.export-excel') }}?month={{ $selectedMonth }}&rekap_search={{ request('rekap_search') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-100">
+                            <i class="fa-solid fa-file-excel"></i> Excel
+                        </a>
+                        <a href="{{ route('admin.reports.export-pdf') }}?month={{ $selectedMonth }}&rekap_search={{ request('rekap_search') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors border border-rose-100">
+                            <i class="fa-solid fa-file-pdf"></i> PDF
+                        </a>
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
+                    <!-- existing table code modified a bit for UI -->
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                <th class="px-6 py-4 font-bold border-b border-gray-100">Anggota</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100">Lokasi / Cabang</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Hadir</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Terlambat</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Disiplin</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Sakit</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Izin</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center">Tugas Luar</th>
-                                <th class="px-6 py-4 font-bold border-b border-gray-100 text-center text-rose-500">Alpha</th>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
+                                <th class="px-6 py-4 font-bold">Anggota</th>
+                                <th class="px-6 py-4 font-bold text-center">Hadir</th>
+                                <th class="px-6 py-4 font-bold text-center">Terlambat</th>
+                                <th class="px-6 py-4 font-bold text-center">Disiplin</th>
+                                <th class="px-6 py-4 font-bold text-center">Sakit</th>
+                                <th class="px-6 py-4 font-bold text-center">Izin</th>
+                                <th class="px-6 py-4 font-bold text-center">Alpha</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse($reports as $r)
                                 <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="font-bold text-gray-900">{{ $r['name'] }}</div>
+                                    <td class="px-6 py-3">
+                                        <div class="font-bold text-gray-900 text-sm">{{ $r['name'] }}</div>
                                         <div class="text-xs text-gray-500">{{ $r['email'] }}</div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-700 font-medium">
-                                        {{ $r['location_name'] }}
+                                    <td class="px-6 py-3 text-center">
+                                        <span class="inline-flex items-center justify-center bg-emerald-100 text-emerald-700 font-bold w-7 h-7 rounded-full text-xs">{{ $r['present'] }}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="inline-flex items-center justify-center bg-emerald-100 text-emerald-700 font-bold w-8 h-8 rounded-full">{{ $r['present'] }}</span>
+                                    <td class="px-6 py-3 text-center">
+                                        <span class="inline-flex items-center justify-center bg-orange-100 text-orange-700 font-bold w-7 h-7 rounded-full text-xs">{{ $r['late'] }}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="inline-flex items-center justify-center bg-orange-100 text-orange-700 font-bold w-8 h-8 rounded-full">{{ $r['late'] }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <div class="flex items-center justify-center">
-                                            <span class="font-bold text-sm {{ $r['discipline_score'] >= 90 ? 'text-emerald-600' : ($r['discipline_score'] >= 75 ? 'text-orange-500' : 'text-rose-600') }}">
-                                                {{ $r['discipline_score'] }}%
-                                            </span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1.5">
-                                            <div class="h-1.5 rounded-full {{ $r['discipline_score'] >= 90 ? 'bg-emerald-500' : ($r['discipline_score'] >= 75 ? 'bg-orange-400' : 'bg-rose-500') }}" style="width: {{ $r['discipline_score'] }}%"></div>
+                                    <td class="px-6 py-3 text-center">
+                                        <div class="font-bold text-sm {{ $r['discipline_score'] >= 90 ? 'text-emerald-600' : ($r['discipline_score'] >= 75 ? 'text-orange-500' : 'text-rose-600') }}">
+                                            {{ $r['discipline_score'] }}%
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-center text-gray-600 font-medium">{{ $r['sick'] }}</td>
-                                    <td class="px-6 py-4 text-center text-gray-600 font-medium">{{ $r['permission'] }}</td>
-                                    <td class="px-6 py-4 text-center text-gray-600 font-medium">{{ $r['duty'] }}</td>
-                                    <td class="px-6 py-4 text-center">
+                                    <td class="px-6 py-3 text-center text-gray-600 font-medium text-sm">{{ $r['sick'] }}</td>
+                                    <td class="px-6 py-3 text-center text-gray-600 font-medium text-sm">{{ $r['permission'] }}</td>
+                                    <td class="px-6 py-3 text-center">
                                         @if($r['alpha'] > 0)
-                                            <span class="inline-flex items-center justify-center bg-rose-100 text-rose-700 font-bold w-8 h-8 rounded-full">{{ $r['alpha'] }}</span>
+                                            <span class="inline-flex items-center justify-center bg-rose-100 text-rose-700 font-bold w-7 h-7 rounded-full text-xs">{{ $r['alpha'] }}</span>
                                         @else
                                             <span class="text-gray-300">-</span>
                                         @endif
@@ -105,17 +163,20 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
-                                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <p class="text-base font-medium text-gray-900">Belum ada data anggota</p>
-                                    </td>
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">Belum ada data rekapitulasi</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+                
+                @if($reports->hasPages())
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
+                    {{ $reports->appends(request()->query())->links() }}
+                </div>
+                @endif
             </div>
-
+            
         </div>
     </div>
 </x-app-layout>

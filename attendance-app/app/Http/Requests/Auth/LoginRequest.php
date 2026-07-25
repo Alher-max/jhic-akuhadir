@@ -28,7 +28,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'school_code' => ['required', 'string'],
+            'login_id' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -42,11 +43,57 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $schoolCode = $this->input('school_code');
+        $loginId = $this->input('login_id');
+
+        // Langkah 1: Cari Tenant/Sekolah berdasarkan school_code atau npsn
+        $tenant = \App\Models\Tenant::where(function ($q) use ($schoolCode) {
+            $q->where('code', $schoolCode)
+              ->orWhere('code', strtoupper($schoolCode));
+            
+            if (\Illuminate\Support\Facades\Schema::hasColumn('tenants', 'npsn')) {
+                $q->orWhere('npsn', $schoolCode);
+            }
+        })->first();
+
+        if (! $tenant) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'school_code' => __('Kode Sekolah / NPSN tidak terdaftar.'),
+            ]);
+        }
+
+        // Langkah 2: Lakukan pencarian User HANYA pada tenant_id sekolah tersebut
+        $user = \App\Models\User::where('tenant_id', $tenant->id)
+            ->where(function ($query) use ($loginId) {
+                $query->where('email', $loginId)
+                      ->orWhere('nisn', $loginId);
+                
+                // Periksa username jika kolomnya ada di database
+                if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'username')) {
+                    $query->orWhere('username', $loginId);
+                }
+
+                // Periksa relasi teacher jika ada
+                if (method_exists(\App\Models\User::class, 'teacher')) {
+                    $query->orWhereHas('teacher', function ($q) use ($loginId) {
+                        $q->where('nip', $loginId)->orWhere('nuptk', $loginId);
+                    });
+                }
+
+                // Periksa relasi profile
+                $query->orWhereHas('profile', function ($q) use ($loginId) {
+                    $q->where('employee_id', $loginId) // NIP
+                      ->orWhere('nuptk', $loginId);
+                });
+            })->first();
+
+        if (! $user || ! Auth::attempt(['id' => $user->id, 'password' => $this->input('password')], $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'login_id' => trans('auth.failed'),
             ]);
         }
 
@@ -69,7 +116,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'login_id' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -81,6 +128,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('login_id')).'|'.$this->ip());
     }
 }

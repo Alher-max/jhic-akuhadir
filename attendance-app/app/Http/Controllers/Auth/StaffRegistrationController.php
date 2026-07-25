@@ -45,7 +45,7 @@ class StaffRegistrationController extends Controller
             'name' => $request->name,
             'email' => $invitation->email,
             'password' => Hash::make($request->password),
-            'role' => 'manager_teacher',
+            'role' => 'wali_kelas',
             'onboarding_completed' => true, // Staf tidak perlu onboarding
         ]);
 
@@ -53,8 +53,15 @@ class StaffRegistrationController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        $otpCode = sprintf("%06d", mt_rand(1, 999999));
+        $user->otp_code = $otpCode;
+        $user->otp_expires_at = \Carbon\Carbon::now()->addMinutes(15);
+        $user->save();
 
-        return redirect(route('dashboard', absolute: false));
+        app(\App\Services\OtpService::class)->sendOtp($user, $otpCode);
+
+        session(['verify_email' => $user->email]);
+
+        return redirect()->route('register.verify-otp');
     }
 }

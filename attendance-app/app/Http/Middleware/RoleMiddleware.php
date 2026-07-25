@@ -26,7 +26,26 @@ class RoleMiddleware
             return redirect()->route('login')->with('error', 'Akun Anda sedang dinonaktifkan.');
         }
 
-        if (!empty($roles) && !in_array($user->role, $roles)) {
+        // Map standardized roles and aliases
+        $expandedRoles = [];
+        foreach ($roles as $role) {
+            $expandedRoles[] = $role;
+            if ($role === 'headmaster') {
+                $expandedRoles[] = 'kepala_sekolah';
+                $expandedRoles[] = 'owner';
+            } elseif ($role === 'operator') {
+                $expandedRoles[] = 'admin_dapodik';
+                $expandedRoles[] = 'admin';
+            } elseif ($role === 'teacher') {
+                $expandedRoles[] = 'guru';
+                $expandedRoles[] = 'wali_kelas';
+                $expandedRoles[] = 'manager_teacher';
+            } elseif ($role === 'student') {
+                $expandedRoles[] = 'member';
+            }
+        }
+
+        if (!empty($roles) && !in_array($user->role, $expandedRoles)) {
             abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
         }
 

@@ -18,7 +18,7 @@ class SuperAdminRegistrationController extends Controller
     {
         $invitation = Invitation::where('token', $token)
             ->where('status', 'pending')
-            ->where('role', 'super_admin')
+            ->where('role', 'admin_dapodik')
             ->first();
 
         if (!$invitation) {
@@ -34,7 +34,7 @@ class SuperAdminRegistrationController extends Controller
     {
         $invitation = Invitation::where('token', $token)
             ->where('status', 'pending')
-            ->where('role', 'super_admin')
+            ->where('role', 'admin_dapodik')
             ->firstOrFail();
 
         $request->validate([
@@ -47,7 +47,7 @@ class SuperAdminRegistrationController extends Controller
             'name' => $request->name,
             'email' => $invitation->email,
             'password' => Hash::make($request->password),
-            'role' => 'super_admin',
+            'role' => 'admin_dapodik',
             'onboarding_completed' => true,
         ]);
 

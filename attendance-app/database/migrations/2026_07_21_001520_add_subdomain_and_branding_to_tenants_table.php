@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('tenants', function (Blueprint $table) {
+            $table->string('subdomain')->unique()->nullable()->after('slug');
+            $table->text('description')->nullable()->after('subdomain');
+            $table->string('logo_path')->nullable()->after('description');
+            $table->string('banner_path')->nullable()->after('logo_path');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('tenants', function (Blueprint $table) {
+            $table->dropColumn(['subdomain', 'description', 'logo_path', 'banner_path']);
+        });
+    }
+};

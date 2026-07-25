@@ -20,6 +20,7 @@
                                 <option value="sick" {{ old('type') == 'sick' ? 'selected' : '' }}>Sakit</option>
                                 <option value="permission" {{ old('type') == 'permission' ? 'selected' : '' }}>Izin Keperluan Pribadi</option>
                                 <option value="duty_trip" {{ old('type') == 'duty_trip' ? 'selected' : '' }}>Tugas Luar Kota / Dinas</option>
+                                <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>Lainnya</option>
                             </select>
                             <x-input-error :messages="$errors->get('type')" class="mt-2" />
                         </div>

@@ -15,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'tenant.onboarding' => \App\Http\Middleware\TenantOnboardingMiddleware::class,
+            'otp.verified' => \App\Http\Middleware\EnsureOtpIsVerified::class,
+            'tenant.subdomain' => \App\Http\Middleware\ResolveTenantSubdomain::class,
+            'force.password.change' => \App\Http\Middleware\ForcePasswordChangeMiddleware::class,
+        ]);
+        
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\ForcePasswordChangeMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

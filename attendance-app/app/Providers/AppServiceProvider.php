@@ -21,19 +21,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Master Bypass for Owner
+        // Master Bypass for Kepala Sekolah / Owner
         Gate::before(function ($user, $ability) {
-            if ($user->role === 'owner') {
+            if (in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner'])) {
                 return true;
             }
         });
 
-        Gate::define('owner', fn ($user) => $user->role === 'owner');
-        Gate::define('super_admin', fn ($user) => $user->role === 'super_admin');
-        Gate::define('manager_teacher', fn ($user) => $user->role === 'manager_teacher');
-        Gate::define('staff_student', fn ($user) => $user->role === 'staff_student');
+        Gate::define('headmaster', fn ($user) => in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner']));
+        Gate::define('operator', fn ($user) => in_array($user->role, ['operator', 'admin_dapodik', 'admin']));
+        Gate::define('teacher', fn ($user) => in_array($user->role, ['teacher', 'guru', 'wali_kelas', 'manager_teacher']));
+        Gate::define('student', fn ($user) => in_array($user->role, ['student', 'member']));
+        Gate::define('parent', fn ($user) => $user->role === 'parent');
+
+        // Aliases for compatibility
+        Gate::define('kepala_sekolah', fn ($user) => in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner']));
+        Gate::define('admin_dapodik', fn ($user) => in_array($user->role, ['operator', 'admin_dapodik', 'admin']));
+        Gate::define('wali_kelas', fn ($user) => in_array($user->role, ['teacher', 'guru', 'wali_kelas']));
 
         // Combined role checks
-        Gate::define('manage_schedules', fn ($user) => in_array($user->role, ['owner', 'super_admin', 'manager_teacher']));
+        Gate::define('manage_schedules', fn ($user) => in_array($user->role, ['headmaster', 'kepala_sekolah', 'operator', 'admin_dapodik', 'teacher', 'wali_kelas']));
     }
 }

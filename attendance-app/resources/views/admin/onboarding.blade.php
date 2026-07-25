@@ -1,3 +1,4 @@
+@php $errors = $errors ?? new \Illuminate\Support\ViewErrorBag; @endphp
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -11,7 +12,7 @@
                 
                 <!-- Progress Bar -->
                 <div class="w-full bg-gray-100 h-2">
-                    <div class="bg-indigo-600 h-2 transition-all duration-500 ease-out" :style="'width: ' + (step === 1 ? '50%' : '100%')"></div>
+                    <div class="bg-red-700 h-2 transition-all duration-500 ease-out" :style="'width: ' + (step === 1 ? '50%' : '100%')"></div>
                 </div>
 
                 <div class="p-8 sm:p-10">
@@ -29,12 +30,12 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 
                                 <!-- Hardware -->
-                                <div @click="method = 'hardware'" :class="{'border-indigo-500 ring-2 ring-indigo-500 bg-indigo-50': method === 'hardware', 'border-gray-200 hover:border-indigo-300': method !== 'hardware'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
+                                <div @click="method = 'hardware'" :class="{'border-red-600 ring-2 ring-red-600 bg-red-50': method === 'hardware', 'border-gray-200 hover:border-red-300': method !== 'hardware'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
                                     <div class="flex items-center justify-between mb-3">
-                                        <div class="p-2 bg-indigo-100 rounded-lg">
-                                            <svg class="w-6 h-6 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                                        <div class="p-2 bg-red-100 rounded-lg">
+                                            <svg class="w-6 h-6 text-red-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
                                         </div>
-                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'hardware' ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300'">
+                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'hardware' ? 'border-red-700 bg-red-700' : 'border-gray-300'">
                                             <div class="h-2.5 w-2.5 rounded-full bg-white" x-show="method === 'hardware'"></div>
                                         </div>
                                     </div>
@@ -43,12 +44,12 @@
                                 </div>
 
                                 <!-- WiFi -->
-                                <div @click="method = 'wifi'" :class="{'border-indigo-500 ring-2 ring-indigo-500 bg-indigo-50': method === 'wifi', 'border-gray-200 hover:border-indigo-300': method !== 'wifi'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
+                                <div @click="method = 'wifi'" :class="{'border-red-600 ring-2 ring-red-600 bg-red-50': method === 'wifi', 'border-gray-200 hover:border-red-300': method !== 'wifi'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="p-2 bg-blue-100 rounded-lg">
                                             <svg class="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                                         </div>
-                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'wifi' ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300'">
+                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'wifi' ? 'border-red-700 bg-red-700' : 'border-gray-300'">
                                             <div class="h-2.5 w-2.5 rounded-full bg-white" x-show="method === 'wifi'"></div>
                                         </div>
                                     </div>
@@ -57,12 +58,12 @@
                                 </div>
 
                                 <!-- GPS -->
-                                <div @click="method = 'gps'" :class="{'border-indigo-500 ring-2 ring-indigo-500 bg-indigo-50': method === 'gps', 'border-gray-200 hover:border-indigo-300': method !== 'gps'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
+                                <div @click="method = 'gps'" :class="{'border-red-600 ring-2 ring-red-600 bg-red-50': method === 'gps', 'border-gray-200 hover:border-red-300': method !== 'gps'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="p-2 bg-emerald-100 rounded-lg">
                                             <svg class="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         </div>
-                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'gps' ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300'">
+                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'gps' ? 'border-red-700 bg-red-700' : 'border-gray-300'">
                                             <div class="h-2.5 w-2.5 rounded-full bg-white" x-show="method === 'gps'"></div>
                                         </div>
                                     </div>
@@ -71,12 +72,12 @@
                                 </div>
 
                                 <!-- Liveness -->
-                                <div @click="method = 'liveness'" :class="{'border-indigo-500 ring-2 ring-indigo-500 bg-indigo-50': method === 'liveness', 'border-gray-200 hover:border-indigo-300': method !== 'liveness'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
+                                <div @click="method = 'liveness'" :class="{'border-red-600 ring-2 ring-red-600 bg-red-50': method === 'liveness', 'border-gray-200 hover:border-red-300': method !== 'liveness'}" class="relative cursor-pointer rounded-xl border p-5 transition-all">
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="p-2 bg-purple-100 rounded-lg">
                                             <svg class="w-6 h-6 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         </div>
-                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'liveness' ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300'">
+                                        <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center" :class="method === 'liveness' ? 'border-red-700 bg-red-700' : 'border-gray-300'">
                                             <div class="h-2.5 w-2.5 rounded-full bg-white" x-show="method === 'liveness'"></div>
                                         </div>
                                     </div>
@@ -91,7 +92,7 @@
                             @enderror
 
                             <div class="mt-8 flex justify-end">
-                                <button type="button" @click="nextStep()" :disabled="!method" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                <button type="button" @click="nextStep()" :disabled="!method" class="px-6 py-3 bg-red-700 text-white font-bold rounded-xl shadow-md hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                                     Lanjut ke Langkah 2
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                 </button>
@@ -102,9 +103,9 @@
                         <div x-show="step === 2" x-transition.opacity.duration.300ms style="display: none;">
                             
                             <!-- Hardware Info -->
-                            <div x-show="method === 'hardware'" class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 text-center">
+                            <div x-show="method === 'hardware'" class="bg-red-50 border border-red-100 rounded-xl p-6 text-center">
                                 <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                    <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                                 </div>
                                 <h3 class="text-lg font-bold text-gray-900 mb-2">Tidak Ada Konfigurasi Tambahan</h3>
                                 <p class="text-gray-600">Sistem akan secara otomatis men-generate <strong>Device Token</strong> unik yang bisa Anda temukan di Dasbor setelah proses ini selesai. Token ini digunakan untuk mengintegrasikan mesin absensi Anda ke sistem kami.</p>
@@ -169,7 +170,7 @@
                                     Kembali
                                 </button>
                                 
-                                <button type="submit" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-700 transition flex items-center gap-2">
+                                <button type="submit" class="px-6 py-3 bg-red-700 text-white font-bold rounded-xl shadow-md hover:bg-red-800 transition flex items-center gap-2">
                                     Selesaikan Pengaturan
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </button>
@@ -239,3 +240,4 @@
         });
     </script>
 </x-app-layout>
+

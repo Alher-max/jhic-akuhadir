@@ -15,10 +15,22 @@ class Schedule extends Model
         'start_time',
         'end_time',
         'grace_period_minutes',
+        'class_id',
+        'teacher_id',
     ];
 
     public function users()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 }

@@ -33,14 +33,33 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('login')->with('error', 'Akun Anda sedang dinonaktifkan.');
         }
 
+        if (!Auth::user()->hasVerifiedEmail()) {
+            $user = Auth::user();
+            
+            $otpCode = sprintf("%06d", mt_rand(1, 999999));
+            $user->otp_code = $otpCode;
+            $user->otp_expires_at = \Carbon\Carbon::now()->addMinutes(15);
+            $user->save();
+            
+            app(\App\Services\OtpService::class)->sendOtp($user, $otpCode);
+            
+            $email = $user->email;
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            session(['verify_email' => $email]);
+            return redirect()->route('register.verify-otp')->with('error', 'Silakan verifikasi OTP Anda terlebih dahulu. Kode OTP baru telah dikirim ke email Anda.');
+        }
+
         $request->session()->regenerate();
 
         $role = Auth::user()->role;
         
-        if ($role === 'owner') {
-            return redirect()->intended(route('owner.dashboard', absolute: false));
-        } elseif ($role === 'staff_student') {
-            return redirect()->intended(route('member.dashboard', absolute: false));
+        if (in_array($role, ['headmaster', 'kepala_sekolah'])) {
+            return redirect()->intended(route('kepsek.dashboard', absolute: false));
+        } elseif (in_array($role, ['student', 'member'])) {
+            return redirect()->intended(route('student.dashboard', absolute: false));
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

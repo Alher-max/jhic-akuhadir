@@ -17,19 +17,19 @@ class TenantOnboardingMiddleware
             $tenant = $user->tenant;
 
             if (!$tenant->onboarding_completed) {
-                // If user is super_admin, they MUST complete onboarding
-                if ($user->role === 'super_admin') {
+                // If user is admin_dapodik, they MUST complete onboarding
+                if ($user->role === 'admin_dapodik') {
                     return redirect()->route('admin.onboarding');
                 }
 
-                // If user is owner
-                if ($user->role === 'owner') {
-                    $superAdminsCount = \App\Models\User::where('tenant_id', $tenant->id)
-                        ->where('role', 'super_admin')
-                        ->count();
-
-                    // Mode Mandiri: 0 super_admins, owner must complete onboarding
-                    if ($superAdminsCount === 0) {
+                // If user is kepala_sekolah
+                if ($user->role === 'kepala_sekolah') {
+                    $hasAdmin = \App\Models\User::where('tenant_id', $user->tenant_id)
+                        ->where('role', 'admin_dapodik')
+                        ->exists();
+                    
+                    // Mode Mandiri: 0 admin_dapodik, kepala_sekolah must complete onboarding
+                    if (!$hasAdmin) {
                         return redirect()->route('admin.onboarding');
                     }
                     

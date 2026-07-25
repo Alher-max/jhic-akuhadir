@@ -15,7 +15,20 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [\App\Http\Controllers\Auth\TenantRegisterController::class, 'store']);
+    Route::get('check-school-code/{code}', [\App\Http\Controllers\Auth\TenantRegisterController::class, 'checkSchoolCode'])
+        ->name('check-school-code');
+
+    Route::get('search-students', [\App\Http\Controllers\Auth\TenantRegisterController::class, 'searchStudents'])
+        ->name('search-students');
+
+    Route::get('student/activate', [\App\Http\Controllers\Auth\StudentActivationController::class, 'create'])
+        ->name('student.activate');
+    Route::post('student/activate', [\App\Http\Controllers\Auth\StudentActivationController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('student.activate.store');
+
+    Route::post('register', [\App\Http\Controllers\Auth\TenantRegisterController::class, 'store'])
+        ->middleware('throttle:10,1');
 
     Route::get('register/verify-otp', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'show'])
         ->name('register.verify-otp');
