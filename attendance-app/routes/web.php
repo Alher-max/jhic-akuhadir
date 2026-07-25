@@ -22,7 +22,7 @@ Route::domain('{subdomain}.' . env('APP_DOMAIN', 'localhost'))->middleware(['ten
 
 Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Kepala Sekolah Routes
-    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':kepala_sekolah'])->group(function () {
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster'])->group(function () {
         Route::get('/kepsek/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('kepsek.dashboard');
         Route::get('/kepsek/api/search-student', [\App\Http\Controllers\OwnerDashboardController::class, 'searchStudent'])->name('kepsek.api.search-student');
         Route::get('/kepsek/api/search-teacher', [\App\Http\Controllers\OwnerDashboardController::class, 'searchTeacher'])->name('kepsek.api.search-teacher');
@@ -30,8 +30,8 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::patch('/kepsek/super-admin/{id}/toggle', [\App\Http\Controllers\OwnerDashboardController::class, 'toggleSuperAdmin'])->name('kepsek.super-admin.toggle');
     });
 
-    // Admin Onboarding Wizard (For kepala_sekolah & admin_dapodik)
-    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':kepala_sekolah,admin_dapodik'])->group(function () {
+    // Admin Onboarding Wizard (For headmaster & operator)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,operator'])->group(function () {
         Route::get('/admin/onboarding', [\App\Http\Controllers\Admin\OnboardingController::class, 'index'])->name('admin.onboarding');
         Route::post('/admin/onboarding', [\App\Http\Controllers\Admin\OnboardingController::class, 'finish']);
     });
