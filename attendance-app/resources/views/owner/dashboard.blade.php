@@ -18,7 +18,7 @@
                     <!-- FILTER PERIODE -->
                     <div class="flex items-center gap-2">
                         <label for="period" class="text-sm font-medium text-gray-600">Periode:</label>
-                        <select name="period" id="period" x-on:change="window.location.href = '{{ route('kepsek.dashboard') }}?period=' + $event.target.value" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg shadow-sm text-sm">
+                        <select name="period" id="period" x-on:change="window.location.href = '{{ route('headmaster.dashboard') }}?period=' + $event.target.value" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg shadow-sm text-sm">
                             <option value="today" {{ $period == 'today' ? 'selected' : '' }}>Hari Ini</option>
                             <option value="this_week" {{ $period == 'this_week' ? 'selected' : '' }}>Minggu Ini</option>
                             <option value="this_month" {{ $period == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
@@ -72,7 +72,7 @@
                                 </button>
                             </div>
                             
-                            <form action="{{ route('kepsek.super-admin.store') }}" method="POST" class="space-y-4">
+                            <form action="{{ route('headmaster.super-admin.store') }}" method="POST" class="space-y-4">
                                 @csrf
                                 <div>
                                     <label for="invite_email" class="block text-sm font-semibold text-gray-700 mb-1">Email Staf / Operator <span class="text-red-500">*</span></label>
@@ -260,8 +260,8 @@
                         this.isLoading = true;
                         try {
                             const url = this.searchType === 'student' 
-                                ? '{{ route('kepsek.api.search-student') }}' 
-                                : '{{ route('kepsek.api.search-teacher') }}';
+                                ? '{{ route('headmaster.api.search-student') }}' 
+                                : '{{ route('headmaster.api.search-teacher') }}';
                             const response = await fetch(`${url}?q=${encodeURIComponent(this.query)}`);
                             if(response.ok) {
                                 this.results = await response.json();

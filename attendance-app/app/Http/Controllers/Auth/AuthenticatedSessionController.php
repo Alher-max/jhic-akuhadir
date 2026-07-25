@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
         $role = Auth::user()->role;
         
         if (in_array($role, ['headmaster', 'kepala_sekolah'])) {
-            return redirect()->intended(route('kepsek.dashboard', absolute: false));
+            return redirect()->intended(route('headmaster.dashboard', absolute: false));
         } elseif (in_array($role, ['student', 'member'])) {
             return redirect()->intended(route('student.dashboard', absolute: false));
         }

@@ -10,8 +10,10 @@ Route::get('/', function () {
 Route::view('/offline', 'errors.offline');
 
 // Redirects for backward compatibility
-Route::redirect('/owner/dashboard', '/kepsek/dashboard', 301);
-Route::redirect('/owner', '/kepsek/dashboard', 301);
+Route::redirect('/owner/dashboard', '/headmaster/dashboard', 301);
+Route::redirect('/owner', '/headmaster/dashboard', 301);
+Route::redirect('/kepsek/dashboard', '/headmaster/dashboard', 301);
+Route::redirect('/kepsek', '/headmaster/dashboard', 301);
 
 // Subdomain Routes (Tenant Landing Pages)
 Route::domain('{subdomain}.' . env('APP_DOMAIN', 'localhost'))->middleware(['tenant.subdomain'])->group(function () {
@@ -21,13 +23,13 @@ Route::domain('{subdomain}.' . env('APP_DOMAIN', 'localhost'))->middleware(['ten
 });
 
 Route::middleware(['auth', 'otp.verified'])->group(function () {
-    // Kepala Sekolah Routes
+    // Headmaster Routes
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster'])->group(function () {
-        Route::get('/kepsek/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('kepsek.dashboard');
-        Route::get('/kepsek/api/search-student', [\App\Http\Controllers\OwnerDashboardController::class, 'searchStudent'])->name('kepsek.api.search-student');
-        Route::get('/kepsek/api/search-teacher', [\App\Http\Controllers\OwnerDashboardController::class, 'searchTeacher'])->name('kepsek.api.search-teacher');
-        Route::post('/kepsek/super-admin', [\App\Http\Controllers\OwnerDashboardController::class, 'inviteSuperAdmin'])->name('kepsek.super-admin.store');
-        Route::patch('/kepsek/super-admin/{id}/toggle', [\App\Http\Controllers\OwnerDashboardController::class, 'toggleSuperAdmin'])->name('kepsek.super-admin.toggle');
+        Route::get('/headmaster/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('headmaster.dashboard');
+        Route::get('/headmaster/api/search-student', [\App\Http\Controllers\OwnerDashboardController::class, 'searchStudent'])->name('headmaster.api.search-student');
+        Route::get('/headmaster/api/search-teacher', [\App\Http\Controllers\OwnerDashboardController::class, 'searchTeacher'])->name('headmaster.api.search-teacher');
+        Route::post('/headmaster/super-admin', [\App\Http\Controllers\OwnerDashboardController::class, 'inviteSuperAdmin'])->name('headmaster.super-admin.store');
+        Route::patch('/headmaster/super-admin/{id}/toggle', [\App\Http\Controllers\OwnerDashboardController::class, 'toggleSuperAdmin'])->name('headmaster.super-admin.toggle');
     });
 
     // Admin Onboarding Wizard (For headmaster & operator)
@@ -40,7 +42,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
         if (in_array($role, ['headmaster', 'kepala_sekolah', 'owner'])) {
-            return redirect()->route('kepsek.dashboard');
+            return redirect()->route('headmaster.dashboard');
         } elseif (in_array($role, ['operator', 'admin_dapodik', 'admin', 'teacher', 'guru', 'wali_kelas', 'manager_teacher', 'staff'])) {
             return redirect()->route('operator.dashboard');
         } elseif ($role === 'parent') {
