@@ -8,7 +8,9 @@
     <div class="py-12" x-data="{
         startDate: '{{ old('start_date', date('Y-m-d')) }}',
         endDate: '{{ old('end_date', date('Y-m-d')) }}',
+        selectedPreset: 1,
         setPreset(days) {
+            this.selectedPreset = days;
             const today = new Date();
             const startStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             const end = new Date(today);
@@ -41,14 +43,20 @@
                         <div class="mb-4">
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Preset Durasi Cepat</label>
                             <div class="flex flex-wrap gap-2">
-                                <button type="button" @click="setPreset(1)" class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium bg-gray-50 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all flex items-center gap-1.5 cursor-pointer">
-                                    <i class="fa-solid fa-calendar-day text-red-600"></i> Hari Ini (1 Hari)
+                                <button type="button" @click="setPreset(1)"
+                                        :class="selectedPreset === 1 ? 'bg-red-600 text-white border-red-600 shadow-sm font-medium' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200 font-medium'"
+                                        class="px-3.5 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-calendar-day" :class="selectedPreset === 1 ? 'text-white' : 'text-slate-500'"></i> Hari Ini (1 Hari)
                                 </button>
-                                <button type="button" @click="setPreset(2)" class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium bg-gray-50 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all flex items-center gap-1.5 cursor-pointer">
-                                    <i class="fa-solid fa-calendar-week text-red-600"></i> 2 Hari
+                                <button type="button" @click="setPreset(2)"
+                                        :class="selectedPreset === 2 ? 'bg-red-600 text-white border-red-600 shadow-sm font-medium' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200 font-medium'"
+                                        class="px-3.5 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-calendar-week" :class="selectedPreset === 2 ? 'text-white' : 'text-slate-500'"></i> 2 Hari
                                 </button>
-                                <button type="button" @click="setPreset(3)" class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium bg-gray-50 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all flex items-center gap-1.5 cursor-pointer">
-                                    <i class="fa-solid fa-calendar-days text-red-600"></i> 3 Hari
+                                <button type="button" @click="setPreset(3)"
+                                        :class="selectedPreset === 3 ? 'bg-red-600 text-white border-red-600 shadow-sm font-medium' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200 font-medium'"
+                                        class="px-3.5 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-calendar-days" :class="selectedPreset === 3 ? 'text-white' : 'text-slate-500'"></i> 3 Hari
                                 </button>
                             </div>
                         </div>
