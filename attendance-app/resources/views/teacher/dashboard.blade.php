@@ -8,6 +8,9 @@
 
     <div class="py-8" x-data="{
         openBantuAbsen: false,
+        openPhotoModal: false,
+        previewPhotoUrl: '',
+        previewPhotoName: '',
         selectedStudentId: '',
         students: {{ json_encode(($studentsForBantuAbsen ?? collect())->map(function($s) {
             return [
@@ -168,6 +171,7 @@
                             <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
                                 <th class="px-6 py-3.5 font-bold">Waktu</th>
                                 <th class="px-6 py-3.5 font-bold">Nama Siswa</th>
+                                <th class="px-6 py-3.5 font-bold text-center">Foto Wajah</th>
                                 <th class="px-6 py-3.5 font-bold">Kelas</th>
                                 <th class="px-6 py-3.5 font-bold">Status Presensi</th>
                                 <th class="px-6 py-3.5 font-bold">Keterangan</th>
@@ -181,6 +185,35 @@
                                     </td>
                                     <td class="px-6 py-3.5 font-medium text-slate-900">
                                         {{ optional($attendance->user)->name ?? 'Unknown' }}
+                                    </td>
+                                    <!-- FOTO BUKTI / WAJAH -->
+                                    <td class="px-6 py-3.5 text-center">
+                                        @php
+                                            $photoUrl = null;
+                                            if (!empty($attendance->photo_path)) {
+                                                $photoUrl = Storage::url($attendance->photo_path);
+                                            } elseif (optional($attendance->user)->avatar || optional($attendance->user)->master_photo) {
+                                                $photoUrl = Storage::url(optional($attendance->user)->avatar ?: optional($attendance->user)->master_photo);
+                                            }
+                                        @endphp
+
+                                        @if($photoUrl)
+                                            <button type="button" 
+                                                    @click="previewPhotoUrl = '{{ $photoUrl }}'; previewPhotoName = '{{ addslashes(optional($attendance->user)->name ?? '') }}'; openPhotoModal = true" 
+                                                    class="group relative inline-block focus:outline-none cursor-pointer"
+                                                    title="Klik untuk lihat foto bukti berukuran penuh">
+                                                <img src="{{ $photoUrl }}" 
+                                                     alt="{{ optional($attendance->user)->name }}" 
+                                                     class="w-10 h-10 rounded-xl object-cover border-2 border-slate-200 shadow-sm group-hover:border-red-500 group-hover:scale-105 transition-all mx-auto">
+                                                <span class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-2xs transition-opacity">
+                                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                                </span>
+                                            </button>
+                                        @else
+                                            <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold mx-auto" title="Belum ada foto">
+                                                <i class="fa-solid fa-user text-slate-300"></i>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-3.5 text-xs text-slate-500">
                                         {{ optional(optional($attendance->user)->schoolClass)->nama_kelas ?? '-' }}
@@ -210,7 +243,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-10 text-center text-slate-400 text-xs">
+                                    <td colspan="6" class="px-6 py-10 text-center text-slate-400 text-xs">
                                         <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-300 block"></i>
                                         Belum ada catatan presensi siswa untuk hari ini.
                                     </td>
@@ -343,6 +376,48 @@
                     </div>
                 </form>
 
+            </div>
+        </div>
+
+        <!-- ===== MODAL LIGHTBOX PRATINJAU FOTO BUKTI / WAJAH ===== -->
+        <div x-show="openPhotoModal" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             style="display: none;"
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            
+            <div @click.outside="openPhotoModal = false"
+                 class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
+                
+                <!-- Header -->
+                <div class="bg-slate-900 p-4 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-camera text-red-500 text-lg"></i>
+                        <div>
+                            <h3 class="font-bold text-sm" x-text="previewPhotoName || 'Foto Bukti Presensi'"></h3>
+                            <p class="text-2xs text-slate-400">Verifikasi Wajah / Snapshot Clock-In</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="openPhotoModal = false" class="text-slate-400 hover:text-white transition-colors text-xl font-bold p-1 cursor-pointer">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Body / Full Image -->
+                <div class="p-4 bg-slate-900 flex justify-center items-center">
+                    <img :src="previewPhotoUrl" alt="Foto Wajah" class="max-h-96 w-full object-contain rounded-2xl border border-slate-800 shadow-lg">
+                </div>
+
+                <!-- Footer -->
+                <div class="p-3.5 bg-slate-50 border-t border-slate-100 text-center">
+                    <button type="button" @click="openPhotoModal = false" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                        Tutup Pratinjau
+                    </button>
+                </div>
             </div>
         </div>
     </div>
