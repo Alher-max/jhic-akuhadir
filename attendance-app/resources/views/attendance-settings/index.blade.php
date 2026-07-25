@@ -187,24 +187,39 @@
                                     <div class="border border-gray-100 rounded-md p-3">
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="text-[11px] font-bold text-gray-700 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-rose-500"></i> Opsi 1: Validasi Geofencing GPS</div>
-                                            <button type="button" onclick="navigator.geolocation.getCurrentPosition(function(position) { document.getElementById('latitude_input').value = position.coords.latitude; document.getElementById('longitude_input').value = position.coords.longitude; })" class="text-[10px] bg-white border border-gray-300 text-gray-700 px-2 py-1 rounded hover:bg-gray-50 shadow-sm flex items-center gap-1">
+                                            <button type="button" onclick="navigator.geolocation.getCurrentPosition(function(position) { document.getElementById('latitude_input').value = position.coords.latitude; document.getElementById('longitude_input').value = position.coords.longitude; })" class="text-[10px] bg-white border border-gray-300 text-gray-700 px-2 py-1 rounded hover:bg-gray-50 shadow-sm flex items-center gap-1 cursor-pointer">
                                                 <i class="fa-solid fa-location-crosshairs text-amber-500"></i> Dapatkan Lokasi Saat Ini
                                             </button>
                                         </div>
+
+                                        <!-- BOX PETUNJUK (INFO ALERT) PRESISI KOORDINAT GPS -->
+                                        <div class="mb-3 bg-amber-50/90 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-900 leading-relaxed">
+                                            <div class="font-bold flex items-center gap-1.5 text-amber-950 mb-1">
+                                                <span>💡 Petunjuk Presisi Koordinat GPS:</span>
+                                            </div>
+                                            <ul class="list-disc list-inside space-y-1 text-[10.5px] text-amber-900">
+                                                <li>Pengambilan lokasi otomatis via Laptop/PC rawan meleset karena mengandalkan jaringan IP/Wi-Fi.</li>
+                                                <li>Disarankan menyalin titik lokasi langsung dari Google Maps: <strong>Buka Google Maps &rarr; Klik kanan pada gerbang/gedung sekolah &rarr; Klik angka koordinat untuk menyalin &rarr; Paste angka Latitude dan Longitude ke kolom di bawah.</strong></li>
+                                            </ul>
+                                        </div>
+
                                         <div class="space-y-2">
                                             <div class="flex gap-2">
                                                 <div class="flex-1">
                                                     <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Latitude</label>
                                                     <input type="text" id="latitude_input" name="latitude" value="{{ $settings->latitude }}" placeholder="Cth: -7.8123456" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat lintang (Cth: -7.8732)</p>
                                                 </div>
                                                 <div class="flex-1">
                                                     <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Longitude</label>
                                                     <input type="text" id="longitude_input" name="longitude" value="{{ $settings->longitude }}" placeholder="Cth: 110.3678901" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat bujur (Cth: 110.3956)</p>
                                                 </div>
                                             </div>
                                             <div>
                                                 <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Radius Perimeter (Meter)</label>
                                                 <input type="number" name="radius_meters" value="{{ $settings->radius_meters }}" placeholder="Cth: 100" min="10" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                <p class="text-[9.5px] text-gray-400 mt-0.5">Batas toleransi jangkauan presensi siswa dari titik lokasi sekolah</p>
                                             </div>
                                             <p class="text-[10px] text-gray-500 leading-tight mt-1">Hanya dapat melakukan clock-in jika berada di dalam radius sekolah.</p>
                                         </div>
