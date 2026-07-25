@@ -65,6 +65,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
         Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
         Route::post('/teacher/manual-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeManualAttendance'])->name('teacher.manual-attendance');
+        Route::post('/teacher/students/{id}/reset-photo', [\App\Http\Controllers\AdminDashboardController::class, 'resetStudentPhoto'])->name('teacher.students.reset-photo');
     });
 
     // Admin & Wali Kelas Routes (Operational Management)

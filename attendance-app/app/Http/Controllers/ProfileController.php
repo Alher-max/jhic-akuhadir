@@ -34,6 +34,13 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
+        // Enforce 1x Photo Lock policy for Students
+        if ($user->role === 'student' && ($request->hasFile('avatar') || $request->hasFile('master_photo'))) {
+            if (!empty($user->avatar) || !empty($user->master_photo)) {
+                return Redirect::back()->with('error', 'Foto profil telah dikunci & terverifikasi. Hubungi Wali Kelas/Operator jika perlu mengubah foto.');
+            }
+        }
+
         if ($request->hasFile('avatar')) {
             // Delete old avatar if exists
             if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
@@ -42,6 +49,9 @@ class ProfileController extends Controller
             // Store new avatar
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
+            if ($user->role === 'student') {
+                $user->master_photo = $path;
+            }
         }
 
         $user->save();

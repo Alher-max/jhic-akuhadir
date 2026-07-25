@@ -22,45 +22,79 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
                 
                 <!-- FOTO PROFIL -->
-                <div class="md:col-span-2 flex items-center gap-6 pb-4 border-b border-slate-200" x-data="{ photoName: null, photoPreview: null }">
-                    <input type="file" id="avatar" name="avatar" class="hidden"
-                           x-ref="avatar"
-                           accept="image/*"
-                           x-on:change="
-                                photoName = $refs.avatar.files[0].name;
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    photoPreview = e.target.result;
-                                };
-                                reader.readAsDataURL($refs.avatar.files[0]);
-                           " />
+                @php
+                    $isStudent = $user->role === 'student';
+                    $hasPhoto = !empty($user->avatar) || !empty($user->master_photo);
+                @endphp
 
-                    <!-- Foto Saat Ini -->
-                    <div x-show="! photoPreview">
-                        @if($user->avatar)
-                            <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="rounded-full h-20 w-20 object-cover shadow-sm border border-slate-200">
-                        @else
-                            <div class="rounded-full h-20 w-20 bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-3xl shadow-sm border border-slate-300">
-                                {{ substr(preg_replace('/[^a-zA-Z]/', '', $user->name), 0, 1) }}
+                @if($isStudent && $hasPhoto)
+                    <!-- UI Foto Siswa Terkunci (Lock 1x) -->
+                    <div class="md:col-span-2 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <img src="{{ Storage::url($user->avatar ?: $user->master_photo) }}" alt="{{ $user->name }}" class="rounded-full h-16 w-16 object-cover shadow-sm border-2 border-amber-300">
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded font-bold text-xs bg-amber-200 text-amber-900">
+                                        <i class="fa-solid fa-lock text-2xs"></i> Foto Profil Terkunci & Terverifikasi
+                                    </span>
+                                </div>
+                                <p class="text-xs text-amber-800 font-medium">
+                                    Foto profil telah dikunci & terverifikasi. Hubungi Wali Kelas/Operator jika perlu mengubah foto.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Form Upload Foto (Pertama kali / Non-Student / Setelah Reset) -->
+                    <div class="md:col-span-2 space-y-3 pb-4 border-b border-slate-200">
+                        @if($isStudent && !$hasPhoto)
+                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-rose-800 font-medium flex items-start gap-2.5">
+                                <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm mt-0.5 flex-shrink-0"></i>
+                                <span>⚠️ Perhatian: Foto profil ini digunakan untuk verifikasi kehadiran. Anda hanya dapat mengunggah foto 1 KALI. Gunakan pasfoto resmi berpakaian rapi.</span>
                             </div>
                         @endif
-                    </div>
 
-                    <!-- Preview Foto Baru -->
-                    <div x-show="photoPreview" style="display: none;">
-                        <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center shadow-sm border border-slate-200"
-                              x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
-                        </span>
-                    </div>
+                        <div class="flex items-center gap-6" x-data="{ photoName: null, photoPreview: null }">
+                            <input type="file" id="avatar" name="avatar" class="hidden"
+                                   x-ref="avatar"
+                                   accept="image/*"
+                                   x-on:change="
+                                        photoName = $refs.avatar.files[0].name;
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            photoPreview = e.target.result;
+                                        };
+                                        reader.readAsDataURL($refs.avatar.files[0]);
+                                   " />
 
-                    <div>
-                        <button type="button" x-on:click.prevent="$refs.avatar.click()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            Pilih Foto
-                        </button>
-                        <p class="mt-2 text-xs text-slate-500">Format: JPG, PNG, WEBP. Maks 2MB.</p>
-                        <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                            <!-- Foto Saat Ini -->
+                            <div x-show="! photoPreview">
+                                @if($user->avatar || $user->master_photo)
+                                    <img src="{{ Storage::url($user->avatar ?: $user->master_photo) }}" alt="{{ $user->name }}" class="rounded-full h-20 w-20 object-cover shadow-sm border border-slate-200">
+                                @else
+                                    <div class="rounded-full h-20 w-20 bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-3xl shadow-sm border border-slate-300">
+                                        {{ substr(preg_replace('/[^a-zA-Z]/', '', $user->name), 0, 1) }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Preview Foto Baru -->
+                            <div x-show="photoPreview" style="display: none;">
+                                <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center shadow-sm border border-slate-200"
+                                      x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
+                                </span>
+                            </div>
+
+                            <div>
+                                <button type="button" x-on:click.prevent="$refs.avatar.click()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 cursor-pointer">
+                                    Pilih Foto
+                                </button>
+                                <p class="mt-2 text-xs text-slate-500">Format: JPG, PNG, WEBP. Maks 2MB.</p>
+                                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @endif
                 
                 <div class="md:col-span-2">
                     <x-input-label for="name" :value="__('Nama Lengkap (beserta gelar)')" />

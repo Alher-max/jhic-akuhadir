@@ -277,19 +277,29 @@
                     </div>
 
                     <!-- BOX VERIFIKASI FOTO SISWA (Anti-Kecurangan) -->
-                    <div x-show="getSelectedStudent()" class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-4">
-                        <img :src="getSelectedStudent()?.avatar_url" alt="Foto Siswa" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-red-100 text-red-700 uppercase tracking-wider mb-1">
-                                <i class="fa-solid fa-id-badge text-2xs"></i> Verifikasi Wajah Siswa
-                            </span>
-                            <h4 class="font-bold text-slate-800 text-sm truncate" x-text="getSelectedStudent()?.name"></h4>
-                            <div class="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
-                                <span>NISN/NIS: <strong class="text-slate-700" x-text="getSelectedStudent()?.nisn"></strong></span>
-                                <span>&bull;</span>
-                                <span>Kelas: <strong class="text-slate-700" x-text="getSelectedStudent()?.class_name"></strong></span>
+                    <div x-show="getSelectedStudent()" class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <img :src="getSelectedStudent()?.avatar_url" alt="Foto Siswa" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-red-100 text-red-700 uppercase tracking-wider mb-1">
+                                    <i class="fa-solid fa-id-badge text-2xs"></i> Verifikasi Wajah Siswa
+                                </span>
+                                <h4 class="font-bold text-slate-800 text-sm truncate" x-text="getSelectedStudent()?.name"></h4>
+                                <div class="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
+                                    <span>NISN/NIS: <strong class="text-slate-700" x-text="getSelectedStudent()?.nisn"></strong></span>
+                                    <span>&bull;</span>
+                                    <span>Kelas: <strong class="text-slate-700" x-text="getSelectedStudent()?.class_name"></strong></span>
+                                </div>
                             </div>
                         </div>
+                        <template x-if="getSelectedStudent()?.id">
+                            <form :action="'/teacher/students/' + getSelectedStudent()?.id + '/reset-photo'" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin me-reset foto profil siswa ini agar siswa dapat mengunggah foto baru?');">
+                                @csrf
+                                <button type="submit" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1 flex-shrink-0 cursor-pointer" title="Reset Foto Profil Siswa">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset Foto
+                                </button>
+                            </form>
+                        </template>
                     </div>
 
                     <!-- Pilihan Status Presensi -->

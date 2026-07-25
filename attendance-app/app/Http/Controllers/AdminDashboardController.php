@@ -230,6 +230,28 @@ class AdminDashboardController extends Controller
         return redirect()->back()->with('success', "Presensi {$student->name} berhasil dicatat oleh Guru!");
     }
 
+    public function resetStudentPhoto($id)
+    {
+        $tenantId = Auth::user()->tenant_id;
+        $student = \App\Models\User::where('tenant_id', $tenantId)
+            ->where('role', 'student')
+            ->findOrFail($id);
+
+        if ($student->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->avatar)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($student->avatar);
+        }
+        if ($student->master_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->master_photo)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($student->master_photo);
+        }
+
+        $student->update([
+            'avatar' => null,
+            'master_photo' => null,
+        ]);
+
+        return redirect()->back()->with('success', "Foto profil {$student->name} berhasil di-reset. Siswa kini dapat mengunggah foto baru 1x lagi.");
+    }
+
     public function updateBanner(Request $request)
     {
         $request->validate([
