@@ -108,6 +108,59 @@
         const SETTINGS_LNG = {{ $settings->longitude ?? 'null' }};
         const SETTINGS_RAD = {{ $settings->radius_meters ?? 100 }};
 
+        /**
+         * Kompresi foto snapshot dari video element ke Canvas (Max 500x500, JPEG 0.7)
+         * Target ukuran: ~30 KB - 50 KB untuk efisiensi bandwidth & penyimpanan server
+         */
+        function captureAndCompressSnapshot(videoEl, maxWidth = 500, maxHeight = 500, quality = 0.7) {
+            let width = videoEl.videoWidth || 640;
+            let height = videoEl.videoHeight || 480;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+            }
+
+            const snapCanvas = document.createElement('canvas');
+            snapCanvas.width = width;
+            snapCanvas.height = height;
+            const snapCtx = snapCanvas.getContext('2d');
+
+            snapCtx.translate(width, 0);
+            snapCtx.scale(-1, 1);
+            snapCtx.drawImage(videoEl, 0, 0, width, height);
+
+            // Log perbandingan ukuran asli vs setelah kompresi
+            const rawCanvas = document.createElement('canvas');
+            rawCanvas.width = videoEl.videoWidth || 640;
+            rawCanvas.height = videoEl.videoHeight || 480;
+            const rawCtx = rawCanvas.getContext('2d');
+            rawCtx.translate(rawCanvas.width, 0);
+            rawCtx.scale(-1, 1);
+            rawCtx.drawImage(videoEl, 0, 0);
+            const rawDataUrl = rawCanvas.toDataURL('image/jpeg', 0.95);
+            const originalKB = Math.round((rawDataUrl.length * 0.75) / 1024);
+
+            const compressedDataUrl = snapCanvas.toDataURL('image/jpeg', quality);
+            const compressedKB = Math.round((compressedDataUrl.length * 0.75) / 1024);
+
+            console.log(`[PWA Photo Compression] Original: ${originalKB}KB (${videoEl.videoWidth}x${videoEl.videoHeight}) -> Compressed: ${compressedKB}KB (${width}x${height}, JPEG q=${quality})`);
+
+            return {
+                canvas: snapCanvas,
+                dataUrl: compressedDataUrl,
+                compressedKB: compressedKB,
+                originalKB: originalKB
+            };
+        }
+
         // Geolocation Logic
         if (REQUIRE_GEOFENCING) {
             isGeofencingValid = false;
@@ -261,15 +314,10 @@
                     if (ear < 0.18) { // Blink detected
                         livenessVerified = true;
                         
-                        const snapCanvas = document.createElement('canvas');
-                        snapCanvas.width = videoElement.videoWidth;
-                        snapCanvas.height = videoElement.videoHeight;
-                        const snapCtx = snapCanvas.getContext('2d');
-                        snapCtx.translate(snapCanvas.width, 0);
-                        snapCtx.scale(-1, 1);
-                        snapCtx.drawImage(videoElement, 0, 0);
+                        const snapshot = captureAndCompressSnapshot(videoElement, 500, 500, 0.7);
+                        const snapCanvas = snapshot.canvas;
                         
-                        document.getElementById('image_snapshot').value = snapCanvas.toDataURL('image/jpeg', 0.8);
+                        document.getElementById('image_snapshot').value = snapshot.dataUrl;
                         
                         if (HAS_MASTER && masterDescriptor && faceApiLoaded) {
                             updateStatus(4); // AI Matching Phase
@@ -321,6 +369,12 @@
         // Form Submit handler
         document.getElementById('clockin-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Pastikan snapshot foto sudah terisi & dikompresi sebelum dikirim
+            if (!document.getElementById('image_snapshot').value && videoElement.videoWidth) {
+                const snapshot = captureAndCompressSnapshot(videoElement, 500, 500, 0.7);
+                document.getElementById('image_snapshot').value = snapshot.dataUrl;
+            }
             const form = e.target;
             const btn = document.getElementById('submit-btn');
             const originalContent = btn.innerHTML;
