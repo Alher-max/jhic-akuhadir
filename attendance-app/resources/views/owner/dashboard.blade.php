@@ -1,98 +1,97 @@
 <x-app-layout>
     <x-slot:title>Dasbor Kepala Sekolah — HadirSekolah</x-slot:title>
     
-    <div x-data="{ showInviteModal: false }">
-        <x-slot name="header">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 class="font-bold text-xl text-gray-800 leading-tight">
-                    {{ __('Dasbor Kepala Sekolah') }}
-                </h2>
-                
-                <div class="flex items-center gap-3">
-                    <!-- Tombol Undang Operator -->
-                    <button type="button" @click="showInviteModal = true" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        + Undang Operator Sekolah
-                    </button>
+    <x-slot name="header">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h2 class="font-bold text-xl text-gray-800 leading-tight">
+                {{ __('Dasbor Kepala Sekolah') }}
+            </h2>
+            
+            <div class="flex items-center gap-3">
+                <!-- Tombol Undang Operator (Pemicu Event Window) -->
+                <button type="button" @click="$dispatch('open-invite-modal')" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-sm cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                    + Undang Operator Sekolah
+                </button>
 
-                    <!-- FILTER PERIODE -->
-                    <div class="flex items-center gap-2">
-                        <label for="period" class="text-sm font-medium text-gray-600">Periode:</label>
-                        <select name="period" id="period" x-on:change="window.location.href = '{{ route('headmaster.dashboard') }}?period=' + $event.target.value" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg shadow-sm text-sm">
-                            <option value="today" {{ $period == 'today' ? 'selected' : '' }}>Hari Ini</option>
-                            <option value="this_week" {{ $period == 'this_week' ? 'selected' : '' }}>Minggu Ini</option>
-                            <option value="this_month" {{ $period == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
-                            <option value="this_semester" {{ $period == 'this_semester' ? 'selected' : '' }}>Semester Ini</option>
-                        </select>
+                <!-- FILTER PERIODE -->
+                <div class="flex items-center gap-2">
+                    <label for="period" class="text-sm font-medium text-gray-600">Periode:</label>
+                    <select name="period" id="period" x-on:change="window.location.href = '{{ route('headmaster.dashboard') }}?period=' + $event.target.value" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg shadow-sm text-sm">
+                        <option value="today" {{ $period == 'today' ? 'selected' : '' }}>Hari Ini</option>
+                        <option value="this_week" {{ $period == 'this_week' ? 'selected' : '' }}>Minggu Ini</option>
+                        <option value="this_month" {{ $period == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                        <option value="this_semester" {{ $period == 'this_semester' ? 'selected' : '' }}>Semester Ini</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="py-8" x-data="{ showInviteModal: false }" @open-invite-modal.window="showInviteModal = true" @keydown.escape.window="showInviteModal = false">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            
+            @if(session('success'))
+                <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
+                    <span class="block sm:inline font-medium">{{ session('success') }}</span>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
+                    <span class="block sm:inline font-medium">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            <!-- Modal Undang Operator Sekolah -->
+            <div x-show="showInviteModal" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showInviteModal = false"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    
+                    <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full p-6" @click.outside="showInviteModal = false">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900" id="modal-title">Undang Operator Sekolah</h3>
+                                    <p class="text-xs text-gray-500">Delegasikan pengelolaan konfigurasi presensi ke Tim IT / Staf Ops.</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="showInviteModal = false" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                        
+                        <form action="{{ route('headmaster.super-admin.store') }}" method="POST" class="space-y-4">
+                            @csrf
+                            <div>
+                                <label for="invite_email" class="block text-sm font-semibold text-gray-700 mb-1">Email Staf / Operator <span class="text-red-500">*</span></label>
+                                <input type="email" name="email" id="invite_email" required placeholder="operator.sekolah@gmail.com" class="w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-red-500 focus:border-red-500 p-2.5">
+                                <p class="text-xs text-gray-500 mt-1.5">Sistem akan men-generate tautan undangan pendaftaran operator untuk institusi Anda.</p>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                                <button type="button" @click="showInviteModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    Batal
+                                </button>
+                                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-red-700 rounded-lg hover:bg-red-800 transition-colors shadow-sm flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                    Kirim Undangan
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </x-slot>
-
-        <div class="py-8">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-                
-                @if(session('success'))
-                    <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
-                        <span class="block sm:inline font-medium">{{ session('success') }}</span>
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
-                        <span class="block sm:inline font-medium">{{ session('error') }}</span>
-                    </div>
-                @endif
-
-                <!-- Modal Undang Operator Sekolah -->
-                <div x-show="showInviteModal" 
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0"
-                     class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
-                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showInviteModal = false"></div>
-                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        
-                        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full p-6">
-                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-bold text-gray-900" id="modal-title">Undang Operator Sekolah</h3>
-                                        <p class="text-xs text-gray-500">Delegasikan pengelolaan konfigurasi presensi ke Tim IT / Staf Ops.</p>
-                                    </div>
-                                </div>
-                                <button type="button" @click="showInviteModal = false" class="text-gray-400 hover:text-gray-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </div>
-                            
-                            <form action="{{ route('headmaster.super-admin.store') }}" method="POST" class="space-y-4">
-                                @csrf
-                                <div>
-                                    <label for="invite_email" class="block text-sm font-semibold text-gray-700 mb-1">Email Staf / Operator <span class="text-red-500">*</span></label>
-                                    <input type="email" name="email" id="invite_email" required placeholder="operator.sekolah@gmail.com" class="w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-red-500 focus:border-red-500 p-2.5">
-                                    <p class="text-xs text-gray-500 mt-1.5">Sistem akan men-generate tautan undangan pendaftaran operator untuk institusi Anda.</p>
-                                </div>
-
-                                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                                    <button type="button" @click="showInviteModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                        Batal
-                                    </button>
-                                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-red-700 rounded-lg hover:bg-red-800 transition-colors shadow-sm flex items-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                        Kirim Undangan
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
 
             <!-- SECTION 1: METRIK STATISTIK UTAMA (CARDS) -->
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
