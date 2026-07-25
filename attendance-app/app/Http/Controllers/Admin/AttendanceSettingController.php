@@ -54,6 +54,7 @@ class AttendanceSettingController extends Controller
             'longitude' => 'nullable|string',
             'radius_meters' => 'nullable|integer|min:10',
             'biometric_ip_address' => 'nullable|string',
+            'is_liveness_active' => 'boolean',
         ]);
 
         // Parsing comma-separated string ke array untuk SSID & MAC
@@ -74,6 +75,7 @@ class AttendanceSettingController extends Controller
             'method_pwa' => $request->has('method_pwa'),
             'method_manual' => $request->has('method_manual'),
             'method_wifi' => $request->has('method_wifi'),
+            'is_liveness_active' => $request->boolean('is_liveness_active'),
             'wifi_allowed_ssids' => $ssids,
             'wifi_allowed_macs' => $macs,
             'rfid_secret_key' => $request->rfid_secret_key ?? $settings->rfid_secret_key,

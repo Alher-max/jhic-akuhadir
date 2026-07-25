@@ -17,6 +17,7 @@
         method_pwa: {{ $settings->method_pwa ? 'true' : 'false' }},
         method_manual: {{ $settings->method_manual ? 'true' : 'false' }},
         method_wifi: {{ $settings->method_wifi ? 'true' : 'false' }},
+        is_liveness_active: {{ ($settings->is_liveness_active ?? true) ? 'true' : 'false' }},
         showDeviceModal: false
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
@@ -232,8 +233,8 @@
                                                 <div class="text-[11px] font-bold text-gray-700 flex items-center gap-1.5 mb-1"><i class="fa-solid fa-face-smile text-emerald-500"></i> Opsi 2: AI Biometric Liveness</div>
                                                 <p class="text-[10px] text-gray-500 leading-tight">Mewajibkan pemindaian wajah real-time (Mencegah foto palsu).</p>
                                             </div>
-                                            <label class="relative inline-flex items-center cursor-pointer ml-3">
-                                                <input type="checkbox" checked class="sr-only peer">
+                                            <label class="relative inline-flex items-center cursor-pointer ml-3" @click.stop>
+                                                <input type="checkbox" name="is_liveness_active" x-model="is_liveness_active" value="1" class="sr-only peer">
                                                 <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                                             </label>
                                         </div>

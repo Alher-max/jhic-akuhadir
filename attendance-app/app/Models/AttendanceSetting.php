@@ -25,6 +25,7 @@ class AttendanceSetting extends Model
         'longitude',
         'radius_meters',
         'biometric_ip_address',
+        'is_liveness_active',
     ];
 
     protected $casts = [
@@ -33,6 +34,7 @@ class AttendanceSetting extends Model
         'method_biometric' => 'boolean',
         'method_manual' => 'boolean',
         'method_wifi' => 'boolean',
+        'is_liveness_active' => 'boolean',
         'wifi_allowed_ssids' => 'array',
         'wifi_allowed_macs' => 'array',
     ];
