@@ -23,9 +23,9 @@
                 $homerooms = auth()->user()->homeroomClasses;
             @endphp
             <div class="rounded-2xl border border-white/10 shadow-lg bg-gradient-to-br {{ $gradientClass }} p-6 text-white relative overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/15 pb-5 mb-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 class="text-2xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2 mb-1">
+                        <h2 class="text-2xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2 mb-1.5">
                             <span>Selamat datang, {{ auth()->user()->name }}!</span>
                             @if($homerooms && $homerooms->count() > 0)
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
@@ -47,30 +47,6 @@
                         <span class="text-white/70">Kode Sekolah:</span>
                         <strong class="text-amber-300 tracking-widest text-sm">{{ $tenant->code ?? 'SCH-001' }}</strong>
                     </div>
-                </div>
-
-                <!-- Tombol Pintas Akses Cepat Guru -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="{{ route('admin.leaves.index') }}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-envelope-open-text text-slate-900"></i> Persetujuan Izin Siswa
-                        @if(($pendingLeavesCount ?? 0) > 0)
-                            <span class="ml-1 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-extrabold animate-pulse">
-                                {{ $pendingLeavesCount }}
-                            </span>
-                        @endif
-                    </a>
-
-                    <a href="{{ route('students.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-users"></i> Siswa Binaan
-                    </a>
-
-                    <a href="{{ route('class-schedules.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-calendar-days"></i> Jadwal Pelajaran (KBM)
-                    </a>
-
-                    <a href="{{ route('attendances.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-clipboard-user"></i> Presensi Harian
-                    </a>
                 </div>
             </div>
             @endif
