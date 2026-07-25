@@ -31,17 +31,6 @@
     <div class="py-8" x-data="{ showInviteModal: false }" @open-invite-modal.window="showInviteModal = true" @keydown.escape.window="showInviteModal = false">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
-            @if(session('success'))
-                <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
-                    <span class="block sm:inline font-medium">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-xl shadow-sm" role="alert">
-                    <span class="block sm:inline font-medium">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <!-- Modal Undang Operator Sekolah -->
             <div x-show="showInviteModal" 
                  x-transition:enter="transition ease-out duration-300"
