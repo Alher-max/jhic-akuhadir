@@ -110,7 +110,11 @@ class HeadmasterDashboardService
             ->get();
 
         // 8. Invitations & Operators
+        $existingUserEmails = User::where('tenant_id', $tenantId)->pluck('email')->filter()->toArray();
+
         $invitations = Invitation::where('tenant_id', $tenantId)
+            ->where('status', 'pending')
+            ->whereNotIn('email', $existingUserEmails)
             ->orderByDesc('created_at')
             ->get();
 
