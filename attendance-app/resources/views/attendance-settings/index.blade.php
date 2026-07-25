@@ -220,7 +220,18 @@
                                             <div>
                                                 <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Radius Perimeter (Meter)</label>
                                                 <input type="number" name="radius_meters" value="{{ $settings->radius_meters }}" placeholder="Cth: 100" min="10" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
-                                                <p class="text-[9.5px] text-gray-400 mt-0.5">Batas toleransi jangkauan presensi siswa dari titik lokasi sekolah</p>
+                                                <p class="text-[9.5px] text-gray-400 mt-0.5">Batas toleransi jangkauan presensi siswa dari titik lokasi sekolah.</p>
+                                                
+                                                <!-- BOX PETUNJUK REKOMENDASI RADIUS -->
+                                                <div class="mt-2 bg-sky-50/90 border border-sky-200 rounded-lg p-2 text-[10.5px] text-sky-900 leading-relaxed">
+                                                    <div class="font-bold flex items-center gap-1.5 text-sky-950 mb-0.5">
+                                                        <span>💡 Panduan Penetapan Radius:</span>
+                                                    </div>
+                                                    <ul class="list-disc list-inside space-y-0.5 text-[10px] text-sky-900">
+                                                        <li><strong>20 &ndash; 30 Meter:</strong> Hanya cocok jika siswa wajib clock-in di luar ruangan / pintu gerbang utama.</li>
+                                                        <li><strong>50 &ndash; 100 Meter (Rekomendasi Ideal):</strong> Meng-cover seluruh lingkungan kelas/gedung sekolah & mengantisipasi toleransi penyimpangan sinyal GPS (GPS Drift) saat siswa berada di dalam ruangan beratap.</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                             <p class="text-[10px] text-gray-500 leading-tight mt-1">Hanya dapat melakukan clock-in jika berada di dalam radius sekolah.</p>
                                         </div>
