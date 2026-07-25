@@ -23,7 +23,7 @@
                 $homerooms = auth()->user()->homeroomClasses;
             @endphp
             <div class="rounded-2xl border border-white/10 shadow-lg bg-gradient-to-br {{ $gradientClass }} p-6 text-white relative overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/15 pb-5 mb-4">
                     <div>
                         <h2 class="text-2xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2 mb-1.5">
                             <span>Selamat datang, {{ auth()->user()->name }}!</span>
@@ -47,6 +47,30 @@
                         <span class="text-white/70">Kode Sekolah:</span>
                         <strong class="text-amber-300 tracking-widest text-sm">{{ $tenant->code ?? 'SCH-001' }}</strong>
                     </div>
+                </div>
+
+                <!-- Tombol Pintas Akses Cepat Guru -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="{{ route('admin.leaves.index') }}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-envelope-open-text text-slate-900"></i> Persetujuan Izin Siswa
+                        @if(($pendingLeavesCount ?? 0) > 0)
+                            <span class="ml-1 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-extrabold animate-pulse">
+                                {{ $pendingLeavesCount }}
+                            </span>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('students.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-users"></i> Siswa Binaan
+                    </a>
+
+                    <a href="{{ route('class-schedules.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-calendar-days"></i> Jadwal Pelajaran (KBM)
+                    </a>
+
+                    <a href="{{ route('attendances.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-clipboard-user"></i> Presensi Harian
+                    </a>
                 </div>
             </div>
             @endif
@@ -105,92 +129,6 @@
                     </div>
                 </a>
 
-            </div>
-
-            <!-- ===== CARD UTAMA AKSI WALI KELAS & GURU ===== -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-red-600"></i>
-                        <span>Menu & Fitur Pengelolaan Guru / Wali Kelas</span>
-                    </h3>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    
-                    <!-- MENU 1: PERSETUJUAN IZIN SISWA -->
-                    <a href="{{ route('admin.leaves.index') }}" class="p-4 rounded-xl border border-slate-200 hover:border-red-500 hover:shadow-md transition-all flex flex-col justify-between bg-white group">
-                        <div class="space-y-2">
-                            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg font-bold group-hover:bg-red-600 group-hover:text-white transition-all">
-                                <i class="fa-solid fa-envelope-open-text"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-red-600 transition-colors">Persetujuan Izin Siswa</h4>
-                            <p class="text-xs text-slate-500 leading-relaxed">
-                                Tinjau, setujui, atau tolak surat pengajuan izin dan sakit dari siswa.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-red-600">
-                            <span>Buka Pengajuan</span>
-                            @if(($pendingLeavesCount ?? 0) > 0)
-                                <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">{{ $pendingLeavesCount }} pending</span>
-                            @else
-                                <i class="fa-solid fa-arrow-right"></i>
-                            @endif
-                        </div>
-                    </a>
-
-                    <!-- MENU 2: KELOLA SISWA BINAAN -->
-                    <a href="{{ route('students.index') }}" class="p-4 rounded-xl border border-slate-200 hover:border-red-500 hover:shadow-md transition-all flex flex-col justify-between bg-white group">
-                        <div class="space-y-2">
-                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                <i class="fa-solid fa-users text-lg"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">Kelola Siswa Binaan</h4>
-                            <p class="text-xs text-slate-500 leading-relaxed">
-                                Lihat daftar siswa, profil data, serta rekaman kehadiran siswa di kelas Anda.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
-                            <span>Lihat Siswa</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </div>
-                    </a>
-
-                    <!-- MENU 3: KELOLA KELAS & ROMBEL -->
-                    <a href="{{ route('operator.classes.index') }}" class="p-4 rounded-xl border border-slate-200 hover:border-red-500 hover:shadow-md transition-all flex flex-col justify-between bg-white group">
-                        <div class="space-y-2">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                                <i class="fa-solid fa-school-flag text-lg"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-600 transition-colors">Kelola Rombel & Kelas</h4>
-                            <p class="text-xs text-slate-500 leading-relaxed">
-                                Pantau pembagian kelas, anggota rombel, dan struktur kelas binaan.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-                            <span>Kelola Kelas</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </div>
-                    </a>
-
-                    <!-- MENU 4: JADWAL KBM & KEGIATAN -->
-                    <a href="{{ route('class-schedules.index') }}" class="p-4 rounded-xl border border-slate-200 hover:border-red-500 hover:shadow-md transition-all flex flex-col justify-between bg-white group">
-                        <div class="space-y-2">
-                            <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg font-bold group-hover:bg-purple-600 group-hover:text-white transition-all">
-                                <i class="fa-solid fa-calendar-days text-lg"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-purple-600 transition-colors">Jadwal KBM & Kegiatan</h4>
-                            <p class="text-xs text-slate-500 leading-relaxed">
-                                Atur dan lihat jadwal mata pelajaran, jadwal piket, dan kegiatan sekolah.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-purple-600">
-                            <span>Lihat Jadwal</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </div>
-                    </a>
-
-                </div>
             </div>
 
             <!-- ===== TABEL FEED LOG PRESENSI HARI INI ===== -->
