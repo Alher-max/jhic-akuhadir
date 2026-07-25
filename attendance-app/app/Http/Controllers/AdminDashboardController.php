@@ -165,7 +165,7 @@ class AdminDashboardController extends Controller
             });
         }
 
-        $attendances = $query->latest('clock_in')->paginate(10)->withQueryString();
+        $attendances = $query->orderByRaw('COALESCE(clock_in, updated_at) DESC')->paginate(10)->withQueryString();
 
         $tenant = \App\Models\Tenant::find($tenantId);
 
