@@ -1,7 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ auth()->user()->role === 'wali_kelas' ? __('Dasbor Guru / Wali Kelas') : __('Dasbor Operator/Admin') }}
+            @if(in_array(auth()->user()->role, ['operator', 'admin_dapodik', 'admin']))
+                {{ __('Dasbor Operator Sekolah') }}
+            @elseif(in_array(auth()->user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel']))
+                {{ __('Dasbor Guru / Wali Kelas') }}
+            @elseif(in_array(auth()->user()->role, ['headmaster', 'kepala_sekolah']))
+                {{ __('Dasbor Kepala Sekolah') }}
+            @else
+                {{ __('Dasbor Utama') }}
+            @endif
         </h2>
     </x-slot>
 
@@ -35,20 +43,29 @@
                     <div class="flex-1 min-w-0">
                         <h2 class="text-xl lg:text-2xl font-extrabold tracking-tight text-white mb-1.5 flex flex-col sm:flex-row sm:items-center gap-2">
                             <span>{{ $tenant->banner_title ?: 'Selamat datang, ' . auth()->user()->name . '!' }}</span>
-                            @if(in_array(auth()->user()->role, ['guru', 'wali_kelas', 'guru_mapel']))
+                            @if(in_array(auth()->user()->role, ['operator', 'admin_dapodik', 'admin']))
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/20 border border-white/30 text-xs font-semibold backdrop-blur-sm shadow-sm">
+                                    <i class="fa-solid fa-user-gear text-amber-300"></i> Operator Sekolah
+                                </span>
+                            @elseif(in_array(auth()->user()->role, ['guru', 'wali_kelas', 'teacher', 'guru_mapel']))
                                 @php $homerooms = auth()->user()->homeroomClasses; @endphp
-                                @if($homerooms->count() > 0)
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/20 border border-white/30 text-xs font-semibold backdrop-blur-sm shadow-sm">
+                                @if($homerooms && $homerooms->count() > 0)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/20 border border-white/30 text-xs font-semibold backdrop-blur-sm shadow-sm">
                                         <i class="fa-solid fa-star text-amber-300"></i> Wali Kelas: {{ $homerooms->pluck('nama_kelas')->implode(', ') }}
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/10 border border-white/20 text-xs font-semibold backdrop-blur-sm text-white/90 shadow-sm">
-                                        <i class="fa-solid fa-star text-white/60"></i> Wali Kelas: -
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/10 border border-white/20 text-xs font-semibold backdrop-blur-sm text-white/90 shadow-sm">
+                                        <i class="fa-solid fa-chalkboard-user text-white/80"></i> Guru Pengajar
                                     </span>
                                 @endif
                             @endif
                         </h2>
-                        @if(in_array(auth()->user()->role, ['guru', 'wali_kelas', 'guru_mapel']))
+                        @if(in_array(auth()->user()->role, ['operator', 'admin_dapodik', 'admin']))
+                            <p class="text-white/90 text-sm font-semibold mt-1">Dasbor Operasional & Admin Dapodik — {{ auth()->user()->tenant->name ?? 'Sekolah Anda' }}</p>
+                            <p class="text-white/70 text-xs leading-relaxed mt-0.5 max-w-xl">
+                                {{ $tenant->banner_description ?: 'Kelola data siswa, pendidik, perangkat presensi, dan konfigurasi operasional sekolah secara terpusat.' }}
+                            </p>
+                        @elseif(in_array(auth()->user()->role, ['guru', 'wali_kelas', 'teacher', 'guru_mapel']))
                             <p class="text-white/80 text-sm">Dasbor Guru & Tenaga Pendidik</p>
                         @else
                             <p class="text-white/80 text-sm font-medium">{{ auth()->user()->tenant->name ?? 'Sekolah Anda' }}</p>

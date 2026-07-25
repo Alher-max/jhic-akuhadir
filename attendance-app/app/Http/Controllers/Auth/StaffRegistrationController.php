@@ -45,7 +45,8 @@ class StaffRegistrationController extends Controller
             'name' => $request->name,
             'email' => $invitation->email,
             'password' => Hash::make($request->password),
-            'role' => 'wali_kelas',
+            'role' => $invitation->role ?: 'operator',
+            'is_active' => true,
             'onboarding_completed' => true, // Staf tidak perlu onboarding
         ]);
 
