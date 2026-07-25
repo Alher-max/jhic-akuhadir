@@ -11,7 +11,12 @@ class OnboardingController extends Controller
 {
     public function index()
     {
-        $tenant = Auth::user()->tenant;
+        $user = Auth::user();
+        if (!in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner'])) {
+            return redirect()->route('dashboard');
+        }
+
+        $tenant = $user->tenant;
         
         // If already completed, redirect to dashboard
         if ($tenant && $tenant->onboarding_completed) {

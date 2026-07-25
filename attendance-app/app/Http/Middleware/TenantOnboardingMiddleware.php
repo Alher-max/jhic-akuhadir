@@ -14,27 +14,21 @@ class TenantOnboardingMiddleware
         $user = Auth::user();
 
         if ($user && $user->tenant) {
+            // Bypass onboarding completely for non-headmaster roles (student, teacher, operator, parent)
+            if (!in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner'])) {
+                return $next($request);
+            }
+
             $tenant = $user->tenant;
 
             if (!$tenant->onboarding_completed) {
-                // If user is admin_dapodik, they MUST complete onboarding
-                if ($user->role === 'admin_dapodik') {
+                $hasAdmin = \App\Models\User::where('tenant_id', $user->tenant_id)
+                    ->whereIn('role', ['operator', 'admin_dapodik', 'admin'])
+                    ->exists();
+                
+                // Mode Mandiri: 0 operator/admin_dapodik, headmaster must complete onboarding
+                if (!$hasAdmin) {
                     return redirect()->route('admin.onboarding');
-                }
-
-                // If user is kepala_sekolah
-                if ($user->role === 'kepala_sekolah') {
-                    $hasAdmin = \App\Models\User::where('tenant_id', $user->tenant_id)
-                        ->where('role', 'admin_dapodik')
-                        ->exists();
-                    
-                    // Mode Mandiri: 0 admin_dapodik, kepala_sekolah must complete onboarding
-                    if (!$hasAdmin) {
-                        return redirect()->route('admin.onboarding');
-                    }
-                    
-                    // If owner has super_admins, let them bypass onboarding
-                    // and allow them to reach dashboard.
                 }
             }
         }

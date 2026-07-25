@@ -89,7 +89,7 @@ class OtpVerificationController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect()->route('onboarding');
+        return redirect()->route('dashboard');
     }
 
     public function resend(Request $request)

@@ -11,8 +11,8 @@ class OnboardingController extends Controller
 {
     public function index()
     {
-        // Hanya tampil jika onboarding belum selesai
-        if (Auth::user()->onboarding_completed) {
+        $user = Auth::user();
+        if (!in_array($user->role, ['headmaster', 'kepala_sekolah', 'owner']) || $user->onboarding_completed) {
             return redirect()->route('dashboard');
         }
         
