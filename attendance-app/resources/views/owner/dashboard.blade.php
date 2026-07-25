@@ -399,6 +399,158 @@
                 </div>
             </div>
 
+            <!-- SECTION 5: KELOLA OPERATOR & STATUS UNDANGAN -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            Kelola Operator Sekolah & Status Undangan
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Daftar staf operasional aktif dan tautan undangan pendaftaran yang telah dikirimkan.</p>
+                    </div>
+
+                    <button type="button" @click="$dispatch('open-invite-modal')" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-sm self-start sm:self-auto cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        + Undang Operator Baru
+                    </button>
+                </div>
+
+                <!-- TABLE DAFTAR OPERATOR & UNDANGAN -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-600">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 font-bold">Nama / Email Operator</th>
+                                <th scope="col" class="px-6 py-3 font-bold">Tipe Akun</th>
+                                <th scope="col" class="px-6 py-3 font-bold">Tanggal Dibuat</th>
+                                <th scope="col" class="px-6 py-3 font-bold text-center">Status</th>
+                                <th scope="col" class="px-6 py-3 font-bold text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <!-- LIST OPERATOR TERDAFTAR -->
+                            @foreach($operators as $op)
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4 font-semibold text-slate-800">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs">
+                                                {{ strtoupper(substr($op->name ?? $op->email, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-slate-900">{{ $op->name }}</div>
+                                                <div class="text-xs text-slate-500 font-normal">{{ $op->email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                            Operator Sekolah
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs text-slate-500">
+                                        {{ $op->created_at ? $op->created_at->translatedFormat('d M Y, H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($op->is_active)
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                                Non-Aktif
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <form action="{{ route('headmaster.super-admin.toggle', $op->id) }}" method="POST" class="inline-block" x-data="{ showConfirmPassword: false }">
+                                            @csrf
+                                            @method('PATCH')
+                                            
+                                            <button type="button" @click="showConfirmPassword = true" class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors {{ $op->is_active ? 'text-rose-600 border-rose-200 hover:bg-rose-50' : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50' }}">
+                                                {{ $op->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                            </button>
+
+                                            <!-- Modal Konfirmasi Password Toggle -->
+                                            <div x-show="showConfirmPassword" style="display:none;" class="fixed inset-0 z-50 overflow-y-auto text-left" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                                <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                                                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showConfirmPassword = false"></div>
+                                                    <div class="inline-block bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:max-w-md sm:w-full p-6 relative z-10 space-y-4">
+                                                        <h4 class="font-bold text-slate-900 text-base">Konfirmasi Konfigurasi Operator</h4>
+                                                        <p class="text-xs text-slate-500">Masukkan Password Anda (Kepala Sekolah) untuk mengonfirmasi perubahan status aktif akun {{ $op->name }}.</p>
+                                                        <div>
+                                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Password Kepala Sekolah</label>
+                                                            <input type="password" name="password" required class="w-full text-sm border-slate-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                                                        </div>
+                                                        <div class="flex justify-end gap-2 pt-2">
+                                                            <button type="button" @click="showConfirmPassword = false" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Batal</button>
+                                                            <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-white bg-red-700 rounded-lg hover:bg-red-800">Konfirmasi</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            <!-- LIST UNDANGAN PENDING -->
+                            @foreach($invitations as $inv)
+                                <tr class="hover:bg-slate-50 transition-colors bg-amber-50/30">
+                                    <td class="px-6 py-4 font-semibold text-slate-800">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-amber-100 border border-amber-200 text-amber-700 font-bold flex items-center justify-center text-xs">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-slate-800">{{ $inv->email }}</div>
+                                                <div class="text-xs text-amber-600 font-medium">Undangan Terkirim</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                            Calon Operator
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs text-slate-500">
+                                        {{ $inv->created_at ? $inv->created_at->translatedFormat('d M Y, H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                            Menunggu Registrasi
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right" x-data="{ copied: false }">
+                                        <button type="button" 
+                                                @click="navigator.clipboard.writeText('{{ route('register.staff', ['token' => $inv->token]) }}'); copied = true; setTimeout(() => copied = false, 2500)" 
+                                                class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                            <span x-text="copied ? 'Tautan Tersalin! ✓' : 'Salin Tautan Undangan'"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            @if($operators->isEmpty() && $invitations->isEmpty())
+                                <tr>
+                                    <td colspan="5" class="px-6 py-10 text-center text-slate-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <svg class="w-10 h-10 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                            <p class="font-medium text-slate-600">Belum ada Operator Sekolah terdaftar atau undangan dikirimkan.</p>
+                                            <p class="text-xs text-slate-400 mt-1">Klik tombol "+ Undang Operator Baru" di atas untuk mendaftarkan staf operasional.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
     </div>

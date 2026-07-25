@@ -115,6 +115,16 @@ class OwnerDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // 5. DAFTAR UNDANGAN & OPERATOR SEKOLAH
+        $invitations = \App\Models\Invitation::where('tenant_id', $tenantId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $operators = User::where('tenant_id', $tenantId)
+            ->whereIn('role', ['operator', 'admin_dapodik'])
+            ->orderBy('name')
+            ->get();
+
         return view('owner.dashboard', compact(
             'totalSiswa', 'totalGuru', 'totalStaf',
             'studentDisciplineRate', 'staffDisciplineRate',
@@ -122,7 +132,9 @@ class OwnerDashboardController extends Controller
             'siswaSnapshot', 'guruSnapshot',
             'trendData',
             'jadwalGuru',
-            'problematicStudents'
+            'problematicStudents',
+            'invitations',
+            'operators'
         ));
     }
 
