@@ -22,22 +22,6 @@
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
-            @if (session('success'))
-                <div class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li class="text-sm">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <!-- BAGIAN 1: KONFIGURASI 5 METODE PRESENSI -->
             <form action="{{ route('attendance-settings.update') }}" method="POST">
                 @csrf
