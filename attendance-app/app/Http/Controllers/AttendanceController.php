@@ -142,6 +142,9 @@ class AttendanceController extends Controller
             $notes = 'Presensi menggunakan fitur Upload Foto Manual (Fallback).';
         }
 
+        $clientIp = $request->ip();
+        $isWifiVerified = in_array($clientIp, ['127.0.0.1', '::1']) || str_starts_with($clientIp, '192.168.') || str_starts_with($clientIp, '10.');
+
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
@@ -150,6 +153,8 @@ class AttendanceController extends Controller
             'status' => $status,
             'photo_path' => $photoPath,
             'notes' => $notes,
+            'ip_address' => $clientIp,
+            'is_wifi_verified' => $isWifiVerified,
         ]);
 
         return redirect()->back()->with('success', 'Berhasil masuk (clock-in).');

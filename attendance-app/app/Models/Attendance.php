@@ -18,6 +18,13 @@ class Attendance extends Model
         'photo_path',
         'face_match_score',
         'notes',
+        'ip_address',
+        'is_wifi_verified',
+    ];
+
+    protected $casts = [
+        'is_wifi_verified' => 'boolean',
+        'face_match_score' => 'float',
     ];
 
     public function user()

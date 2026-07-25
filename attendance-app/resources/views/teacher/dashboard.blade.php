@@ -219,23 +219,39 @@
                                         {{ optional(optional($attendance->user)->schoolClass)->nama_kelas ?? '-' }}
                                     </td>
                                     <td class="px-6 py-3.5">
-                                        @if($attendance->status === 'present')
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                <i class="fa-solid fa-circle-check text-2xs"></i> Hadir Tepat
-                                            </span>
-                                        @elseif($attendance->status === 'late')
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                                <i class="fa-solid fa-clock text-2xs"></i> Terlambat
-                                            </span>
-                                        @elseif(in_array($attendance->status, ['sick', 'permission', 'leave']))
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                                <i class="fa-solid fa-hospital-user text-2xs"></i> Izin / Sakit
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
-                                                {{ ucfirst($attendance->status) }}
-                                            </span>
-                                        @endif
+                                        <div class="flex flex-col items-start gap-1">
+                                            <div>
+                                                @if($attendance->status === 'present')
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <i class="fa-solid fa-circle-check text-2xs"></i> Hadir Tepat
+                                                    </span>
+                                                @elseif($attendance->status === 'late')
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                                        <i class="fa-solid fa-clock text-2xs"></i> Terlambat
+                                                    </span>
+                                                @elseif(in_array($attendance->status, ['sick', 'permission', 'leave']))
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                        <i class="fa-solid fa-hospital-user text-2xs"></i> Izin / Sakit
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                                                        {{ ucfirst($attendance->status) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            @if(!in_array($attendance->status, ['sick', 'permission', 'leave']))
+                                                @if($attendance->is_wifi_verified)
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-emerald-100/80 text-emerald-800 border border-emerald-200" title="Terhubung langsung via Wi-Fi Sekolah (IP: {{ $attendance->ip_address ?: 'Terverifikasi' }})">
+                                                        <i class="fa-solid fa-wifi text-3xs"></i> Wi-Fi Sekolah 📶
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-amber-100/90 text-amber-900 border border-amber-300" title="Menggunakan paket data seluler / IP Luar (IP: {{ $attendance->ip_address ?: 'Data Seluler' }})">
+                                                        <i class="fa-solid fa-signal text-3xs"></i> Data Seluler 📱
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-3.5 text-xs text-slate-500 max-w-xs truncate">
                                         {{ $attendance->notes ?: '-' }}

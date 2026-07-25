@@ -125,6 +125,32 @@ class PwaAttendanceController extends Controller
 
         $matchScore = $request->input('face_match_score') ? (float)$request->input('face_match_score') : null;
 
+        // Tangkap IP Client & Validasi Wi-Fi Sekolah (Mode Fleksibel)
+        $clientIp = $request->ip();
+        $isWifiVerified = false;
+
+        $allowedIps = [];
+        if ($settings && !empty($settings->biometric_ip_address)) {
+            $allowedIps = array_merge($allowedIps, array_map('trim', explode(',', $settings->biometric_ip_address)));
+        }
+
+        $deviceIps = \App\Models\AttendanceDevice::where('tenant_id', $user->tenant_id)
+            ->whereNotNull('ip_address')
+            ->pluck('ip_address')
+            ->toArray();
+        $allowedIps = array_merge($allowedIps, $deviceIps);
+
+        $envIps = env('SCHOOL_WIFI_IPS') ?: env('WIFI_ALLOWED_IPS') ?: config('services.wifi.allowed_ips');
+        if ($envIps) {
+            $allowedIps = array_merge($allowedIps, is_array($envIps) ? $envIps : array_map('trim', explode(',', $envIps)));
+        }
+
+        if (!empty($allowedIps) && in_array($clientIp, $allowedIps)) {
+            $isWifiVerified = true;
+        } elseif (in_array($clientIp, ['127.0.0.1', '::1']) || str_starts_with($clientIp, '192.168.') || str_starts_with($clientIp, '10.') || str_starts_with($clientIp, '172.16.')) {
+            $isWifiVerified = true;
+        }
+
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
@@ -133,6 +159,8 @@ class PwaAttendanceController extends Controller
             'status' => $status,
             'photo_path' => $photoPath,
             'face_match_score' => $matchScore,
+            'ip_address' => $clientIp,
+            'is_wifi_verified' => $isWifiVerified,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Absensi berhasil diverifikasi!']);
