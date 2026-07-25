@@ -38,7 +38,7 @@ class AttendanceSettingController extends Controller
     public function updateSettings(Request $request)
     {
         $tenantId = Auth::user()->tenant_id;
-        $settings = AttendanceSetting::where('tenant_id', $tenantId)->firstOrFail();
+        $settings = AttendanceSetting::firstOrCreate(['tenant_id' => $tenantId]);
 
         $request->validate([
             'method_rfid' => 'boolean',
@@ -68,6 +68,13 @@ class AttendanceSettingController extends Controller
             $macs = array_map('trim', explode(',', $request->wifi_allowed_macs));
         }
 
+        $biometricIpAddress = null;
+        if ($request->filled('biometric_ip_address')) {
+            $ipList = array_map('trim', explode(',', $request->biometric_ip_address));
+            $ipList = array_filter($ipList, fn($ip) => $ip !== '');
+            $biometricIpAddress = !empty($ipList) ? implode(', ', $ipList) : null;
+        }
+
         $settings->update([
             'method_rfid' => $request->has('method_rfid'),
             'method_qrcode' => $request->has('method_qrcode'),
@@ -82,7 +89,7 @@ class AttendanceSettingController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'radius_meters' => $request->radius_meters ?? 100,
-            'biometric_ip_address' => $request->biometric_ip_address,
+            'biometric_ip_address' => $biometricIpAddress,
         ]);
 
         if ($request->has('generate_new_key')) {

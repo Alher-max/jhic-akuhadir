@@ -249,6 +249,11 @@
                                         </div>
                                         <div x-show="method_wifi" class="space-y-2 mt-2 pt-2 border-t border-gray-100">
                                             <div>
+                                                <label class="block text-[10px] font-bold text-gray-700 mb-0.5">IP Public Wi-Fi Resmi Sekolah</label>
+                                                <input type="text" name="biometric_ip_address" value="{{ $settings->biometric_ip_address }}" placeholder="Contoh: 180.252.10.1, 114.122.20.2, 36.88.5.12" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                <p class="text-[9.5px] text-gray-400 mt-0.5 leading-tight">Jika sekolah memiliki beberapa jaringan/IP Wi-Fi, pisahkan dengan koma (contoh: 180.252.10.1, 114.122.20.2, 36.88.5.12).</p>
+                                            </div>
+                                            <div>
                                                 <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Daftar SSID Wi-Fi Diizinkan</label>
                                                 <textarea name="wifi_allowed_ssids" rows="1" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" placeholder="Contoh: Wi-Fi_Sekolah_1, Wi-Fi_Perpus">{{ is_array($settings->wifi_allowed_ssids) ? implode(', ', $settings->wifi_allowed_ssids) : '' }}</textarea>
                                             </div>
