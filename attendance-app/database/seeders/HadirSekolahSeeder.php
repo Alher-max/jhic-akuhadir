@@ -29,27 +29,48 @@ class HadirSekolahSeeder extends Seeder
         $defaultPassword = \Illuminate\Support\Facades\Hash::make('password');
 
         // 1. KEPALA SEKOLAH
+        $headmasterPassword = \Illuminate\Support\Facades\Hash::make('Password123!');
         $kepsek = \App\Models\User::updateOrCreate(
             ['email' => 'kepala@sman2yogyakarta.sch.id'],
             [
                 'name' => 'Drs. H. Supriyadi, M.Pd.',
-                'password' => $defaultPassword,
+                'password' => $headmasterPassword,
                 'role' => 'headmaster',
+                'nisn' => '5147749651100002',
                 'tenant_id' => $tenant->id,
                 'is_active' => true,
+                'onboarding_completed' => true,
                 'email_verified_at' => now(),
             ]
         );
 
-        \App\Models\User::updateOrCreate(
+        \App\Models\UserProfile::updateOrCreate(
+            ['user_id' => $kepsek->id],
+            [
+                'nuptk' => '5147749651100002',
+                'employee_id' => '5147749651100002',
+            ]
+        );
+
+        $kepsekPleret = \App\Models\User::updateOrCreate(
             ['email' => 'kepsek.pleret@hadirsekolah.id'],
             [
                 'name' => 'Drs. H. Supriyadi, M.Pd.',
-                'password' => $defaultPassword,
+                'password' => $headmasterPassword,
                 'role' => 'headmaster',
+                'nisn' => '5147749651100003',
                 'tenant_id' => $tenant->id,
                 'is_active' => true,
+                'onboarding_completed' => true,
                 'email_verified_at' => now(),
+            ]
+        );
+
+        \App\Models\UserProfile::updateOrCreate(
+            ['user_id' => $kepsekPleret->id],
+            [
+                'nuptk' => '5147749651100003',
+                'employee_id' => '5147749651100003',
             ]
         );
 
