@@ -174,7 +174,11 @@ class AdminDashboardController extends Controller
             ->where('is_active', true)
             ->get();
 
-        return view('dashboard', compact(
+        $viewName = in_array(Auth::user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel', 'manager_teacher'])
+            ? 'teacher.dashboard'
+            : 'dashboard';
+
+        return view($viewName, compact(
             'totalSiswa', 'totalGuruStaff', 'totalRombel', 'sudahHadirHariIni', 
             'attendances', 'pendingLeavesCount', 'tenant', 
             'waliTotalSiswa', 'waliHadirHariIni', 'waliIzinSakit', 'waliBelumAbsen', 'waliClassName', 'availableClasses',
