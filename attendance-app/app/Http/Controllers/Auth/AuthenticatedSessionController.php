@@ -56,13 +56,17 @@ class AuthenticatedSessionController extends Controller
 
         $role = Auth::user()->role;
         
-        if (in_array($role, ['headmaster', 'kepala_sekolah'])) {
+        if (in_array($role, ['headmaster', 'kepala_sekolah', 'owner'])) {
             return redirect()->intended(route('headmaster.dashboard', absolute: false));
-        } elseif (in_array($role, ['student', 'member'])) {
+        } elseif (in_array($role, ['operator', 'admin_dapodik', 'admin'])) {
+            return redirect()->intended(route('operator.dashboard', absolute: false));
+        } elseif (in_array($role, ['teacher', 'guru', 'wali_kelas', 'manager_teacher'])) {
+            return redirect()->intended(route('teacher.dashboard', absolute: false));
+        } elseif ($role === 'parent') {
+            return redirect()->intended(route('parent.dashboard', absolute: false));
+        } else {
             return redirect()->intended(route('student.dashboard', absolute: false));
         }
-
-        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**

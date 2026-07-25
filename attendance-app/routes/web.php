@@ -43,8 +43,10 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         $role = auth()->user()->role;
         if (in_array($role, ['headmaster', 'kepala_sekolah', 'owner'])) {
             return redirect()->route('headmaster.dashboard');
-        } elseif (in_array($role, ['operator', 'admin_dapodik', 'admin', 'teacher', 'guru', 'wali_kelas', 'manager_teacher', 'staff'])) {
+        } elseif (in_array($role, ['operator', 'admin_dapodik', 'admin'])) {
             return redirect()->route('operator.dashboard');
+        } elseif (in_array($role, ['teacher', 'guru', 'wali_kelas', 'manager_teacher'])) {
+            return redirect()->route('teacher.dashboard');
         } elseif ($role === 'parent') {
             return redirect()->route('parent.dashboard');
         } else {
@@ -52,11 +54,20 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         }
     })->name('dashboard');
 
-    // Admin & Wali Kelas Routes (Operational)
-    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,operator,teacher', 'tenant.onboarding'])->group(function () {
+    // Operator Dashboard Route (Strict Role: operator)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':operator', 'tenant.onboarding'])->group(function () {
         Route::get('/operator/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('operator.dashboard');
         Route::redirect('/manager/dashboard', '/operator/dashboard');
         Route::post('/operator/dashboard/banner', [\App\Http\Controllers\AdminDashboardController::class, 'updateBanner'])->name('operator.dashboard.banner');
+    });
+
+    // Teacher Dashboard Route (Strict Role: teacher)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
+        Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
+    });
+
+    // Admin & Wali Kelas Routes (Operational Management)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,operator,teacher', 'tenant.onboarding'])->group(function () {
         
         // Management Routes (Schedules)
         Route::resource('dashboard/schedules', \App\Http\Controllers\Admin\ScheduleController::class)->except(['show']);
