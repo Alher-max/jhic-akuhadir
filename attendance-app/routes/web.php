@@ -64,6 +64,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Teacher Dashboard Route (Strict Role: teacher)
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
         Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
+        Route::post('/teacher/manual-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeManualAttendance'])->name('teacher.manual-attendance');
     });
 
     // Admin & Wali Kelas Routes (Operational Management)

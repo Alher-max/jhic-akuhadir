@@ -174,6 +174,15 @@ class AdminDashboardController extends Controller
             ->where('is_active', true)
             ->get();
 
+        $studentsForBantuAbsen = \App\Models\User::where('tenant_id', $tenantId)
+            ->where('role', 'student')
+            ->when($isWaliKelas && $availableClasses->isNotEmpty(), function($q) use ($availableClasses) {
+                $q->whereIn('class_id', $availableClasses->pluck('id'));
+            })
+            ->with('schoolClass')
+            ->orderBy('name')
+            ->get();
+
         $viewName = in_array(Auth::user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel', 'manager_teacher'])
             ? 'teacher.dashboard'
             : 'dashboard';
@@ -184,8 +193,41 @@ class AdminDashboardController extends Controller
             'waliTotalSiswa', 'waliHadirHariIni', 'waliIzinSakit', 'waliBelumAbsen', 'waliClassName', 'availableClasses',
             'opSiswaHadirTepat', 'opSiswaTerlambat', 'opSiswaIzinSakit', 'opSiswaAlpa',
             'opGuruHadir', 'opGuruIzinSakit', 'opRombelKosong', 'opPendingInvitations',
-            'sysGpsActive', 'sysWifiActive', 'sysWaReady', 'teachers'
+            'sysGpsActive', 'sysWifiActive', 'sysWaReady', 'teachers', 'studentsForBantuAbsen'
         ));
+    }
+
+    public function storeManualAttendance(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:users,id',
+            'status' => 'required|in:present,late',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        $tenantId = Auth::user()->tenant_id;
+        $student = \App\Models\User::where('tenant_id', $tenantId)
+            ->where('role', 'student')
+            ->findOrFail($request->student_id);
+
+        $today = \Carbon\Carbon::today()->format('Y-m-d');
+        $now = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
+        $notes = $request->notes ?: 'Presensi manual dibantu oleh Guru / Wali Kelas';
+
+        \App\Models\Attendance::updateOrCreate(
+            [
+                'user_id' => $student->id,
+                'tenant_id' => $tenantId,
+                'date' => $today,
+            ],
+            [
+                'clock_in' => $now,
+                'status' => $request->status,
+                'notes' => $notes,
+            ]
+        );
+
+        return redirect()->back()->with('success', "Presensi {$student->name} berhasil dicatat oleh Guru!");
     }
 
     public function updateBanner(Request $request)

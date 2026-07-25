@@ -6,7 +6,22 @@
         </h2>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-8" x-data="{
+        openBantuAbsen: false,
+        selectedStudentId: '',
+        students: {{ json_encode(($studentsForBantuAbsen ?? collect())->map(function($s) {
+            return [
+                'id' => $s->id,
+                'name' => $s->name,
+                'nisn' => $s->nisn ?: $s->nis ?: '-',
+                'class_name' => optional($s->schoolClass)->nama_kelas ?: 'Kelas Binaan',
+                'avatar_url' => $s->avatar ? asset('storage/' . $s->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($s->name) . '&background=f87171&color=fff',
+            ];
+        })->values()) }},
+        getSelectedStudent() {
+            return this.students.find(s => s.id == this.selectedStudentId) || null;
+        }
+    }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- ===== BANNER SAMBUTAN WALI KELAS & GURU ===== -->
@@ -68,9 +83,9 @@
                         <i class="fa-solid fa-calendar-days"></i> Jadwal Pelajaran (KBM)
                     </a>
 
-                    <a href="{{ route('attendances.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-clipboard-user"></i> Presensi Harian
-                    </a>
+                    <button type="button" @click="openBantuAbsen = true" class="bg-white hover:bg-slate-100 text-red-700 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm cursor-pointer">
+                        <i class="fa-solid fa-user-check text-red-600"></i> + Bantu Absen
+                    </button>
                 </div>
             </div>
             @endif
@@ -212,6 +227,113 @@
                 @endif
             </div>
 
+        </div>
+
+        <!-- ===== MODAL BANTU ABSEN (PRESENSI MANUAL GURU) ===== -->
+        <div x-show="openBantuAbsen" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             style="display: none;"
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            
+            <div @click.outside="openBantuAbsen = false"
+                 class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
+                
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-red-600 to-red-700 p-5 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-user-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight">Bantu Absen Siswa</h3>
+                            <p class="text-white/80 text-xs">Pencatatan Presensi Manual oleh Guru / Wali Kelas</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="openBantuAbsen = false" class="text-white/70 hover:text-white transition-colors text-xl font-bold p-1 cursor-pointer">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Modal Form -->
+                <form method="POST" action="{{ route('teacher.manual-attendance') }}" class="p-6 space-y-5">
+                    @csrf
+
+                    <!-- Dropdown Pilih Siswa -->
+                    <div>
+                        <label for="student_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                            Pilih Siswa <span class="text-red-500">*</span>
+                        </label>
+                        <select id="student_id" name="student_id" x-model="selectedStudentId" class="w-full border-slate-300 rounded-xl shadow-sm focus:border-red-500 focus:ring-red-500 text-sm font-medium" required>
+                            <option value="" disabled selected>-- Pilih Siswa Binaan --</option>
+                            <template x-for="student in students" :key="student.id">
+                                <option :value="student.id" x-text="student.name + ' (' + student.class_name + ')'"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- BOX VERIFIKASI FOTO SISWA (Anti-Kecurangan) -->
+                    <div x-show="getSelectedStudent()" class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-4">
+                        <img :src="getSelectedStudent()?.avatar_url" alt="Foto Siswa" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-red-100 text-red-700 uppercase tracking-wider mb-1">
+                                <i class="fa-solid fa-id-badge text-2xs"></i> Verifikasi Wajah Siswa
+                            </span>
+                            <h4 class="font-bold text-slate-800 text-sm truncate" x-text="getSelectedStudent()?.name"></h4>
+                            <div class="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
+                                <span>NISN/NIS: <strong class="text-slate-700" x-text="getSelectedStudent()?.nisn"></strong></span>
+                                <span>&bull;</span>
+                                <span>Kelas: <strong class="text-slate-700" x-text="getSelectedStudent()?.class_name"></strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilihan Status Presensi -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                            Status Presensi <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-emerald-50/50 cursor-pointer font-semibold text-xs text-slate-700">
+                                <input type="radio" name="status" value="present" checked class="text-red-600 focus:ring-red-500">
+                                <span class="flex items-center gap-1.5 text-emerald-700">
+                                    <i class="fa-solid fa-circle-check text-emerald-600"></i> Hadir Tepat
+                                </span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-amber-50/50 cursor-pointer font-semibold text-xs text-slate-700">
+                                <input type="radio" name="status" value="late" class="text-red-600 focus:ring-red-500">
+                                <span class="flex items-center gap-1.5 text-amber-700">
+                                    <i class="fa-solid fa-clock text-amber-600"></i> Terlambat
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Catatan Guru -->
+                    <div>
+                        <label for="notes" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Alasan / Catatan Guru
+                        </label>
+                        <input type="text" id="notes" name="notes" placeholder="Contoh: Lupa kartu presensi / HP mati" class="w-full border-slate-300 rounded-xl shadow-sm focus:border-red-500 focus:ring-red-500 text-sm">
+                    </div>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="pt-2 flex items-center justify-end gap-3">
+                        <button type="button" @click="openBantuAbsen = false" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-100 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-check text-xs"></i>
+                            <span>Simpan Presensi</span>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
         </div>
     </div>
 </x-app-layout>
