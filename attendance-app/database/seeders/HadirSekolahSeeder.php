@@ -74,16 +74,14 @@ class HadirSekolahSeeder extends Seeder
             ]
         );
 
-        // 2. OPERATOR SEKOLAH
-        $admin = \App\Models\User::updateOrCreate(
-            ['email' => 'admin.dapodik@hadirsekolah.id'],
+        // 2. UNDANGAN OPERATOR SEKOLAH PENDING (SEKOLAH MURNI BELUM MEMILIKI OPERATOR AKTIFF)
+        \App\Models\Invitation::updateOrCreate(
+            ['email' => 'operator@sman2yogyakarta.sch.id'],
             [
-                'name' => 'Maya Kartika, S.Kom.',
-                'password' => $defaultPassword,
-                'role' => 'operator',
                 'tenant_id' => $tenant->id,
-                'is_active' => true,
-                'email_verified_at' => now(),
+                'role' => 'operator',
+                'token' => 'sman2jogja-operator-invitation-token-12345',
+                'status' => 'pending',
             ]
         );
 
