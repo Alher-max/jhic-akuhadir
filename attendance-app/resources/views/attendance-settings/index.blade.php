@@ -207,13 +207,13 @@
                                             <div class="flex gap-2">
                                                 <div class="flex-1">
                                                     <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Latitude</label>
-                                                    <input type="text" id="latitude_input" name="latitude" value="{{ $settings->latitude }}" placeholder="Cth: -7.8123456" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
-                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat lintang (Cth: -7.8732)</p>
+                                                    <input type="text" id="latitude_input" name="latitude" value="{{ $settings->latitude }}" onpaste="handleGpsPaste(event)" placeholder="Cth: -7.8123456" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat lintang (Auto-split saat paste dari Google Maps)</p>
                                                 </div>
                                                 <div class="flex-1">
                                                     <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Longitude</label>
-                                                    <input type="text" id="longitude_input" name="longitude" value="{{ $settings->longitude }}" placeholder="Cth: 110.3678901" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
-                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat bujur (Cth: 110.3956)</p>
+                                                    <input type="text" id="longitude_input" name="longitude" value="{{ $settings->longitude }}" onpaste="handleGpsPaste(event)" placeholder="Cth: 110.3678901" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                                    <p class="text-[9.5px] text-gray-400 mt-0.5">Koordinat bujur (Auto-split saat paste dari Google Maps)</p>
                                                 </div>
                                             </div>
                                             <div>
@@ -416,5 +416,24 @@
             </div>
         </div>
 
+        <script>
+            function handleGpsPaste(e) {
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                if (pastedData && pastedData.includes(',')) {
+                    e.preventDefault();
+                    const parts = pastedData.split(',');
+                    const latInput = document.getElementById('latitude_input');
+                    const lngInput = document.getElementById('longitude_input');
+                    if (latInput && parts[0]) {
+                        latInput.value = parts[0].trim();
+                        latInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    if (lngInput && parts[1]) {
+                        lngInput.value = parts[1].trim();
+                        lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            }
+        </script>
     </div>
 </x-app-layout>
