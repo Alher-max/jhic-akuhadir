@@ -11,6 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;');
+
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('parent_id')->nullable()->after('tenant_id');
             $table->foreign('parent_id')->references('id')->on('users')->onDelete('set null');
