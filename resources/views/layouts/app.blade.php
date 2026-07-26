@@ -21,6 +21,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="{{ asset('js/image-compressor.js') }}"></script>
     </head>
     <body class="font-sans antialiased" x-data="{ offline: !navigator.onLine }" @online.window="offline = false" @offline.window="offline = true">
         

@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -47,6 +48,7 @@ class TeacherManagementController extends Controller
             'email' => 'nullable|email|max:255',
             'nip' => 'nullable|string|max:50',
             'role' => 'nullable|string|in:guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'avatar' => 'nullable|image|max:2048',
             'teachers_file' => 'nullable|file|mimes:csv,txt|max:2048'
         ]);
 
@@ -111,10 +113,16 @@ class TeacherManagementController extends Controller
         $existing = User::where('email', $email)->first();
         if ($existing) return $existing;
 
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars/' . $tenant->id, 'public');
+        }
+
         return User::create([
             'tenant_id' => $tenant->id,
             'name' => $request->name,
             'email' => $email,
+            'avatar' => $avatarPath,
             'nisn' => $request->nip,
             'password' => $password,
             'must_change_password' => true,
@@ -239,13 +247,23 @@ class TeacherManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'role' => 'required|string|in:guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
-        $teacher->update([
+        $updateData = [
             'name' => $request->name,
             'email' => $request->email ?: $teacher->email,
             'role' => $request->role,
-        ]);
+        ];
+
+        if ($request->hasFile('avatar')) {
+            if ($teacher->avatar) {
+                Storage::disk('public')->delete($teacher->avatar);
+            }
+            $updateData['avatar'] = $request->file('avatar')->store('avatars/' . Auth::user()->tenant_id, 'public');
+        }
+
+        $teacher->update($updateData);
 
         return redirect()->route('operator.teachers.index')->with('success', 'Data Pendidik / Staf berhasil diperbarui.');
     }

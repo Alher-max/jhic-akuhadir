@@ -15,6 +15,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="{{ asset('js/image-compressor.js') }}"></script>
 </head>
 <body class="font-sans antialiased bg-brand-bg text-brand-text-main m-0 p-0 min-h-screen">
     {{ $slot }}

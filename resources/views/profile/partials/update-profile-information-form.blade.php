@@ -59,12 +59,12 @@
                                    x-ref="avatar"
                                    accept="image/*"
                                    x-on:change="
-                                        photoName = $refs.avatar.files[0].name;
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            photoPreview = e.target.result;
-                                        };
-                                        reader.readAsDataURL($refs.avatar.files[0]);
+                                        compressFileInput($event, (url, compressedFile) => {
+                                            if (compressedFile) {
+                                                photoName = compressedFile.name;
+                                                photoPreview = url;
+                                            }
+                                        });
                                    " />
 
                             <!-- Foto Saat Ini -->
@@ -89,7 +89,7 @@
                                 <button type="button" x-on:click.prevent="$refs.avatar.click()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 cursor-pointer">
                                     Pilih Foto
                                 </button>
-                                <p class="mt-2 text-xs text-slate-500">Format: JPG, PNG, WEBP. Maks 2MB.</p>
+                                <p class="mt-2 text-xs text-slate-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
                                 <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
                             </div>
                         </div>

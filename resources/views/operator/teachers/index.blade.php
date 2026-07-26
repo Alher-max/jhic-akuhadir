@@ -222,9 +222,13 @@
                                                     $initials .= strtoupper(substr($nameParts[1], 0, 1));
                                                 }
                                             @endphp
-                                            <div class="w-9 h-9 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center flex-shrink-0 uppercase">
-                                                {{ $initials }}
-                                            </div>
+                                            @if($teacher->avatar || $teacher->master_photo)
+                                                <img src="{{ Storage::url($teacher->avatar ?: $teacher->master_photo) }}" alt="{{ $cleanName }}" class="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-slate-200">
+                                            @else
+                                                <div class="w-9 h-9 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center flex-shrink-0 uppercase">
+                                                    {{ $initials }}
+                                                </div>
+                                            @endif
                                             <div>
                                                 <div>{{ $cleanName }}</div>
                                             </div>
@@ -351,7 +355,7 @@
                         <p class="mt-2 text-sm text-brand-text-muted">Masukkan informasi guru di bawah ini.</p>
                     </div>
                     
-                    <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5">
+                    <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ createPhotoPreview: null }">
                         @csrf
                         <div class="space-y-4">
                             <div>
@@ -391,6 +395,29 @@
                                         <option value="caraka">Tenaga Kebersihan (Caraka)</option>
                                     </optgroup>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label for="teacher_avatar" class="block text-sm font-medium text-gray-700">Foto Profil / Avatar (Opsional)</label>
+                                <div class="mt-1 flex items-center">
+                                    <template x-if="!createPhotoPreview">
+                                        <span class="inline-block h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-gray-100">
+                                            <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                        </span>
+                                    </template>
+                                    <template x-if="createPhotoPreview">
+                                        <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
+                                    </template>
+                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                </div>
+                                <template x-if="createPhotoPreview">
+                                    <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
+                                        <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
+                                    </div>
+                                </template>
+                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
                             </div>
                         </div>
 

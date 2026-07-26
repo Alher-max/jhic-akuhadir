@@ -12,7 +12,8 @@
     <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
-    <!-- Tailwind CSS -->
+    <!-- Scripts & Tailwind CSS -->
+    <script src="{{ asset('js/image-compressor.js') }}"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {

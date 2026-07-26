@@ -102,14 +102,14 @@
                             <template x-if="createPhotoPreview">
                                 <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                             </template>
-                            <input type="file" name="master_photo" id="master_photo" accept="image/*" @change="if($event.target.files.length > 0) { createPhotoPreview = URL.createObjectURL($event.target.files[0]) } else { createPhotoPreview = null }" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                            <input type="file" name="master_photo" id="master_photo" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                         </div>
                         <template x-if="createPhotoPreview">
                             <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
-                                <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap
+                                <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
                             </div>
                         </template>
-                        <p class="mt-1.5 text-xs text-gray-500">Gunakan foto pas dengan wajah terlihat jelas. (Maks 2MB).</p>
+                        <p class="mt-1.5 text-xs text-gray-500">Gunakan foto pas dengan wajah terlihat jelas. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
                     </div>
                 </div>
 
@@ -326,13 +326,13 @@
                                     <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </span>
-                            <input type="file" name="master_photo" accept="image/*" @change="if($event.target.files.length > 0) { previewUrl = URL.createObjectURL($event.target.files[0]) } else { previewUrl = null }" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none w-full">
+                            <input type="file" name="master_photo" accept="image/*" @change="compressFileInput($event, (url) => { previewUrl = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none w-full">
                         </div>
                         <div x-show="previewUrl" class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
-                            <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Baru Siap
+                            <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Baru Siap (Telah dikompresi secara otomatis)
                         </div>
-                        <p x-show="!previewUrl && selectedStudent?.master_photo" class="mt-1 text-xs text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i>Menampilkan foto yang sudah ada. Pilih file baru untuk menggantinya.</p>
-                        <p x-show="!previewUrl && !selectedStudent?.master_photo" class="mt-1 text-xs text-gray-500">Biarkan kosong jika tidak ingin mengunggah foto.</p>
+                        <p x-show="!previewUrl && selectedStudent?.master_photo" class="mt-1 text-xs text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i>Menampilkan foto yang sudah ada. Pilih file baru untuk menggantinya dengan foto yang terkompresi otomatis.</p>
+                        <p x-show="!previewUrl && !selectedStudent?.master_photo" class="mt-1 text-xs text-gray-500">Biarkan kosong jika tidak ingin mengunggah foto. Jika mengunggah, gambar akan otomatis dikompresi.</p>
                     </div>
                 </div>
 

@@ -18,6 +18,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="{{ asset('js/image-compressor.js') }}"></script>
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900 flex h-screen overflow-hidden">
