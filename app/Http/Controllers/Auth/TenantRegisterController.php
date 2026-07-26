@@ -86,10 +86,11 @@ class TenantRegisterController extends Controller
     public function store(Request $request)
     {
         $roleType = $request->input('role_type', 'kepala_sekolah');
+        $userEmail = $request->filled('email') ? strtolower(trim($request->email)) : null;
         
         $invitation = null;
-        if (in_array($roleType, ['teacher', 'guru', 'manager']) && $request->filled('email')) {
-            $invitation = DB::table('invitations')->where('email', $request->email)->where('status', 'pending')->first();
+        if (!empty($userEmail)) {
+            $invitation = DB::table('invitations')->where('email', $userEmail)->where('status', 'pending')->first();
         }
 
         // Base Validation
@@ -109,7 +110,9 @@ class TenantRegisterController extends Controller
             }
         } elseif ($roleType === 'parent') {
             $rules['email'] = ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class];
-            $rules['tenant_code'] = ['required', 'string', 'max:20'];
+            if (!$invitation) {
+                $rules['tenant_code'] = ['required', 'string', 'max:20'];
+            }
         } else {
             // student / member
             $rules['name'] = ['nullable', 'string', 'max:255'];
@@ -206,11 +209,14 @@ class TenantRegisterController extends Controller
             }
 
             $actualRole = in_array($roleType, ['teacher', 'guru', 'manager']) ? 'teacher' : ($roleType === 'parent' ? 'parent' : 'student');
-            $userEmail = $request->email;
+            if ($invitation && !empty($invitation->role)) {
+                $actualRole = $invitation->role;
+            }
+
             $userNisn = $request->nisn ?? $request->student_nisn;
             $isBypassOtp = empty($userEmail) && !empty($userNisn);
 
-            if (isset($invitation) && $invitation) {
+            if ($invitation && !empty($invitation->tenant_id)) {
                 $tenant = Tenant::find($invitation->tenant_id);
             } else {
                 $tenantCode = strtoupper(trim($request->tenant_code ?? ''));
@@ -242,9 +248,9 @@ class TenantRegisterController extends Controller
                     'email_verified_at' => $isBypassOtp ? Carbon::now() : null,
                 ]);
 
-                if (isset($invitation) && $invitation) {
+                if ($invitation) {
                     DB::table('invitations')->where('id', $invitation->id)->update([
-                        'status' => 'completed',
+                        'status' => 'accepted',
                         'updated_at' => Carbon::now()
                     ]);
                 }
