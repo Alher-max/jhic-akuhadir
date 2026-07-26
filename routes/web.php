@@ -9,6 +9,7 @@ Route::get('/', function () {
             'name' => 'HadirSekolah',
             'domain' => 'hadiryuk.thortech.shop',
             'logo' => null,
+            'banner_path' => null,
         ]
     ]);
 });
