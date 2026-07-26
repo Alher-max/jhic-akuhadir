@@ -64,6 +64,17 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
+                            <label for="birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                            <input type="text" name="birth_place" id="birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Kota Tempat Lahir">
+                        </div>
+                        <div>
+                            <label for="birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir <span class="text-red-500">*</span></label>
+                            <input type="date" name="birth_date" id="birth_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label for="class_id" class="block text-sm font-medium text-gray-700">Kelas / Rombel <span class="text-red-500">*</span></label>
                             <select name="class_id" id="class_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 <option value="">-- Pilih Kelas --</option>
@@ -160,17 +171,6 @@
 
                 <!-- TAB 3: ALAMAT & KESEHATAN -->
                 <div x-show="activeTab === 'detail'" class="space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
-                            <input type="text" name="birth_place" id="birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Kota Tempat Lahir">
-                        </div>
-                        <div>
-                            <label for="birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
-                            <input type="date" name="birth_date" id="birth_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="religion" class="block text-sm font-medium text-gray-700">Agama</label>
@@ -283,6 +283,17 @@
                                 <option value="L">Laki-laki (L)</option>
                                 <option value="P">Perempuan (P)</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                            <input type="text" name="birth_place" x-model="editForm.birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tanggal Lahir <span class="text-red-500">*</span></label>
+                            <input type="date" name="birth_date" x-model="editForm.birth_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                         </div>
                     </div>
 
@@ -416,17 +427,6 @@
 
                 <!-- TAB 3: ALAMAT & KESEHATAN -->
                 <div x-show="activeEditTab === 'detail'" class="space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
-                            <input type="text" name="birth_place" x-model="editForm.birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
-                            <input type="date" name="birth_date" x-model="editForm.birth_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Agama</label>
