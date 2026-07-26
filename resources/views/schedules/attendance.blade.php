@@ -12,25 +12,6 @@
     }">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <!-- Flash Alert Notifications -->
-            @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl shadow-sm text-emerald-800 text-sm flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-base me-1"></i>
-                        <span class="font-semibold">{{ session('success') }}</span>
-                    </div>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-xl shadow-sm text-rose-800 text-sm flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-exclamation text-rose-600 text-base me-1"></i>
-                        <span class="font-semibold">{{ session('error') }}</span>
-                    </div>
-                </div>
-            @endif
-
             <!-- Header Info Card -->
             <div class="bg-brand-surface p-6 rounded-2xl border border-brand-border shadow-sm flex items-center justify-between gap-4">
                 <div class="flex items-center gap-4">

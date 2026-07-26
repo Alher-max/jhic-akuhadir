@@ -19,27 +19,6 @@
                 </div>
             </div>
 
-            <!-- Pesan Sukses / Error -->
-            @if(session('success'))
-                <div class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-            @if ($errors->any())
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li class="text-sm">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <!-- Tabel Data Guru -->
             <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border">
                 <div class="overflow-x-auto">

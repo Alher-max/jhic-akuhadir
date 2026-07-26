@@ -13,12 +13,6 @@
     <div class="py-12 bg-gray-50 min-h-screen" x-data="{ viewMode: localStorage.getItem('scheduleViewMode') || 'list' }" x-init="$watch('viewMode', val => localStorage.setItem('scheduleViewMode', val))">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
-            @if(session('success'))
-                <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl relative shadow-sm" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
             <!-- FILTER BAR & VIEW SWITCHER -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <form method="GET" action="{{ route('schedules.index') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto" id="filterForm">

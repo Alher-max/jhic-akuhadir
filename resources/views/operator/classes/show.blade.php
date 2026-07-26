@@ -13,18 +13,6 @@
     <div class="py-12 bg-brand-bg min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Pesan Sukses / Error -->
-            @if(session('success'))
-                <div class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-200">
                 <div class="p-6 text-gray-900">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6">

@@ -151,27 +151,6 @@
                 </form>
             </div>
 
-            <!-- Pesan Sukses / Error -->
-            @if(session('success'))
-                <div class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-            @if ($errors->any())
-                <div class="mb-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded relative" role="alert">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li class="text-sm">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <!-- Tabel Data Guru -->
             <form method="GET" action="{{ route('operator.teachers.index') }}" class="flex flex-wrap items-center gap-3 mb-4">
                 <!-- Search Input -->
