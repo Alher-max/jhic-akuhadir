@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('tenant.landing', [
         'tenant' => (object) [
-            'name' => 'HadirSekolah',
-            'domain' => 'hadiryuk.thortech.shop',
-            'logo' => null,
-            'banner_path' => null,
+            'id'               => 1,
+            'name'             => 'HadirSekolah',
+            'domain'           => 'hadiryuk.thortech.shop',
+            'logo_path'        => null,
+            'banner_path'      => null,
+            'institution_type' => 'school',
+            'code'             => 'HADIR',
         ]
     ]);
 });
