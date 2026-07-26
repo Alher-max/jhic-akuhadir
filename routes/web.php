@@ -4,7 +4,13 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('tenant.landing', ['tenant' => null]);
+    return view('tenant.landing', [
+        'tenant' => (object) [
+            'name' => 'HadirSekolah',
+            'domain' => 'hadiryuk.thortech.shop',
+            'logo' => null,
+        ]
+    ]);
 });
 
 Route::view('/offline', 'errors.offline');
