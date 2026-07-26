@@ -260,6 +260,7 @@
                                             <div>
                                                 <label class="block text-[10px] font-medium text-gray-500 mb-0.5">Daftar MAC Address / BSSID</label>
                                                 <textarea name="wifi_allowed_macs" rows="1" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" placeholder="Contoh: 00:1A:2B:3C:4D:5E">{{ is_array($settings->wifi_allowed_macs) ? implode(', ', $settings->wifi_allowed_macs) : '' }}</textarea>
+                                                <p class="text-xs text-gray-500 mt-1"><span class="font-semibold text-amber-600">Opsional</span> (Boleh dikosongkan). Browser web / PWA tidak dapat membaca BSSID demi alasan privasi perangkat. Cukup isi IP Public & SSID untuk penguncian Wi-Fi standar.</p>
                                             </div>
                                         </div>
                                     </div>

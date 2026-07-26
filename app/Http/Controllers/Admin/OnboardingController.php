@@ -36,7 +36,7 @@ class OnboardingController extends Controller
 
         $request->validate([
             'attendance_method' => 'required|in:hardware,wifi,gps,liveness',
-            'wifi_bssid' => 'required_if:attendance_method,wifi|nullable|string',
+            'wifi_bssid' => 'nullable|string',
             'gps_lat' => 'required_if:attendance_method,gps|nullable|string',
             'gps_lng' => 'required_if:attendance_method,gps|nullable|string',
             'gps_radius' => 'required_if:attendance_method,gps|nullable|integer|min:1',

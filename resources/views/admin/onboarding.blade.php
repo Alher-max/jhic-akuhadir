@@ -115,7 +115,7 @@
                             <div x-show="method === 'wifi'" class="space-y-4">
                                 <div>
                                     <x-input-label for="wifi_bssid" value="Alamat BSSID / MAC Router" />
-                                    <x-text-input id="wifi_bssid" class="block mt-1 w-full" type="text" name="wifi_bssid" placeholder="Contoh: 00:1A:2B:3C:4D:5E" x-bind:required="method === 'wifi'" />
+                                    <x-text-input id="wifi_bssid" class="block mt-1 w-full" type="text" name="wifi_bssid" placeholder="Contoh: 00:1A:2B:3C:4D:5E" />
                                     <p class="text-xs text-gray-500 mt-1">Anggota harus terhubung ke jaringan dengan alamat ini untuk bisa absen.</p>
                                     @error('wifi_bssid')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                                 </div>
