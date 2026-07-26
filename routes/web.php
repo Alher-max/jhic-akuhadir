@@ -4,17 +4,19 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('tenant.landing', [
-        'tenant' => (object) [
-            'id'               => 1,
-            'name'             => 'HadirSekolah',
-            'domain'           => 'hadiryuk.thortech.shop',
-            'logo_path'        => null,
-            'banner_path'      => null,
-            'institution_type' => 'school',
-            'code'             => 'HADIR',
-        ]
-    ]);
+    $mockTenant = new class {
+        public $id = 1;
+        public $name = 'HadirSekolah';
+        public $domain = 'hadiryuk.thortech.shop';
+        public $institution_type = 'school';
+
+        public function __get($name) { return null; }
+        public function __call($method, $args) { return null; }
+        public function __isset($name) { return false; }
+        public function __toString() { return $this->name; }
+    };
+
+    return view('tenant.landing', ['tenant' => $mockTenant]);
 });
 
 Route::view('/offline', 'errors.offline');
