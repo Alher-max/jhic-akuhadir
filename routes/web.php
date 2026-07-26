@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('tenant.landing');
+    return view('tenant.landing', ['tenant' => null]);
 });
 
 Route::view('/offline', 'errors.offline');
