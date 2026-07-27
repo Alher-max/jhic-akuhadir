@@ -19,6 +19,7 @@ class MemberDashboardController extends Controller
         }
 
         $user = Auth::user();
+        $user->load(['schoolClass.waliKelas', 'tenant']);
 
         // Fetch today's attendance
         $todayAttendance = Attendance::where('user_id', $user->id)
