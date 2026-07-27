@@ -22,7 +22,7 @@ class TeacherManagementController extends Controller
         
         $query = User::with('homeroomClasses')
             ->where('tenant_id', $tenantId)
-            ->whereIn('role', ['guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka']);
+            ->whereIn('role', ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka']);
             
         if (!empty($selectedRole)) {
             $query->where('role', $selectedRole);
@@ -37,8 +37,9 @@ class TeacherManagementController extends Controller
         }
             
         $teachers = $query->orderBy('name')->paginate(10)->withQueryString();
+        $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('nama_kelas')->get();
             
-        return view('operator.teachers.index', compact('teachers', 'selectedRole', 'search'));
+        return view('operator.teachers.index', compact('teachers', 'selectedRole', 'search', 'classes'));
     }
 
     public function store(Request $request)
@@ -47,7 +48,7 @@ class TeacherManagementController extends Controller
             'name' => 'required_without:teachers_file|string|max:255',
             'email' => 'nullable|email|max:255',
             'nip' => 'nullable|string|max:50',
-            'role' => 'nullable|string|in:guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'role' => 'nullable|string|in:teacher,guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
             'avatar' => 'nullable|image|max:2048',
             'teachers_file' => 'nullable|file|mimes:csv,txt|max:2048'
         ]);
@@ -239,21 +240,34 @@ class TeacherManagementController extends Controller
     
     public function update(Request $request, User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
             abort(403);
         }
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'role' => 'required|string|in:guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'email' => ['nullable', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($teacher->id)],
+            'nip' => ['nullable', 'string', 'max:50', \Illuminate\Validation\Rule::unique('users', 'nisn')->ignore($teacher->id)],
+            'role' => 'required|string|in:teacher,guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'is_active' => 'required|boolean',
+            'class_id' => 'nullable|exists:school_classes,id',
             'avatar' => 'nullable|image|max:2048',
         ]);
 
+        $email = $request->email;
+        if (!$email && !$teacher->email) {
+            $identifier = $request->nip ?: Str::random(6);
+            $email = 'guru.' . $identifier . '@hadirsekolah.id';
+        } elseif (!$email) {
+            $email = $teacher->email;
+        }
+
         $updateData = [
             'name' => $request->name,
-            'email' => $request->email ?: $teacher->email,
+            'email' => $email,
+            'nisn' => $request->nip,
             'role' => $request->role,
+            'is_active' => (bool)$request->is_active,
         ];
 
         if ($request->hasFile('avatar')) {
@@ -265,23 +279,39 @@ class TeacherManagementController extends Controller
 
         $teacher->update($updateData);
 
-        return redirect()->route('operator.teachers.index')->with('success', 'Data Pendidik / Staf berhasil diperbarui.');
+        if ($request->has('class_id')) {
+            \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)
+                ->where('wali_kelas_id', $teacher->id)
+                ->update(['wali_kelas_id' => null]);
+
+            if (!empty($request->class_id)) {
+                $schoolClass = \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)
+                    ->where('id', $request->class_id)
+                    ->first();
+                if ($schoolClass) {
+                    $schoolClass->update(['wali_kelas_id' => $teacher->id]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Data Pendidik / Staf berhasil diperbarui.');
     }
 
     public function show(User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
             abort(403);
         }
 
         $teacher->load('homeroomClasses');
+        $classes = \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)->orderBy('nama_kelas')->get();
         
-        return view('operator.teachers.show', compact('teacher'));
+        return view('operator.teachers.show', compact('teacher', 'classes'));
     }
 
     public function destroy(User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
             abort(403);
         }
         

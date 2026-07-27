@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showModal: false, showImport: false }">
+    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showModal: false, showImport: false, showEditModal: false, editForm: { id: null, name: '', nip: '', email: '', role: 'guru', is_active: 1, class_id: '' }, openEdit(data) { this.editForm = data; this.showEditModal = true; } }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Halaman -->
             <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
@@ -307,6 +307,9 @@
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm">
                                         <div class="flex items-center gap-x-3 justify-end">
+                                            <button type="button" @click="openEdit({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', nip: '{{ addslashes($teacher->nisn ?? '') }}', email: '{{ addslashes($teacher->email) }}', role: '{{ $teacher->role }}', is_active: {{ $teacher->is_active ? 1 : 0 }}, class_id: '{{ $teacher->homeroomClasses->first()?->id ?? '' }}' })" class="text-indigo-600 hover:text-indigo-700 font-medium text-xs transition-colors flex items-center gap-1" title="Edit Data Pendidik">
+                                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                                            </button>
                                             <a href="{{ route('operator.teachers.show', $teacher->id) }}" class="text-sky-600 hover:text-sky-700 font-medium text-xs transition-colors" title="Detail Profil"><i class="fa-solid fa-eye"></i> Detail</a>
                                             <form action="{{ route('operator.teachers.reset-password', $teacher->id) }}" method="POST" class="inline" onsubmit="return confirm('Reset kata sandi ke bawaan sistem?');">
                                                 @csrf
@@ -427,6 +430,127 @@
                             </button>
                             <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                                 Simpan Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Edit Guru -->
+        <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-edit-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showEditModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showEditModal = false"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div x-show="showEditModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-brand-surface rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-brand-border">
+                    <div>
+                        <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-edit-title">Edit Data Guru / Pendidik</h3>
+                        <p class="mt-1 text-sm text-brand-text-muted">Perbarui informasi dan peran pendidik di bawah ini.</p>
+                    </div>
+                    
+                    <form :action="'/operator/teachers/' + editForm.id" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ editPhotoPreview: null }">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="edit_name" class="block text-sm font-medium text-gray-700">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
+                                <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="edit_nip" class="block text-sm font-medium text-gray-700">NIP / NIK / NUPTK</label>
+                                    <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                </div>
+                                
+                                <div>
+                                    <label for="edit_email" class="block text-sm font-medium text-gray-700">Surel / Email</label>
+                                    <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan <span class="text-red-500">*</span></label>
+                                <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <optgroup label="-- Pendidik (Guru) --">
+                                        <option value="guru_kelas">Guru Kelas</option>
+                                        <option value="guru">Guru Mata Pelajaran</option>
+                                        <option value="guru_bk">Guru Bimbingan dan Konseling (BK)</option>
+                                        <option value="guru_inklusi">Guru Pembimbing Khusus (Inklusi)</option>
+                                        <option value="guru_kejuruan">Guru Produktif (Kejuruan)</option>
+                                        <option value="wali_kelas">Wali Kelas</option>
+                                    </optgroup>
+                                    <optgroup label="-- Tenaga Kependidikan --">
+                                        <option value="headmaster">Kepala Sekolah</option>
+                                        <option value="manager_teacher">Wakil Kepala Sekolah / Manajemen</option>
+                                        <option value="staff">Tenaga Administrasi Sekolah (Tata Usaha)</option>
+                                        <option value="pustakawan">Tenaga Perpustakaan (Pustakawan)</option>
+                                        <option value="laboran">Tenaga Laboratorium (Laboran)</option>
+                                        <option value="it_support">Teknisi Sumber Belajar / IT Support</option>
+                                        <option value="satpam">Petugas Keamanan (Satpam)</option>
+                                        <option value="caraka">Tenaga Kebersihan (Caraka)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Penugasan Wali Kelas -->
+                            <div>
+                                <label for="edit_class_id" class="block text-sm font-medium text-gray-700">Penugasan Wali Kelas (Opsional)</label>
+                                <select name="class_id" id="edit_class_id" x-model="editForm.class_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <option value="">-- Belum Ditugaskan ke Kelas --</option>
+                                    @foreach($classes ?? [] as $cls)
+                                        <option value="{{ $cls->id }}">
+                                            {{ $cls->nama_kelas }} ({{ $cls->jenjang }} {{ $cls->tingkat }})
+                                            @if($cls->wali_kelas_id && $cls->wali_kelas_id != 0)
+                                                - Wali saat ini: {{ $cls->waliKelas?->name }}
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Pilih kelas jika pendidik ditugaskan sebagai Wali Kelas.</p>
+                            </div>
+
+                            <!-- Status Akun -->
+                            <div>
+                                <label for="edit_is_active" class="block text-sm font-medium text-gray-700">Status Akun <span class="text-red-500">*</span></label>
+                                <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Nonaktif</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="edit_teacher_avatar" class="block text-sm font-medium text-gray-700">Foto Profil / Avatar Baru (Opsional)</label>
+                                <div class="mt-1 flex items-center">
+                                    <template x-if="!editPhotoPreview">
+                                        <span class="inline-block h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-gray-100">
+                                            <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                        </span>
+                                    </template>
+                                    <template x-if="editPhotoPreview">
+                                        <img :src="editPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
+                                    </template>
+                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                </div>
+                                <template x-if="editPhotoPreview">
+                                    <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
+                                        <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
+                                    </div>
+                                </template>
+                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6">
+                            <button type="button" @click="showEditModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                                Batal
+                            </button>
+                            <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                                Simpan Perubahan
                             </button>
                         </div>
                     </form>

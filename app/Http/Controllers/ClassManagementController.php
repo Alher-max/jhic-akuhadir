@@ -33,9 +33,11 @@ class ClassManagementController extends Controller
             return $jenjangOrder[$jenjangName] ?? 99;
         });
 
+        $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
         $teachers = User::where('tenant_id', $tenantId)
-            ->where('role', 'wali_kelas')
+            ->whereIn('role', $teacherRoles)
             ->where('is_active', true)
+            ->orderBy('name')
             ->get();
 
         return view('operator.classes.index', compact('groupedClasses', 'teachers'));
@@ -128,7 +130,8 @@ class ClassManagementController extends Controller
                 'exists:users,id',
                 function ($attribute, $value, $fail) use ($tenantId) {
                     if ($value) {
-                        $user = User::where('id', $value)->where('tenant_id', $tenantId)->where('role', 'wali_kelas')->first();
+                        $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
+                        $user = User::where('id', $value)->where('tenant_id', $tenantId)->whereIn('role', $teacherRoles)->first();
                         if (!$user) {
                             $fail('Wali kelas yang dipilih tidak valid atau tidak berada di sekolah Anda.');
                         }
