@@ -368,7 +368,17 @@
             @endif
 
             <!-- Weekly Schedule Section -->
-            @php $todayIso = $todayDayOfWeek ?? \Carbon\Carbon::now()->dayOfWeekIso; @endphp
+            @php
+                $todayIso = $todayDayOfWeek ?? \Carbon\Carbon::now()->dayOfWeekIso;
+                $timetableData = $weeklyTimetable ?? $dummyTimetable ?? [];
+                $hasWeeklySchedule = false;
+                foreach ($timetableData as $dayItems) {
+                    if (!empty($dayItems)) {
+                        $hasWeeklySchedule = true;
+                        break;
+                    }
+                }
+            @endphp
             <div>
                 <div class="mb-4">
                     <h3 class="text-lg font-bold text-brand-text-main">
@@ -376,78 +386,85 @@
                     </h3>
                 </div>
 
-                <div class="bg-brand-surface rounded-2xl border border-brand-border overflow-hidden shadow-sm p-1">
-                    <div class="flex flex-col gap-1">
-                        @php
-                            $days = [
-                                1 => 'Senin',
-                                2 => 'Selasa',
-                                3 => 'Rabu',
-                                4 => 'Kamis',
-                                5 => 'Jumat',
-                                6 => 'Sabtu',
-                                7 => 'Minggu',
-                            ];
-                        @endphp
-                        
-                        @foreach($days as $num => $dayName)
+                @if($hasWeeklySchedule)
+                    <div class="bg-brand-surface rounded-2xl border border-brand-border overflow-hidden shadow-sm p-1">
+                        <div class="flex flex-col gap-1">
                             @php
-                                $isToday = ($num === $todayIso);
-                                $dayBreakdown = $dummyTimetable[$num] ?? [];
+                                $days = [
+                                    1 => 'Senin',
+                                    2 => 'Selasa',
+                                    3 => 'Rabu',
+                                    4 => 'Kamis',
+                                    5 => 'Jumat',
+                                    6 => 'Sabtu',
+                                    7 => 'Minggu',
+                                ];
                             @endphp
                             
-                            <div class="rounded-xl border transition-colors"
-                                 :class="activeDay === {{ $num }} ? 'border-brand-primary/30 bg-brand-primary/5' : 'border-transparent hover:bg-gray-50'">
-                                <button @click="activeDay = activeDay === {{ $num }} ? null : {{ $num }}" class="w-full text-left p-3 flex items-start justify-between outline-none">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 shrink-0 flex flex-col items-center justify-center rounded-lg"
-                                             :class="activeDay === {{ $num }} ? 'bg-brand-primary text-white' : 'bg-gray-100 text-brand-text-muted'">
-                                            <span class="text-[10px] font-bold uppercase tracking-wider">{{ substr($dayName, 0, 3) }}</span>
-                                        </div>
-                                        <div>
-                                            <h4 class="text-sm font-bold" :class="activeDay === {{ $num }} ? 'text-brand-primary' : 'text-brand-text-main'">{{ $dayName }}</h4>
-                                            <p class="text-xs text-brand-text-muted mt-0.5">
-                                                @if(count($dayBreakdown) > 0)
-                                                    {{ count($dayBreakdown) }} Sesi Kegiatan
-                                                @else
-                                                    Libur / Bebas KBM
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        @if($isToday)
-                                            <span class="px-2 py-1 bg-brand-primary text-white text-[9px] font-bold uppercase tracking-wider rounded-md shadow-sm shrink-0">Hari Ini</span>
-                                        @endif
-                                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="activeDay === {{ $num }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                    </div>
-                                </button>
+                            @foreach($days as $num => $dayName)
+                                @php
+                                    $isToday = ($num === $todayIso);
+                                    $dayBreakdown = $timetableData[$num] ?? [];
+                                @endphp
                                 
-                                <div x-show="activeDay === {{ $num }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2">
-                                    <div class="px-3 pb-3 pt-1">
-                                        @if(count($dayBreakdown) > 0)
-                                            <div class="space-y-2">
-                                                @foreach($dayBreakdown as $b)
-                                                    <div class="flex items-start gap-2 bg-white border border-gray-100 rounded-lg p-2 shadow-sm">
-                                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 whitespace-nowrap">{{ $b['jam'] }}</span>
-                                                        <div>
-                                                            <p class="text-xs font-bold text-gray-800">{{ $b['mapel'] }}</p>
-                                                            <p class="text-[10px] text-gray-500 font-medium">{{ $b['waktu'] }} &bull; {{ $b['guru'] }}</p>
+                                <div class="rounded-xl border transition-colors"
+                                     :class="activeDay === {{ $num }} ? 'border-brand-primary/30 bg-brand-primary/5' : 'border-transparent hover:bg-gray-50'">
+                                    <button @click="activeDay = activeDay === {{ $num }} ? null : {{ $num }}" class="w-full text-left p-3 flex items-start justify-between outline-none">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 shrink-0 flex flex-col items-center justify-center rounded-lg"
+                                                 :class="activeDay === {{ $num }} ? 'bg-brand-primary text-white' : 'bg-gray-100 text-brand-text-muted'">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider">{{ substr($dayName, 0, 3) }}</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-sm font-bold" :class="activeDay === {{ $num }} ? 'text-brand-primary' : 'text-brand-text-main'">{{ $dayName }}</h4>
+                                                <p class="text-xs text-brand-text-muted mt-0.5">
+                                                    @if(count($dayBreakdown) > 0)
+                                                        {{ count($dayBreakdown) }} Sesi Kegiatan
+                                                    @else
+                                                        Libur / Bebas KBM
+                                                    @endif
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            @if($isToday)
+                                                <span class="px-2 py-1 bg-brand-primary text-white text-[9px] font-bold uppercase tracking-wider rounded-md shadow-sm shrink-0">Hari Ini</span>
+                                            @endif
+                                            <svg class="w-4 h-4 text-gray-400 transition-transform" :class="activeDay === {{ $num }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </button>
+                                    
+                                    <div x-show="activeDay === {{ $num }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2">
+                                        <div class="px-3 pb-3 pt-1">
+                                            @if(count($dayBreakdown) > 0)
+                                                <div class="space-y-2">
+                                                    @foreach($dayBreakdown as $b)
+                                                        <div class="flex items-start gap-2 bg-white border border-gray-100 rounded-lg p-2 shadow-sm">
+                                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 whitespace-nowrap">{{ $b['jam'] }}</span>
+                                                            <div>
+                                                                <p class="text-xs font-bold text-gray-800">{{ $b['mapel'] }}</p>
+                                                                <p class="text-[10px] text-gray-500 font-medium">{{ $b['waktu'] }} &bull; {{ $b['guru'] }}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <div class="text-center py-4 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
-                                                <p class="text-xs text-gray-400 font-medium italic">🎉 Hari Libur / Tidak ada KBM</p>
-                                            </div>
-                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
+                                                    <p class="text-xs text-gray-400 font-medium italic">🎉 Hari Libur / Tidak ada KBM</p>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="bg-brand-surface border border-brand-border rounded-2xl p-6 text-center text-gray-500 shadow-sm">
+                        <span class="material-symbols-outlined text-gray-300 text-4xl mb-2">calendar_today</span>
+                        <p class="text-sm font-medium text-gray-600">Belum ada jadwal pelajaran mingguan yang diatur.</p>
+                    </div>
+                @endif
             </div>
 
             <!-- History Section -->
