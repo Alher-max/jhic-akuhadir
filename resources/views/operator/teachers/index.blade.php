@@ -306,21 +306,59 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm">
-                                        <div class="flex items-center gap-x-3 justify-end">
-                                            <button type="button" @click="openEdit({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', nip: '{{ addslashes($teacher->nisn ?? '') }}', email: '{{ addslashes($teacher->email) }}', role: '{{ $teacher->role }}', is_active: {{ $teacher->is_active ? 1 : 0 }}, class_id: '{{ $teacher->homeroomClasses->first()?->id ?? '' }}' })" class="text-indigo-600 hover:text-indigo-700 font-medium text-xs transition-colors flex items-center gap-1" title="Edit Data Pendidik">
-                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                            </button>
-                                            <a href="{{ route('operator.teachers.show', $teacher->id) }}" class="text-sky-600 hover:text-sky-700 font-medium text-xs transition-colors" title="Detail Profil"><i class="fa-solid fa-eye"></i> Detail</a>
-                                            <form action="{{ route('operator.teachers.reset-password', $teacher->id) }}" method="POST" class="inline" onsubmit="return confirm('Reset kata sandi ke bawaan sistem?');">
-                                                @csrf
-                                                <button type="submit" class="text-orange-600 hover:text-orange-700 font-medium text-xs transition-colors" title="Reset Password"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-                                            </form>
-                                            <form action="{{ route('operator.teachers.destroy', $teacher->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data staf ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-rose-600 hover:text-rose-700 font-medium text-xs transition-colors"><i class="fa-solid fa-trash-can"></i> Hapus</button>
-                                            </form>
-                                        </div>
+                                         <div class="relative inline-block text-left" x-data="{ open: false }" @click.away="open = false">
+                                             <!-- Tombol Kebab Titik Tiga (⋮) -->
+                                             <button type="button" @click="open = !open" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 shadow-sm transition-colors focus:outline-none" title="Menu Aksi">
+                                                 <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                 </svg>
+                                             </button>
+
+                                             <!-- Dropdown Menu Panel -->
+                                             <div x-show="open"
+                                                  x-transition:enter="transition ease-out duration-100"
+                                                  x-transition:enter-start="transform opacity-0 scale-95"
+                                                  x-transition:enter-end="transform opacity-100 scale-100"
+                                                  x-transition:leave="transition ease-in duration-75"
+                                                  x-transition:leave-start="transform opacity-100 scale-100"
+                                                  x-transition:leave-end="transform opacity-0 scale-95"
+                                                  style="display: none;"
+                                                  class="origin-top-right absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 divide-y divide-gray-100 text-left">
+                                                 
+                                                 <!-- Group 1: Aksi Utama -->
+                                                 <div class="py-1">
+                                                     <!-- Edit Data -->
+                                                     <button type="button" @click="open = false; openEdit({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', nip: '{{ addslashes($teacher->nisn ?? '') }}', email: '{{ addslashes($teacher->email) }}', role: '{{ $teacher->role }}', is_active: {{ $teacher->is_active ? 1 : 0 }}, class_id: '{{ $teacher->homeroomClasses->first()?->id ?? '' }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
+                                                         <i class="fa-solid fa-pen-to-square text-blue-500 w-4 text-center"></i> Edit Data
+                                                     </button>
+
+                                                     <!-- Detail Profil -->
+                                                     <a href="{{ route('operator.teachers.show', $teacher->id) }}" class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
+                                                         <i class="fa-solid fa-eye text-emerald-500 w-4 text-center"></i> Detail Profil
+                                                     </a>
+
+                                                     <!-- Reset Password -->
+                                                     <form action="{{ route('operator.teachers.reset-password', $teacher->id) }}" method="POST" onsubmit="return confirm('Reset kata sandi ke bawaan sistem?');">
+                                                         @csrf
+                                                         <button type="submit" class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
+                                                             <i class="fa-solid fa-key text-amber-500 w-4 text-center"></i> Reset Password
+                                                         </button>
+                                                     </form>
+                                                 </div>
+
+                                                 <!-- Group 2: Aksi Destruktif -->
+                                                 <div class="py-1">
+                                                     <!-- Hapus Pendidik -->
+                                                     <form action="{{ route('operator.teachers.destroy', $teacher->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data staf ini?');">
+                                                         @csrf
+                                                         @method('DELETE')
+                                                         <button type="submit" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors">
+                                                             <i class="fa-solid fa-trash-can text-red-500 w-4 text-center"></i> Hapus Pendidik
+                                                         </button>
+                                                     </form>
+                                                 </div>
+                                             </div>
+                                         </div>
                                     </td>
                                 </tr>
                             @empty
