@@ -37,7 +37,7 @@ class TeacherManagementController extends Controller
         }
             
         $teachers = $query->orderBy('name')->paginate(10)->withQueryString();
-        $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('nama_kelas')->get();
+        $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
             
         return view('operator.teachers.index', compact('teachers', 'selectedRole', 'search', 'classes'));
     }
@@ -304,7 +304,7 @@ class TeacherManagementController extends Controller
         }
 
         $teacher->load('homeroomClasses');
-        $classes = \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)->orderBy('nama_kelas')->get();
+        $classes = \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)->ordered()->get();
         
         return view('operator.teachers.show', compact('teacher', 'classes'));
     }

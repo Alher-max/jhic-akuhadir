@@ -81,7 +81,7 @@
                             <select name="class_id" id="class_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($classes as $kelas)
-                                    <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }} ({{ $kelas->jenjang }} - Tingkat {{ $kelas->tingkat }})</option>
+                                    <option value="{{ $kelas->id }}">{{ $kelas->full_name }} ({{ $kelas->jenjang }} - Tingkat {{ $kelas->tingkat }})</option>
                                 @endforeach
                             </select>
                         </div>
@@ -311,7 +311,7 @@
                             <select name="class_id" x-model="editForm.class_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($classes as $class)
-                                    <option value="{{ $class->id }}">{{ $class->nama_kelas }} ({{ $class->jenjang }})</option>
+                                    <option value="{{ $class->id }}">{{ $class->full_name }} ({{ $class->jenjang }})</option>
                                 @endforeach
                             </select>
                         </div>
@@ -511,7 +511,7 @@
                     <select name="class_id" id="import_class_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                         <option value="">-- Pilih Kelas Target --</option>
                         @foreach($classes as $kelas)
-                            <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }} ({{ $kelas->jenjang }} - Tingkat {{ $kelas->tingkat }})</option>
+                            <option value="{{ $kelas->id }}">{{ $kelas->full_name }} ({{ $kelas->jenjang }} - Tingkat {{ $kelas->tingkat }})</option>
                         @endforeach
                     </select>
                 </div>

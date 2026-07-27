@@ -5,7 +5,7 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Daftar Siswa - Kelas ') . $class->nama_kelas }}
+                {{ __('Daftar Siswa - ') . $class->full_name }}
             </h2>
         </div>
     </x-slot>

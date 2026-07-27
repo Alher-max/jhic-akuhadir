@@ -1,16 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Pengelolaan Alat & Metode Presensi') }}
-            </h2>
-            <a href="{{ route('attendance-schedules.index') }}" class="px-4 py-2 bg-brand-primary text-white hover:bg-red-700 text-xs sm:text-sm font-bold rounded-xl shadow-sm transition inline-flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left"></i> Atur Jam Operasional Presensi
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+            <i class="fa-solid fa-mobile-screen-button text-brand-primary"></i>
+            {{ __('Pengelolaan Alat & Metode Presensi') }}
+        </h2>
     </x-slot>
 
-    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ 
+    <div class="py-10 bg-brand-bg min-h-screen" x-data="{ 
         method_rfid: {{ $settings->method_rfid ? 'true' : 'false' }},
         method_qrcode: {{ $settings->method_qrcode ? 'true' : 'false' }},
         method_biometric: {{ $settings->method_biometric ? 'true' : 'false' }},
@@ -20,7 +16,41 @@
         is_liveness_active: {{ ($settings->is_liveness_active ?? true) ? 'true' : 'false' }},
         showDeviceModal: false
     }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            
+            <!-- Bar Menu Tab Navigasi Pengaturan Presensi -->
+            <div class="flex items-center gap-2 p-1.5 bg-brand-surface rounded-2xl border border-brand-border shadow-xs w-full sm:w-auto self-start">
+                <a href="{{ route('attendance-settings.index') }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-settings.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Alat & Metode Presensi</span>
+                </a>
+                <a href="{{ route('attendance-schedules.index') }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-schedules.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Jam Operasional & Keterlambatan</span>
+                </a>
+            </div>
+
+            <!-- Banner Info Pengarah Jam Operasional -->
+            <div class="bg-gradient-to-r from-blue-500/10 via-indigo-500/5 to-transparent border border-blue-200/80 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-blue-950">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900">Petunjuk Navigasi Operator</h4>
+                        <p class="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                            Halaman ini digunakan untuk mengaktifkan <strong>Alat & Metode Presensi</strong> (RFID, QR Code, Biometrik, PWA, Manual, Wi-Fi). 
+                            Untuk menentukan <strong>jam masuk, jam pulang, dan toleransi keterlambatan</strong>, silakan klik menu <strong>Atur Jam Operasional & Keterlambatan</strong>.
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('attendance-schedules.index') }}" class="px-4 py-2.5 bg-brand-primary hover:bg-red-700 text-white text-xs font-semibold rounded-xl shadow-sm transition shrink-0 inline-flex items-center gap-2 self-end sm:self-auto whitespace-nowrap">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Atur Jam Operasional & Keterlambatan &rarr;
+                </a>
+            </div>
             
             <!-- BAGIAN 1: KONFIGURASI 5 METODE PRESENSI -->
             <form action="{{ route('attendance-settings.update') }}" method="POST">

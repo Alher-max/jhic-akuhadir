@@ -18,6 +18,35 @@ class SchoolClass extends Model
         'wali_kelas_id',
     ];
 
+    protected $appends = [
+        'full_name',
+    ];
+
+    /**
+     * Accessor for full_name: prevents double "Kelas" prefix.
+     */
+    public function getFullNameAttribute(): string
+    {
+        if (empty($this->nama_kelas)) {
+            return 'Tanpa Kelas';
+        }
+
+        $nama = trim($this->nama_kelas);
+        if (preg_match('/^kelas\b/i', $nama)) {
+            return $nama;
+        }
+
+        return 'Kelas ' . $nama;
+    }
+
+    /**
+     * Scope query to order classes logically by level (tingkat) then class name (nama_kelas).
+     */
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc');
+    }
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);

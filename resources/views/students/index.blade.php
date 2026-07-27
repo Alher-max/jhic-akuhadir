@@ -53,48 +53,62 @@
                     <p class="text-sm text-gray-600">Tambah, edit, dan atur data siswa serta relasi akun orang tua.</p>
                 </div>
                 <div class="flex items-center gap-2.5">
-                    <button @click="showImportModal = true" class="px-4 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-sm border border-brand-border inline-flex items-center gap-1.5">
+                    <button @click="showImportModal = true"
+                        class="px-4 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-sm border border-brand-border inline-flex items-center gap-1.5">
                         <i class="fa-solid fa-file-import text-indigo-600"></i> Import Siswa (CSV/Excel)
                     </button>
-                    <button @click="showModal = true" class="px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-sm">
+                    <button @click="showModal = true"
+                        class="px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-sm">
                         + Tambah Siswa Baru
                     </button>
                 </div>
             </div>
 
             <!-- FILTER BAR -->
-            <div class="bg-brand-surface p-4 rounded-xl shadow-sm border border-brand-border mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <form method="GET" action="{{ route('students.index') }}" class="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full" id="filterForm">
-                    
+            <div
+                class="bg-brand-surface p-4 rounded-xl shadow-sm border border-brand-border mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <form method="GET" action="{{ route('students.index') }}"
+                    class="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full" id="filterForm">
+
                     <!-- Search Input -->
                     <div class="w-full lg:w-64 relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <i class="fa-solid fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" name="search" value="{{ request('search') }}" class="w-full pl-9 pr-3 py-2 border border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm" placeholder="Cari Nama atau NISN..." onchange="document.getElementById('filterForm').submit()">
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            class="w-full pl-9 pr-3 py-2 border border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm"
+                            placeholder="Cari Nama, NISN, atau Email..."
+                            onchange="document.getElementById('filterForm').submit()">
                     </div>
-                    
+
                     <!-- Filter Class -->
                     <div class="w-full sm:w-48">
-                        <select name="class_id" class="w-full border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm" onchange="document.getElementById('filterForm').submit()">
+                        <select name="class_id"
+                            class="w-full border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm"
+                            onchange="document.getElementById('filterForm').submit()">
                             <option value="">Pilih Kelas / Rombel</option>
                             @foreach($classes as $c)
-                                <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->nama_kelas }}</option>
+                                <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>
+                                    {{ $c->full_name }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <!-- Filter Status -->
                     <div class="w-full sm:w-40">
-                        <select name="status" class="w-full border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm" onchange="document.getElementById('filterForm').submit()">
+                        <select name="status"
+                            class="w-full border-brand-border rounded-lg text-sm focus:ring-brand-primary focus:border-brand-primary shadow-sm"
+                            onchange="document.getElementById('filterForm').submit()">
                             <option value="">Semua Status</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
-                            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-Aktif</option>
+                            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-Aktif
+                            </option>
                         </select>
                     </div>
-                    
+
                     @if(request('search') || request('class_id') || request('status'))
-                        <a href="{{ route('students.index') }}" class="text-sm text-gray-500 hover:text-red-600 font-medium px-2 flex-shrink-0 transition-colors w-full sm:w-auto text-center sm:text-left mt-2 sm:mt-0">
+                        <a href="{{ route('students.index') }}"
+                            class="text-sm text-gray-500 hover:text-red-600 font-medium px-2 flex-shrink-0 transition-colors w-full sm:w-auto text-center sm:text-left mt-2 sm:mt-0">
                             Reset Filter
                         </a>
                     @endif
@@ -117,26 +131,35 @@
                             @forelse($students as $student)
                                 <tr class="hover:bg-gray-50/50">
                                     <td class="px-4 py-3.5 align-middle">
-                                        <span class="font-mono text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-md inline-block">{{ $student->nisn ?? '-' }}</span>
+                                        <span
+                                            class="font-mono text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-md inline-block">{{ $student->nisn ?? '-' }}</span>
                                     </td>
                                     <td class="px-4 py-3.5 align-middle text-left">
                                         <div class="flex flex-col items-start text-left gap-1">
-                                            <button type="button" @click="openEditModal(@js($student))" class="font-semibold text-gray-900 hover:text-indigo-600 text-left transition cursor-pointer block">
+                                            <button type="button" @click="openEditModal(@js($student))"
+                                                class="font-semibold text-gray-900 hover:text-indigo-600 text-left transition cursor-pointer block">
                                                 {{ $student->name }}
                                             </button>
-                                            <div class="text-xs text-gray-500 flex items-center justify-start text-left gap-1 flex-wrap">
-                                                <i class="fa-solid fa-envelope w-3"></i> {{ $student->email ?? 'Tidak ada surel' }}
+                                            <div
+                                                class="text-xs text-gray-500 flex items-center justify-start text-left gap-1 flex-wrap">
+                                                <i class="fa-solid fa-envelope w-3"></i>
+                                                {{ $student->email ?? 'Tidak ada surel' }}
                                                 @if($student->master_photo)
-                                                    <span class="inline-flex items-center text-emerald-600 ml-1" title="Foto Master Terdaftar"><i class="fa-solid fa-camera-retro"></i></span>
+                                                    <span class="inline-flex items-center text-emerald-600 ml-1"
+                                                        title="Foto Master Terdaftar"><i
+                                                            class="fa-solid fa-camera-retro"></i></span>
                                                 @endif
                                             </div>
                                             <div class="mt-0.5 text-left">
                                                 @if($student->parent)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200/60">
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200/60">
                                                         👨‍👩‍👦 Ortu: {{ $student->parent->name }}
                                                     </span>
                                                 @else
-                                                    <button type="button" @click="openEditModal(@js($student))" title="Klik untuk hubungkan data orang tua" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition cursor-pointer">
+                                                    <button type="button" @click="openEditModal(@js($student))"
+                                                        title="Klik untuk hubungkan data orang tua"
+                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition cursor-pointer">
                                                         🔗 Ortu: Belum terhubung
                                                     </button>
                                                 @endif
@@ -144,24 +167,32 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-3.5 align-middle">
-                                        <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-medium">{{ $student->schoolClass->nama_kelas ?? '-' }}</span>
+                                        <span
+                                            class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-medium">{{ $student->schoolClass->full_name ?? '-' }}</span>
                                     </td>
                                     <td class="px-4 py-3.5 align-middle">
                                         @if($student->is_active)
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">Nonaktif</span>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">Nonaktif</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3.5 align-middle text-right text-sm">
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <button type="button" @click="openEditModal(@js($student))" class="px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition inline-flex items-center gap-1">
-                                                <i class="fa-solid fa-eye text-xs"></i><i class="fa-solid fa-pen-to-square"></i> Lihat / Edit
+                                            <button type="button" @click="openEditModal(@js($student))"
+                                                class="px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition inline-flex items-center gap-1">
+                                                <i class="fa-solid fa-eye text-xs"></i><i
+                                                    class="fa-solid fa-pen-to-square"></i> Lihat / Edit
                                             </button>
-                                            <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($student->name) }}?');">
+                                            <form action="{{ route('students.destroy', $student->id) }}" method="POST"
+                                                class="inline m-0"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($student->name) }}?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
+                                                <button type="submit"
+                                                    class="px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
                                                     <i class="fa-solid fa-trash"></i> Hapus
                                                 </button>
                                             </form>

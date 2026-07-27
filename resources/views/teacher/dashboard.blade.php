@@ -17,7 +17,7 @@
                 'id' => $s->id,
                 'name' => $s->name,
                 'nisn' => $s->nisn ?: $s->nis ?: '-',
-                'class_name' => optional($s->schoolClass)->nama_kelas ?: 'Kelas Binaan',
+                'class_name' => optional($s->schoolClass)->full_name ?: 'Kelas Binaan',
                 'avatar_url' => $s->avatar ? asset('storage/' . $s->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($s->name) . '&background=f87171&color=fff',
             ];
         })->values()) }},
@@ -47,7 +47,7 @@
                             <span>Selamat datang, {{ auth()->user()->name }}!</span>
                             @if($homerooms && $homerooms->count() > 0)
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
-                                    <i class="fa-solid fa-star"></i> Wali Kelas: {{ $homerooms->pluck('nama_kelas')->implode(', ') }}
+                                    <i class="fa-solid fa-star"></i> Wali Kelas: {{ $homerooms->map(fn($c) => $c->full_name)->implode(', ') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-white/90 text-xs font-medium backdrop-blur-sm">

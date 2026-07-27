@@ -2,7 +2,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-brand-text-main leading-tight flex items-center gap-2">
             <i class="fa-solid fa-clock-rotate-left text-brand-primary"></i>
-            {{ __('Jam Operasional Presensi Harian') }}
+            {{ __('Jam Operasional & Keterlambatan') }}
         </h2>
     </x-slot>
 
@@ -11,6 +11,20 @@
         sessionTolerance: {{ $tenant->session_late_tolerance_minutes ?? 10 }}
     }">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            <!-- Bar Menu Tab Navigasi Pengaturan Presensi -->
+            <div class="flex items-center gap-2 p-1.5 bg-brand-surface rounded-2xl border border-brand-border shadow-xs w-full sm:w-auto self-start">
+                <a href="{{ route('attendance-settings.index') }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-settings.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Alat & Metode Presensi</span>
+                </a>
+                <a href="{{ route('attendance-schedules.index') }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-schedules.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Jam Operasional & Keterlambatan</span>
+                </a>
+            </div>
 
             <!-- Header Info Card -->
             <div class="bg-brand-surface p-6 rounded-2xl border border-brand-border shadow-sm flex items-center justify-between gap-4">

@@ -23,14 +23,15 @@ class ClassScheduleController extends Controller
         if (in_array($user->role, ['guru', 'wali_kelas', 'guru_mapel'])) {
             $classes = SchoolClass::where('tenant_id', $tenantId)
                 ->where('wali_kelas_id', $user->id)
+                ->ordered()
                 ->get();
 
             // Jika tidak ada kelas binaan khusus, tampilkan semua kelas tenant
             if ($classes->isEmpty()) {
-                $classes = SchoolClass::where('tenant_id', $tenantId)->get();
+                $classes = SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
             }
         } else {
-            $classes = SchoolClass::where('tenant_id', $tenantId)->get();
+            $classes = SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
         }
 
         $selectedClassId = $request->get('class_id', $classes->first()?->id);

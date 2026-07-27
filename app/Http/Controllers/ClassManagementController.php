@@ -17,9 +17,7 @@ class ClassManagementController extends Controller
         $classes = SchoolClass::with(['waliKelas'])
             ->withCount('students')
             ->where('tenant_id', $tenantId)
-            ->orderBy('jenjang')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas')
+            ->ordered()
             ->get();
             
         // Kelompokkan kelas berdasarkan jenjang lalu tingkat, dan urutkan tingkat (Ascending)

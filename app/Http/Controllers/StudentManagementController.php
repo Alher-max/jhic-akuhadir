@@ -36,7 +36,8 @@ class StudentManagementController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('nisn', 'like', "%{$search}%");
+                  ->orWhere('nisn', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -56,9 +57,7 @@ class StudentManagementController extends Controller
             ->get();
             
         $classesQuery = SchoolClass::where('tenant_id', $tenantId)
-            ->orderBy('jenjang')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas');
+            ->ordered();
             
         // Jika user adalah guru/wali kelas, batasi pilihan kelas hanya ke kelas asuhannya.
         if (in_array(Auth::user()->role, ['guru', 'wali_kelas', 'guru_mapel'])) {
@@ -125,6 +124,8 @@ class StudentManagementController extends Controller
         if ($request->hasFile('master_photo')) {
             $masterPhotoPath = $request->file('master_photo')->store('master_photos/' . $tenant->id, 'public');
         }
+
+        $email = $request->email ?: (strtolower(str_replace([' ', ',', '.'], '', $request->name)) . rand(100, 999) . '@' . ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id');
 
         Student::create([
             'tenant_id' => $tenant->id,

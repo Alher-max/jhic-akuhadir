@@ -45,7 +45,7 @@
                     <i class="fa-solid fa-calendar-days"></i> Jadwal KBM Rutin
                     <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold"
                         :class="activeTab === 'schedules' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'">
-                        {{ $selectedClass ? $selectedClass->nama_kelas : 'Pilih Kelas' }}
+                        {{ $selectedClass ? $selectedClass->full_name : 'Pilih Kelas' }}
                     </span>
                 </button>
 
@@ -182,7 +182,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-extrabold text-brand-text-main">
-                                Jadwal KBM: {{ $selectedClass?->nama_kelas ?? 'Pilih Kelas' }}
+                                Jadwal KBM: {{ $selectedClass?->full_name ?? 'Pilih Kelas' }}
                             </h3>
                             <p class="text-xs text-brand-text-muted">
                                 {{ $selectedClass ? 'Jenjang ' . $selectedClass->jenjang . ' (Tingkat ' . $selectedClass->tingkat . ')' : 'Pilih kelas untuk menampilkan jadwal' }}
@@ -198,7 +198,7 @@
                                 <select name="class_id" onchange="this.form.submit()" class="text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl pl-4 pr-10 py-2.5 shadow-sm focus:ring-brand-primary focus:border-brand-primary appearance-none cursor-pointer">
                                     @foreach($classes as $class)
                                         <option value="{{ $class->id }}" {{ $selectedClassId == $class->id ? 'selected' : '' }}>
-                                            Kelas {{ $class->nama_kelas }} ({{ $class->jenjang }})
+                                            {{ $class->full_name }} ({{ $class->jenjang }})
                                         </option>
                                     @endforeach
                                 </select>
