@@ -130,6 +130,8 @@
                 }
             }
         </script>
+        @else
         @include('partials.pwa-prompt')
+        @endif
     </body>
 </html>
