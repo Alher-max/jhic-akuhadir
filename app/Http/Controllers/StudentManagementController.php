@@ -113,10 +113,13 @@ class StudentManagementController extends Controller
             $parentId = $request->parent_id;
         }
 
-        // Auto-generate dummy email for students without email if not provided
-        $email = $request->email ?? ($request->nisn . '@' . ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id');
-        
-        $password = Hash::make('password'); // Default password
+        // Auto-generate default password format: {NISN}{TANGGAL_LAHIR(DDMMYYYY)}
+        $birthDateFormatted = $request->birth_date ? Carbon::parse($request->birth_date)->format('dmY') : '';
+        $rawPassword = $request->nisn . $birthDateFormatted;
+        if (empty($rawPassword)) {
+            $rawPassword = 'password';
+        }
+        $password = Hash::make($rawPassword);
         
         $masterPhotoPath = null;
         if ($request->hasFile('master_photo')) {
@@ -141,6 +144,7 @@ class StudentManagementController extends Controller
             'blood_type' => $request->blood_type,
             'medical_notes' => $request->medical_notes,
             'password' => $password,
+            'is_password_changed' => false,
             'parent_id' => $parentId,
             'class_id' => $request->class_id,
             'master_photo' => $masterPhotoPath,
@@ -340,11 +344,17 @@ class StudentManagementController extends Controller
                             $domain = $tenant ? ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id' : 'hadirsekolah.id';
                             $emailFinal = $email ?? (strtolower(str_replace([' ', ',', '.'], '', $name)) . rand(100,999) . '@' . $domain);
                             
+                            $birthFormatted = $birthDate ? Carbon::parse($birthDate)->format('dmY') : '';
+                            $defaultPass = ($nisn ?? '') . $birthFormatted;
+                            if (empty($defaultPass)) {
+                                $defaultPass = 'password123';
+                            }
                             $fieldsToSave['tenant_id'] = $tenantId;
                             $fieldsToSave['name'] = $name;
                             $fieldsToSave['email'] = $emailFinal;
                             $fieldsToSave['nisn'] = $nisn;
-                            $fieldsToSave['password'] = Hash::make('password123');
+                            $fieldsToSave['password'] = Hash::make($defaultPass);
+                            $fieldsToSave['is_password_changed'] = false;
                             $fieldsToSave['is_active'] = true;
                             $fieldsToSave['onboarding_completed'] = true;
                             $fieldsToSave['email_verified_at'] = Carbon::now();

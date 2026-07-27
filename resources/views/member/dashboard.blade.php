@@ -188,7 +188,37 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-8 -mt-6">
+        <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-6 -mt-6">
+
+            @if(auth()->check() && !auth()->user()->is_password_changed)
+                <!-- Banner Penawaran Ganti Password Bawaan -->
+                <div x-data="{ dismissed: localStorage.getItem('pass_banner_dismissed_v1') === '1' }"
+                     x-show="!dismissed"
+                     class="w-full bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/50 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 relative z-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-xl">shield_lock</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-900">Perbarui Password Bawaan Anda</p>
+                            <p class="text-[11px] text-gray-600">Demi keamanan akun, yuk perbarui password bawaan Anda!</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                        <button type="button"
+                                @click="dismissed = true; localStorage.setItem('pass_banner_dismissed_v1', '1');"
+                                class="text-xs text-gray-500 hover:text-gray-700 px-2.5 py-1.5 font-medium transition">
+                            Nanti Saja
+                        </button>
+                        <button type="button"
+                                @click="$dispatch('open-change-password-modal')"
+                                class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-sm flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">key</span>
+                            Ganti Password
+                        </button>
+                    </div>
+                </div>
+            @endif
             
             <!-- Clock & Action Card -->
             <div class="bg-brand-surface border border-brand-border rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center relative z-20">
@@ -318,11 +348,15 @@
                     </button>
                 @endif
                 
-                <div class="w-full mt-4">
-                    <a href="{{ route('member.leaves.create') }}" class="w-full inline-flex justify-center items-center py-3 border rounded-xl text-sm font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors">
-                        <span class="material-symbols-outlined text-[18px] mr-2">event_note</span>
+                <div class="w-full mt-4 flex items-center gap-2">
+                    <a href="{{ route('member.leaves.create') }}" class="flex-1 inline-flex justify-center items-center py-3 border rounded-xl text-xs font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors">
+                        <span class="material-symbols-outlined text-[18px] mr-1.5">event_note</span>
                         Ajukan Izin / Sakit
                     </a>
+                    <button type="button" @click="$dispatch('open-change-password-modal')" class="inline-flex justify-center items-center py-3 px-3.5 border rounded-xl text-xs font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors" title="Ganti Password">
+                        <span class="material-symbols-outlined text-[18px] mr-1">key</span>
+                        Ganti Password
+                    </button>
                 </div>
                 
                 @if(session('success'))
@@ -610,6 +644,84 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Modal Ganti Password -->
+            <div x-data="{ showChangePasswordModal: false, showCurrent: false, showNew: false, showConfirm: false }"
+                 @open-change-password-modal.window="showChangePasswordModal = true"
+                 x-show="showChangePasswordModal"
+                 style="display: none;"
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
+                
+                <div class="bg-white rounded-3xl overflow-hidden w-full max-w-sm shadow-2xl relative p-6 text-left" @click.outside="showChangePasswordModal = false">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg">lock_reset</span>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900">Ganti Password Akun</h3>
+                        </div>
+                        <button type="button" @click="showChangePasswordModal = false" class="text-gray-400 hover:text-gray-600 p-1">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
+                        @csrf
+                        @method('put')
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Password Saat Ini (Bawaan)</label>
+                            <div class="relative flex items-center">
+                                <input :type="showCurrent ? 'text' : 'password'" name="current_password" required autocomplete="current-password"
+                                       placeholder="Masukkan password lama..."
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                <button type="button" @click="showCurrent = !showCurrent" class="absolute right-3 text-gray-400 hover:text-gray-600">
+                                    <span class="material-symbols-outlined text-base" x-text="showCurrent ? 'visibility_off' : 'visibility'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Password Baru</label>
+                            <div class="relative flex items-center">
+                                <input :type="showNew ? 'text' : 'password'" name="password" required autocomplete="new-password"
+                                       placeholder="Minimal 8 karakter..."
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                <button type="button" @click="showNew = !showNew" class="absolute right-3 text-gray-400 hover:text-gray-600">
+                                    <span class="material-symbols-outlined text-base" x-text="showNew ? 'visibility_off' : 'visibility'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Konfirmasi Password Baru</label>
+                            <div class="relative flex items-center">
+                                <input :type="showConfirm ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password"
+                                       placeholder="Ulangi password baru..."
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                <button type="button" @click="showConfirm = !showConfirm" class="absolute right-3 text-gray-400 hover:text-gray-600">
+                                    <span class="material-symbols-outlined text-base" x-text="showConfirm ? 'visibility_off' : 'visibility'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 pt-2">
+                            <button type="button" @click="showChangePasswordModal = false" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold rounded-xl transition shadow-sm">
+                                Simpan Password
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 

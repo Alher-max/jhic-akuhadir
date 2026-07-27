@@ -94,13 +94,15 @@ class ClassManagementController extends Controller
                                 $user->save();
                             } else {
                                 $isEmail = filter_var($emailOrNisn, FILTER_VALIDATE_EMAIL);
+                                $nisnVal = $isEmail ? null : $emailOrNisn;
                                 \App\Models\Student::create([
                                     'tenant_id' => $tenantId,
                                     'name' => $name,
                                     'email' => $isEmail ? $emailOrNisn : strtolower(str_replace(' ', '', $name)) . rand(100,999) . '@student.com',
-                                    'nisn' => $isEmail ? null : $emailOrNisn,
+                                    'nisn' => $nisnVal,
                                     'class_id' => $class->id,
-                                    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                                    'password' => \Illuminate\Support\Facades\Hash::make($nisnVal ?: 'password123'),
+                                    'is_password_changed' => false,
                                     'onboarding_completed' => true
                                 ]);
                             }
@@ -280,11 +282,17 @@ class ClassManagementController extends Controller
                             $domain = $tenant ? ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id' : 'hadirsekolah.id';
                             $emailFinal = $email ?? (strtolower(str_replace([' ', ',', '.'], '', $name)) . rand(100,999) . '@' . $domain);
 
+                            $birthFormatted = isset($birthDate) && $birthDate ? \Illuminate\Support\Carbon::parse($birthDate)->format('dmY') : '';
+                            $defaultPass = ($nisn ?? '') . $birthFormatted;
+                            if (empty($defaultPass)) {
+                                $defaultPass = 'password123';
+                            }
                             $fieldsToSave['tenant_id'] = $tenantId;
                             $fieldsToSave['name'] = $name;
                             $fieldsToSave['email'] = $emailFinal;
                             $fieldsToSave['nisn'] = $nisn;
-                            $fieldsToSave['password'] = \Illuminate\Support\Facades\Hash::make('password123');
+                            $fieldsToSave['password'] = \Illuminate\Support\Facades\Hash::make($defaultPass);
+                            $fieldsToSave['is_password_changed'] = false;
                             $fieldsToSave['is_active'] = true;
                             $fieldsToSave['onboarding_completed'] = true;
                             $fieldsToSave['email_verified_at'] = \Illuminate\Support\Carbon::now();

@@ -119,7 +119,7 @@
                 </div>
 
                 <!-- Role Switcher -->
-                <div class="grid grid-cols-2 gap-1.5 p-1.5 mb-6 bg-brand-bg rounded-xl border border-brand-border">
+                <div class="grid grid-cols-2 gap-1.5 p-1.5 mb-4 bg-brand-bg rounded-xl border border-brand-border">
                     <button type="button" @click="activeTab = 'kepala_sekolah'; codeValid = true;"
                             :class="{ 'bg-brand-primary text-white font-semibold shadow-sm': activeTab === 'kepala_sekolah', 'text-brand-text-muted hover:bg-brand-primary/5 font-medium': activeTab !== 'kepala_sekolah' }"
                             class="py-2.5 px-2 text-xs text-center rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5">
@@ -132,18 +132,15 @@
                         <i class="fa-solid fa-chalkboard-user"></i>
                         <span class="truncate">Tenaga Pendidik / Kependidikan</span>
                     </button>
-                    <button type="button" @click="activeTab = 'student'; codeValid = true; checkCode();"
-                            :class="{ 'bg-brand-primary text-white font-semibold shadow-sm': activeTab === 'student', 'text-brand-text-muted hover:bg-brand-primary/5 font-medium': activeTab !== 'student' }"
-                            class="py-2.5 px-2 text-xs text-center rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-user-graduate"></i>
-                        <span class="truncate">Siswa</span>
-                    </button>
-                    <button type="button" @click="activeTab = 'parent'; checkCode();"
-                            :class="{ 'bg-brand-primary text-white font-semibold shadow-sm': activeTab === 'parent', 'text-brand-text-muted hover:bg-brand-primary/5 font-medium': activeTab !== 'parent' }"
-                            class="py-2.5 px-2 text-xs text-center rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-users"></i>
-                        <span class="truncate">Orang Tua</span>
-                    </button>
+                </div>
+
+                <!-- Info Box Akun Siswa & Orang Tua -->
+                <div class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs leading-relaxed flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-blue-600 text-base shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong class="font-semibold block mb-0.5">Info Akun Siswa & Orang Tua:</strong>
+                        Akun Siswa dan Orang Tua dibuatkan langsung oleh sekolah. Silakan hubungi Operator Sekolah atau Wali Kelas Anda untuk mendapatkan hak akses login.
+                    </div>
                 </div>
 
                 @if ($errors->any())
