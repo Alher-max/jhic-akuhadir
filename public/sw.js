@@ -1,10 +1,17 @@
 const CACHE_NAME = 'hadiryuk-v1';
 const STATIC_ASSETS = [
     '/',
-    '/offline',
     '/manifest.json',
     '/favicon.ico',
+    '/images/logo.png',
+    '/images/icon.png',
 ];
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
 
 self.addEventListener('install', (event) => {
     console.log('Service Worker: Installing...');
@@ -15,7 +22,6 @@ self.addEventListener('install', (event) => {
                 return cache.addAll(STATIC_ASSETS);
             })
     );
-    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -62,12 +68,12 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(event.request)
                 .catch(() => {
-                    return caches.match('/offline');
+                    return caches.match('/');
                 })
         );
         return;
     }
 
     // Fallback for everything else
-    event.respondWith(fetch(event.request).catch(() => caches.match('/offline')));
+    event.respondWith(fetch(event.request).catch(() => caches.match('/')));
 });

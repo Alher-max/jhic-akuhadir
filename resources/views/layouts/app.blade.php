@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#4f46e5">
+        <meta name="theme-color" content="#b91c1c">
         <link rel="manifest" href="/manifest.json">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -130,21 +130,6 @@
                 }
             }
         </script>
-        @else
-        {{-- Di production, daftarkan Service Worker seperti biasa --}}
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then(registration => {
-                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        })
-                        .catch(err => {
-                            console.log('ServiceWorker registration failed: ', err);
-                        });
-                });
-            }
-        </script>
-        @endif
+        @include('partials.pwa-prompt')
     </body>
 </html>
