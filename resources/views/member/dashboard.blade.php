@@ -577,6 +577,7 @@
                 </div>
             </div>
 
+            <x-footer class="mt-8 bg-transparent border-t-0 text-gray-400" />
         </main>
     </div>
 

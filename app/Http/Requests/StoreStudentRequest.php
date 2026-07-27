@@ -29,7 +29,7 @@ class StoreStudentRequest extends FormRequest
             'gender' => ['nullable', 'in:L,P'],
             'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
             'class_id' => ['required', 'exists:school_classes,id'],
-            'parent_option' => ['required', 'in:new,existing'],
+            'parent_option' => ['nullable', 'in:none,new,existing'],
             'parent_name' => ['required_if:parent_option,new', 'nullable', 'string', 'max:255'],
             'father_name' => ['nullable', 'string', 'max:255'],
             'mother_name' => ['nullable', 'string', 'max:255'],

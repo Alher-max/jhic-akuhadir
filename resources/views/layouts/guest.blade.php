@@ -17,7 +17,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/image-compressor.js') }}"></script>
 </head>
-<body class="font-sans antialiased bg-brand-bg text-brand-text-main m-0 p-0 min-h-screen">
-    {{ $slot }}
+<body class="font-sans antialiased bg-brand-bg text-brand-text-main m-0 p-0 min-h-screen flex flex-col justify-between">
+    <div class="flex-1 flex flex-col">
+        {{ $slot }}
+    </div>
+    <x-footer class="bg-transparent border-t-0 py-3 text-brand-text-muted" />
 </body>
 </html>

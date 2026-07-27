@@ -205,36 +205,50 @@
                     this.isLocating = true;
                     this.locationError = '';
 
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                this.gpsLat = position.coords.latitude;
-                                this.gpsLng = position.coords.longitude;
-                                this.isLocating = false;
-                            },
-                            (error) => {
-                                this.isLocating = false;
-                                switch(error.code) {
-                                    case error.PERMISSION_DENIED:
-                                        this.locationError = "Izin lokasi ditolak oleh browser Anda.";
-                                        break;
-                                    case error.POSITION_UNAVAILABLE:
-                                        this.locationError = "Informasi lokasi tidak tersedia.";
-                                        break;
-                                    case error.TIMEOUT:
-                                        this.locationError = "Waktu permintaan lokasi habis.";
-                                        break;
-                                    default:
-                                        this.locationError = "Terjadi kesalahan yang tidak diketahui.";
-                                        break;
-                                }
-                            },
-                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                        );
-                    } else {
+                    if (window.isSecureContext === false && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                        this.locationError = "Fitur GPS membutuhkan koneksi aman (HTTPS).";
+                        this.isLocating = false;
+                        return;
+                    }
+
+                    if (!navigator.geolocation) {
                         this.isLocating = false;
                         this.locationError = "Geolocation tidak didukung oleh browser Anda.";
+                        return;
                     }
+
+                    const handleSuccess = (position) => {
+                        this.gpsLat = position.coords.latitude;
+                        this.gpsLng = position.coords.longitude;
+                        this.isLocating = false;
+                    };
+
+                    const handleError = (error) => {
+                        this.isLocating = false;
+                        if (error.code === error.PERMISSION_DENIED) {
+                            this.locationError = "Izin lokasi ditolak. Harap izinkan akses lokasi di Pengaturan browser/iOS Anda.";
+                        } else if (error.code === error.POSITION_UNAVAILABLE || error.code === error.TIMEOUT) {
+                            this.locationError = "Gagal mendapatkan sinyal GPS. Silakan coba lagi atau salin koordinat langsung dari Google Maps.";
+                        } else {
+                            this.locationError = "Terjadi kesalahan saat mengambil lokasi GPS.";
+                        }
+                    };
+
+                    navigator.geolocation.getCurrentPosition(
+                        handleSuccess,
+                        (highAccErr) => {
+                            if (highAccErr.code === highAccErr.PERMISSION_DENIED) {
+                                handleError(highAccErr);
+                                return;
+                            }
+                            navigator.geolocation.getCurrentPosition(
+                                handleSuccess,
+                                handleError,
+                                { enableHighAccuracy: false, timeout: 10000 }
+                            );
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
                 }
             }));
         });

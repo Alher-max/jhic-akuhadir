@@ -78,7 +78,7 @@
             
             <div class="bg-gray-50 px-8 py-6 border-t border-gray-100 flex items-center justify-between">
                 <p class="text-sm text-gray-500">
-                    &copy; {{ date('Y') }} {{ $tenant?->name ?? 'HadirYuk' }}
+                    © 2026 Almas Alfatih, CTO PT Thortech. Hak Cipta Dilindungi.
                 </p>
                 <p class="text-xs text-gray-400 flex items-center gap-1">
                     Powered by <strong class="text-red-600">HadirYuk</strong>

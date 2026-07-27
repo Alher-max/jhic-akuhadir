@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invitation;
+use App\Services\InvitationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class OnboardingController extends Controller
 {
+    public function __construct(
+        protected InvitationService $invitationService
+    ) {}
+
     public function index()
     {
         $user = Auth::user();
@@ -33,12 +38,7 @@ class OnboardingController extends Controller
         ]);
 
         if ($request->onboarding_option === 'delegate') {
-            Invitation::create([
-                'tenant_id' => $user->tenant_id,
-                'email' => $request->delegate_email,
-                'token' => Str::random(32),
-                'status' => 'pending',
-            ]);
+            $this->invitationService->inviteOperator($request->delegate_email, $user->tenant_id);
         }
 
         // Tandai onboarding selesai

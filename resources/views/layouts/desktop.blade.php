@@ -59,8 +59,11 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-            {{ $slot }}
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6 flex flex-col justify-between">
+            <div class="flex-1">
+                {{ $slot }}
+            </div>
+            <x-footer class="mt-8 bg-transparent border-t-0 text-gray-400" />
         </main>
     </div>
 

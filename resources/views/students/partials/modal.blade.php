@@ -6,28 +6,30 @@
     <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showModal = false"></div>
 
     <!-- Modal Box -->
-    <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-2xl bg-brand-surface rounded-2xl p-6 shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
-        <div>
-            <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-create">Tambah Siswa Baru</h3>
-            <p class="mt-1 text-sm text-brand-text-muted">Masukkan rincian informasi siswa sesuai dengan tab kategori di bawah ini.</p>
-        </div>
+    <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-2xl bg-brand-surface rounded-2xl shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
+        <div class="p-6 pb-0 sm:p-8 sm:pb-0">
+            <div>
+                <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-create">Tambah Siswa Baru</h3>
+                <p class="mt-1 text-sm text-brand-text-muted">Masukkan rincian informasi siswa sesuai dengan tab kategori di bawah ini.</p>
+            </div>
 
-        <!-- TAB NAVIGATION -->
-        <div class="flex border-b border-gray-200 mt-4 gap-1">
-            <button type="button" @click="activeTab = 'utama'" :class="activeTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-id-card"></i> 📌 Data Utama
-            </button>
-            <button type="button" @click="activeTab = 'ortu'" :class="activeTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
-            </button>
-            <button type="button" @click="activeTab = 'detail'" :class="activeTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
-            </button>
+            <!-- TAB NAVIGATION -->
+            <div class="flex border-b border-gray-200 mt-4 gap-1 overflow-x-auto">
+                <button type="button" @click="activeTab = 'utama'" :class="activeTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-id-card"></i> 📌 Data Utama
+                </button>
+                <button type="button" @click="activeTab = 'ortu'" :class="activeTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
+                </button>
+                <button type="button" @click="activeTab = 'detail'" :class="activeTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
+                </button>
+            </div>
         </div>
         
-        <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="mt-4 flex flex-col overflow-hidden flex-1">
+        <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 py-2">
+            <div class="space-y-4 overflow-y-auto flex-1 p-6 sm:p-8">
                 
                 <!-- TAB 1: DATA UTAMA & AKADEMIK -->
                 <div x-show="activeTab === 'utama'" class="space-y-4">
@@ -39,18 +41,18 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="nisn" class="block text-sm font-medium text-gray-700">NISN <span class="text-red-500">*</span></label>
-                            <input type="text" name="nisn" id="nisn" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nomor NISN Nasional">
+                            <input type="text" name="nisn" id="nisn" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 0081234567">
                         </div>
                         <div>
                             <label for="nis" class="block text-sm font-medium text-gray-700">NIS (Lokal Sekolah)</label>
-                            <input type="text" name="nis" id="nis" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nomor Induk Sekolah">
+                            <input type="text" name="nis" id="nis" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 202410012">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="nik" class="block text-sm font-medium text-gray-700">NIK (Nomor Induk Kependudukan)</label>
-                            <input type="text" name="nik" id="nik" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="16 digit NIK sesuai KTP/KK">
+                            <input type="text" name="nik" id="nik" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 3402121508080001">
                         </div>
                         <div>
                             <label for="gender" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
@@ -65,7 +67,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
-                            <input type="text" name="birth_place" id="birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Kota Tempat Lahir">
+                            <input type="text" name="birth_place" id="birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: Sleman">
                         </div>
                         <div>
                             <label for="birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir <span class="text-red-500">*</span></label>
@@ -85,7 +87,7 @@
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">Surel Siswa (Opsional)</label>
-                            <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis terisi jika kosong">
+                            <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: siswa@sekolah.sch.id">
                         </div>
                     </div>
 
@@ -132,8 +134,12 @@
                     </div>
 
                     <div class="pt-2 border-t border-gray-200">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Relasi Akun Orang Tua / Wali</label>
-                        <div class="flex items-center space-x-4 mb-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Relasi Akun Orang Tua / Wali (Opsional)</label>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-3">
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="parentOption" name="parent_option" value="none" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Tidak buat akun ortu sekarang</span>
+                            </label>
                             <label class="inline-flex items-center">
                                 <input type="radio" x-model="parentOption" name="parent_option" value="new" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Buat Akun Orang Tua Baru</span>
@@ -211,7 +217,7 @@
 
             </div>
 
-            <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6 pt-4 border-t border-gray-200 shrink-0">
+            <div class="p-6 pt-4 pb-6 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl shrink-0 flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3">
                 <button type="button" @click="showModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                     Batal
                 </button>
@@ -229,52 +235,54 @@
     <div x-show="showEditModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showEditModal = false"></div>
 
     <!-- Modal Box -->
-    <div x-show="showEditModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-2xl bg-brand-surface rounded-2xl p-6 shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
-        <div>
-            <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-edit">Lihat / Edit Data Siswa</h3>
-            <p class="mt-1 text-sm text-brand-text-muted">Perbarui atau lihat rincian informasi siswa sesuai dengan tab di bawah ini.</p>
-        </div>
+    <div x-show="showEditModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-2xl bg-brand-surface rounded-2xl shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
+        <div class="p-6 pb-0 sm:p-8 sm:pb-0">
+            <div>
+                <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-edit">Lihat / Edit Data Siswa</h3>
+                <p class="mt-1 text-sm text-brand-text-muted">Perbarui atau lihat rincian informasi siswa sesuai dengan tab di bawah ini.</p>
+            </div>
 
-        <!-- TAB NAVIGATION EDIT -->
-        <div class="flex border-b border-gray-200 mt-4 gap-1">
-            <button type="button" @click="activeEditTab = 'utama'" :class="activeEditTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-id-card"></i> 📌 Data Utama
-            </button>
-            <button type="button" @click="activeEditTab = 'ortu'" :class="activeEditTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
-            </button>
-            <button type="button" @click="activeEditTab = 'detail'" :class="activeEditTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5">
-                <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
-            </button>
+            <!-- TAB NAVIGATION EDIT -->
+            <div class="flex border-b border-gray-200 mt-4 gap-1 overflow-x-auto">
+                <button type="button" @click="activeEditTab = 'utama'" :class="activeEditTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-id-card"></i> 📌 Data Utama
+                </button>
+                <button type="button" @click="activeEditTab = 'ortu'" :class="activeEditTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
+                </button>
+                <button type="button" @click="activeEditTab = 'detail'" :class="activeEditTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
+                </button>
+            </div>
         </div>
         
-        <form :action="'{{ url('dashboard/students') }}/' + editForm.id" method="POST" enctype="multipart/form-data" class="mt-4 flex flex-col overflow-hidden flex-1">
+        <form :action="'{{ url('dashboard/students') }}/' + editForm.id" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf
             @method('PUT')
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 py-2">
+            <div class="space-y-4 overflow-y-auto flex-1 p-6 sm:p-8">
                 
                 <!-- TAB 1: DATA UTAMA & AKADEMIK -->
                 <div x-show="activeEditTab === 'utama'" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" x-model="editForm.name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                        <input type="text" name="name" x-model="editForm.name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: Budi Santoso">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">NISN <span class="text-red-500">*</span></label>
-                            <input type="text" name="nisn" x-model="editForm.nisn" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <input type="text" name="nisn" x-model="editForm.nisn" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 0081234567">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">NIS (Lokal Sekolah)</label>
-                            <input type="text" name="nis" x-model="editForm.nis" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <input type="text" name="nis" x-model="editForm.nis" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 202410012">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">NIK (Nomor Induk Kependudukan)</label>
-                            <input type="text" name="nik" x-model="editForm.nik" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <input type="text" name="nik" x-model="editForm.nik" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 3402121508080001">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
@@ -289,7 +297,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
-                            <input type="text" name="birth_place" x-model="editForm.birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <input type="text" name="birth_place" x-model="editForm.birth_place" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: Sleman">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Tanggal Lahir <span class="text-red-500">*</span></label>
@@ -309,7 +317,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Surel / Username</label>
-                            <input type="email" name="email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <input type="email" name="email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: siswa@sekolah.sch.id">
                         </div>
                     </div>
                     
@@ -390,6 +398,10 @@
                                 <span class="ml-2 text-sm text-gray-700">Tidak ada perubahan</span>
                             </label>
                             <label class="inline-flex items-center w-full">
+                                <input type="radio" x-model="editForm.parent_option" name="parent_option" value="none" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Lepas / Tanpa Akun Orang Tua</span>
+                            </label>
+                            <label class="inline-flex items-center w-full">
                                 <input type="radio" x-model="editForm.parent_option" name="parent_option" value="new" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Buat Akun Orang Tua Baru</span>
                             </label>
@@ -467,7 +479,7 @@
 
             </div>
 
-            <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6 pt-4 border-t border-gray-200 shrink-0">
+            <div class="p-6 pt-4 pb-6 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl shrink-0 flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3">
                 <button type="button" @click="showEditModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                     Batal
                 </button>
@@ -485,15 +497,15 @@
     <div x-show="showImportModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showImportModal = false"></div>
 
     <!-- Modal Box -->
-    <div x-show="showImportModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-xl bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
-        <div>
+    <div x-show="showImportModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative z-10 w-full max-w-xl bg-brand-surface rounded-2xl shadow-xl my-8 border border-brand-border flex flex-col max-h-[90vh] overflow-hidden text-left">
+        <div class="p-6 pb-0 sm:p-8 sm:pb-0">
             <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-import">Import Data Siswa (CSV/Excel)</h3>
             <p class="mt-2 text-sm text-brand-text-muted">Unggah berkas CSV/TXT untuk memasukkan atau memperbarui data siswa secara massal ke dalam kelas.</p>
         </div>
         
-        <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="mt-5 flex flex-col flex-1 min-h-0">
+        <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 py-1">
+            <div class="space-y-4 overflow-y-auto flex-1 p-6 sm:p-8">
                 <div>
                     <label for="import_class_id" class="block text-sm font-medium text-gray-700">Target Kelas / Rombel <span class="text-red-500">*</span></label>
                     <select name="class_id" id="import_class_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
@@ -530,7 +542,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6 pt-4 border-t border-gray-200 shrink-0 pb-1">
+            <div class="p-6 pt-4 pb-6 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl shrink-0 flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3">
                 <button type="button" @click="showImportModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                     Batal
                 </button>

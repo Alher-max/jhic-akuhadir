@@ -92,9 +92,9 @@ class StudentManagementController extends Controller
 
         $tenant = Tenant::findOrFail($user->tenant_id);
         
-        $parentId = $request->parent_id;
+        $parentId = null;
 
-        if ($request->parent_option === 'new' || $request->filled('parent_name')) {
+        if ($request->parent_option === 'new' && $request->filled('parent_name')) {
             $parentEmail = $request->parent_email ?: 'ortu.' . $request->nisn . '@hadirsekolah.id';
             
             $parentUser = User::create([
@@ -109,6 +109,8 @@ class StudentManagementController extends Controller
             ]);
 
             $parentId = $parentUser->id;
+        } elseif ($request->parent_option === 'existing') {
+            $parentId = $request->parent_id;
         }
 
         // Auto-generate dummy email for students without email if not provided
@@ -160,7 +162,7 @@ class StudentManagementController extends Controller
 
         $parentId = $student->parent_id;
 
-        if ($request->parent_option === 'new' || ($request->parent_option === 'new' && $request->filled('parent_name'))) {
+        if ($request->parent_option === 'new' && $request->filled('parent_name')) {
             $tenant = Tenant::find($tenantId);
             $domain = $tenant ? ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id' : 'hadirsekolah.id';
             $parentEmail = $request->parent_email ?: 'ortu.' . $request->nisn . '@' . $domain;
@@ -179,6 +181,8 @@ class StudentManagementController extends Controller
             $parentId = $parentUser->id;
         } elseif ($request->parent_option === 'existing') {
             $parentId = $request->parent_id;
+        } elseif ($request->parent_option === 'none') {
+            $parentId = null;
         }
 
         $email = $request->email ?? $student->email;

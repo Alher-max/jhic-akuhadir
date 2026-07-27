@@ -116,4 +116,38 @@ class StudentRegistrationTest extends TestCase
 
         $response->assertSessionHasErrors(['nisn_or_email']);
     }
+
+    /**
+     * test: allows creating a new student without parent account (optional parent relation)
+     */
+    public function test_allows_creating_new_student_without_parent_account(): void
+    {
+        $admin = User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Operator Sekolah',
+            'email' => 'operator@sman1test.sch.id',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'role' => 'operator',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('students.store'), [
+                'name' => 'Budi Tanpa Ortu',
+                'nisn' => '0081234567',
+                'nis' => '202410012',
+                'class_id' => $this->schoolClass->id,
+                'birth_date' => '2008-05-15',
+                'parent_option' => 'none',
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $student = \App\Models\Student::where('nisn', '0081234567')->first();
+        $this->assertNotNull($student);
+        $this->assertEquals('Budi Tanpa Ortu', $student->name);
+        $this->assertNull($student->parent_id);
+    }
 }

@@ -57,9 +57,11 @@
         </div>
     </header>
 
-    <main class="p-4">
+    <main class="p-4 flex-1 pb-20">
         {{ $slot }}
     </main>
+
+    <x-footer class="mb-16 bg-transparent border-t-0 text-gray-400 text-[10px]" />
 
     <!-- Bottom Navigation Bar (PWA standard) -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 z-50">

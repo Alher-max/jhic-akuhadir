@@ -63,7 +63,7 @@ class OwnerDashboardController extends Controller
     public function inviteSuperAdmin(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
         ]);
 
         $this->invitationService->inviteOperator($request->email);

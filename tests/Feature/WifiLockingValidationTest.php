@@ -64,17 +64,17 @@ class WifiLockingValidationTest extends TestCase
 
         $admin = User::create([
             'tenant_id' => $tenant->id,
-            'name' => 'Admin Sekolah',
-            'email' => 'admin@sman2testing.sch.id',
+            'name' => 'Operator Sekolah 2',
+            'email' => 'operator@sman2testing.sch.id',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'role' => 'admin',
+            'role' => 'operator',
             'is_active' => true,
         ]);
 
         // Submit form onboarding dengan attendance_method wifi dan wifi_bssid dikosongkan
         $response = $this->actingAs($admin)
-            ->post(route('onboarding.finish'), [
+            ->post(route('admin.onboarding'), [
                 'attendance_method' => 'wifi',
                 'wifi_bssid' => '', // Dikosongkan
             ]);

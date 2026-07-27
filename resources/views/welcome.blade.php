@@ -97,18 +97,18 @@
             
             <h1 class="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-brand-text-main leading-snug mb-6 w-full break-words">
                 Ekosistem Absensi Pintar,<br class="hidden md:block" /> 
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-[#8A151A]">Zero Fraud & Real-Time</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-[#8A151A]">Anti-Titip Absen & Real-Time</span>
             </h1>
             
             <p class="mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-brand-text-muted mx-auto mb-8 sm:mb-10 font-medium leading-relaxed w-full">
-                Platform kehadiran digital tingkat enterprise. Solusi lengkap dan tak tertembus kecurangan, dirancang khusus untuk kedisiplinan dan integrasi tanpa batas. 
+                Platform presensi digital modern untuk siswa, guru, dan staf sekolah. Dirancang khusus untuk meningkatkan kedisiplinan belajar mengajar tanpa beban infrastruktur rumit. 
                 <br class="hidden md:block"/> 
-                <span class="inline-block mt-3 font-semibold bg-brand-primary/10 text-brand-primary px-3 py-1.5 rounded-lg text-xs sm:text-sm w-auto max-w-full break-words whitespace-normal">✨ Zero Infrastruktur Server</span>
+                <span class="inline-block mt-3 font-semibold bg-brand-primary/10 text-brand-primary px-3 py-1.5 rounded-lg text-xs sm:text-sm w-auto max-w-full break-words whitespace-normal">⚡ Tanpa Perlu Server Sendiri</span>
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
                 <a href="/register?role=owner" class="w-full sm:w-auto px-6 sm:px-8 py-4 rounded-xl font-bold text-sm sm:text-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 text-center whitespace-normal break-words">
-                    <i class="fa-solid fa-rocket shrink-0"></i> Daftar Kepala Sekolah
+                    <i class="fa-solid fa-rocket shrink-0"></i> Daftarkan Sekolah Sekarang
                 </a>
             </div>
         </div>
@@ -118,8 +118,8 @@
     <section id="fitur" class="py-16 sm:py-20 bg-brand-surface relative border-y border-brand-border/50 w-full overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
-                <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 break-words">4 Pilar Anti-Kecurangan</h2>
-                <p class="text-brand-text-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto break-words">Kami memastikan setiap data kehadiran 100% valid, akurat, dan tidak dapat dimanipulasi dengan teknologi mutakhir.</p>
+                <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 break-words">4 Pilar Utama Pencegah Kecurangan</h2>
+                <p class="text-brand-text-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto break-words">Memastikan data kehadiran siswa dan guru 100% valid, akurat, serta transparan untuk pihak sekolah dan wali murid.</p>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
@@ -128,8 +128,8 @@
                     <div class="w-12 h-12 sm:w-14 sm:h-14 bg-brand-surface rounded-xl flex items-center justify-center border border-brand-border mb-5 sm:mb-6 group-hover:scale-110 group-hover:bg-brand-primary transition-all duration-300 shadow-sm shrink-0">
                         <i class="fa-solid fa-map-location-dot text-xl sm:text-2xl text-brand-primary group-hover:text-white transition-colors"></i>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">Validasi Geofencing</h3>
-                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Anti-Fake GPS terintegrasi. Memastikan pengguna hanya dapat melakukan absensi di dalam radius lokasi yang telah disetujui secara ketat.</p>
+                    <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">Validasi Geofencing Presisi</h3>
+                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Membatasi radius lokasi presensi secara ketat di area gerbang atau lingkungan fisik sekolah dengan proteksi Anti-Fake GPS.</p>
                 </div>
                 
                 <!-- Pilar 2 -->
@@ -138,7 +138,7 @@
                         <i class="fa-solid fa-user-check text-brand-primary text-xl group-hover:text-white transition-colors"></i>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">AI Liveness Detection</h3>
-                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Pemindaian wajah asli (bukan foto/video). Algoritma AI mendeteksi gerakan dan kedalaman wajah secara real-time untuk validasi biologis.</p>
+                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Pemindaian wajah interaktif untuk memastikan presensi dilakukan oleh siswa/guru bersangkutan (bukan foto, cetakan, atau rekaman video).</p>
                 </div>
                 
                 <!-- Pilar 3 -->
@@ -147,7 +147,7 @@
                         <i class="fa-solid fa-wifi text-xl sm:text-2xl text-brand-primary group-hover:text-white transition-colors"></i>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">Wi-Fi Network Locking</h3>
-                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Kunci Jaringan WiFi Resmi. Absensi hanya dapat diakses saat perangkat terhubung dengan BSSID dan IP institusi yang terdaftar.</p>
+                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Sistem mengunci jalur presensi agar hanya bisa diakses ketika perangkat terhubung ke Wi-Fi resmi lingkungan sekolah.</p>
                 </div>
                 
                 <!-- Pilar 4 -->
@@ -155,8 +155,8 @@
                     <div class="w-12 h-12 sm:w-14 sm:h-14 bg-brand-surface rounded-xl flex items-center justify-center border border-brand-border mb-5 sm:mb-6 group-hover:scale-110 group-hover:bg-brand-primary transition-all duration-300 shadow-sm shrink-0">
                         <i class="fa-brands fa-nfc-symbol text-xl sm:text-2xl text-brand-primary group-hover:text-white transition-colors"></i>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">Integrasi Hardware</h3>
-                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Dukungan penuh untuk Mesin Absensi Fisik dan IoT (ESP32 / RFID). Sinkronisasi dua arah seketika ke dalam satu dashboard terpusat.</p>
+                    <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-brand-text-main break-words">Integrasi IoT & Mesin Fisik</h3>
+                    <p class="text-brand-text-muted leading-relaxed text-xs sm:text-sm break-words">Dukungan langsung untuk mesin absensi fisik (RFID/ESP32) yang terhubung otomatis ke dalam satu dashboard pusat.</p>
                 </div>
             </div>
         </div>
@@ -168,30 +168,24 @@
             <div class="flex flex-col lg:flex-row items-center gap-12 sm:gap-16 w-full">
                 <div class="w-full lg:w-1/2 text-center lg:text-left min-w-0">
                     <div class="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 text-brand-primary text-xs sm:text-sm font-bold mb-4 sm:mb-6 tracking-wide break-words whitespace-normal">ARSITEKTUR MODULAR</div>
-                    <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 break-words">Fleksibilitas Tanpa Batas untuk Semua Skala Bisnis</h2>
+                    <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 break-words">Solusi Fleksibel untuk Semua Jenjang Sekolah & Yayasan</h2>
                     <p class="text-brand-text-muted text-sm sm:text-base md:text-lg mb-8 leading-relaxed break-words">
-                        Dibangun dengan fondasi yang kokoh untuk melayani dari startup hingga enterprise. Pilih arsitektur yang paling sesuai dengan kebutuhan instansi Anda.
+                        Dirancang kokoh untuk melayani kebutuhan presensi harian dari jenjang SD, SMP, SMA/SMK, hingga Kompleks Yayasan Pendidikan.
                     </p>
                     
                     <div class="space-y-4 sm:space-y-6 text-left w-full min-w-0">
                         <!-- ZERO INFRASTRUKTUR HIGHLIGHT CARD -->
                         <div class="relative bg-white p-5 sm:p-6 rounded-2xl border-2 border-brand-primary/30 shadow-lg group hover:border-brand-primary/60 transition-colors mt-8 sm:mt-0 w-full min-w-0 break-words">
                             <div class="absolute -top-4 sm:-top-4 left-4 sm:left-auto sm:-right-3 bg-brand-primary text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full shadow-md animate-pulse whitespace-normal break-words text-center max-w-[80%]">
-                                <i class="fa-solid fa-star"></i> ZERO INFRASTRUKTUR
+                                ★ ZERO INFRASTRUKTUR
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4 mt-4 sm:mt-0 w-full min-w-0">
                                 <div class="w-12 h-12 shrink-0 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center shadow-sm">
                                     <i class="fa-solid fa-building text-brand-primary text-lg sm:text-xl"></i>
                                 </div>
                                 <div class="w-full min-w-0">
-                                    <h4 class="text-lg sm:text-xl font-bold mb-2 break-words">Standalone SaaS</h4>
-                                    <p class="text-brand-text-muted text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 break-words">Platform Multi-Tenant mutakhir dimana setiap institusi mendapatkan Kode Institusi unik, dashboard terisolasi, dan keamanan data level bank.</p>
-                                    <div class="bg-brand-bg rounded-lg p-3 sm:p-4 border border-brand-border/50 text-[11px] sm:text-xs md:text-sm text-brand-text-muted leading-relaxed font-medium shadow-inner w-full min-w-0">
-                                        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 text-brand-primary">
-                                            <i class="fa-solid fa-circle-check shrink-0"></i> <span class="font-bold break-words">Keunggulan Utama:</span>
-                                        </div>
-                                        <span class="break-words">Mengeliminasi total biaya modal awal untuk penyediaan server cloud, bebas biaya perawatan arsitektur basis data, tidak memerlukan komputer peladen lokal yang mahal, dan langsung siap pakai tanpa beban pemeliharaan oleh tim IT teknis khusus.</span>
-                                    </div>
+                                    <h4 class="text-lg sm:text-xl font-bold mb-2 break-words">Standalone SaaS Sekolah</h4>
+                                    <p class="text-brand-text-muted text-xs sm:text-sm leading-relaxed break-words">Setiap sekolah mendapat Kode Instansi unik, dashboard terisolasi, dan penyimpanan data aman. Langsung siap pakai tanpa perlu membeli server fisik lokal yang mahal.</p>
                                 </div>
                             </div>
                         </div>
@@ -201,8 +195,8 @@
                                 <i class="fa-solid fa-puzzle-piece text-brand-primary text-lg sm:text-xl"></i>
                             </div>
                             <div class="w-full min-w-0">
-                                <h4 class="text-lg sm:text-xl font-bold mb-2 break-words">Modul Integrasi (API)</h4>
-                                <p class="text-brand-text-muted text-xs sm:text-sm leading-relaxed break-words">Desain Plug-and-Play yang mudah disematkan ke dalam sistem LMS (Learning Management System) atau HRIS (Human Resource Information System) Anda yang sudah ada.</p>
+                                <h4 class="text-lg sm:text-xl font-bold mb-2 break-words">Modul Integrasi LMS & Sistem Sekolah</h4>
+                                <p class="text-brand-text-muted text-xs sm:text-sm leading-relaxed break-words">Desain Plug-and-Play yang mudah dihubungkan ke sistem LMS, e-Rapor, maupun database internal sekolah yang sudah ada.</p>
                             </div>
                         </div>
                     </div>
@@ -265,8 +259,8 @@
     <section id="rbac" class="py-16 sm:py-24 bg-brand-surface border-y border-brand-border/50 w-full overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="text-center mb-12 sm:mb-16">
-                <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 break-words">Dynamic RBAC 4 Tingkat</h2>
-                <p class="text-brand-text-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto break-words">Kendali penuh di tangan Anda. Role-Based Access Control yang dinamis, memastikan privasi data dan efisiensi manajemen secara hierarkis.</p>
+                <h2 class="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 break-words">Hak Akses 4 Tingkat Terintegrasi</h2>
+                <p class="text-brand-text-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto break-words">Pembagian peran yang jelas untuk mendukung transparansi dan efisiensi manajemen operasional sekolah.</p>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
@@ -276,8 +270,8 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center border border-brand-border shadow-sm mb-3 sm:mb-4 shrink-0">
                         <i class="fa-solid fa-crown text-brand-primary text-base sm:text-lg"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Kepala Sekolah / Yayasan</h3>
-                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Akses tingkat tertinggi. Dasbor analitik eksekutif, laporan presensi global, dan pengaturan institusi tingkat atas.</p>
+                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Kepala Sekolah & Yayasan</h3>
+                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Akses Dasbor Analitik Eksekutif, laporan tingkat kedisiplinan sekolah, dan kontrol kebijakan utama.</p>
                 </div>
                 
                 <!-- Role 2 -->
@@ -286,8 +280,8 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center border border-brand-border shadow-sm mb-3 sm:mb-4 shrink-0">
                         <i class="fa-solid fa-shield-halved text-brand-primary text-base sm:text-lg"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Admin Dapodik / Tata Usaha</h3>
-                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Pengelola sistem harian. Manajemen data siswa/guru, pengaturan geofence, jadwal KBM, dan persetujuan data master.</p>
+                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Operator Dapodik & Tata Usaha</h3>
+                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Manajemen data siswa, guru, rombel/kelas, pengaturan jadwal KBM, dan verifikasi permohonan izin/sakit.</p>
                 </div>
                 
                 <!-- Role 3 -->
@@ -296,8 +290,8 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center border border-brand-border shadow-sm mb-3 sm:mb-4 shrink-0">
                         <i class="fa-solid fa-user-tie text-brand-primary text-base sm:text-lg"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Wali Kelas / Guru</h3>
-                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Pemimpin kelas. Monitor kehadiran siswa binaan, persetujuan surat izin/sakit, dan rekap tingkat rombel.</p>
+                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Wali Kelas & Guru Pengajar</h3>
+                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Monitoring kehadiran siswa binaan secara langsung, validasi presensi jam pelajaran (KBM), dan rekapitulasinya.</p>
                 </div>
                 
                 <!-- Role 4 -->
@@ -306,8 +300,8 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center border border-brand-border shadow-sm mb-3 sm:mb-4 shrink-0">
                         <i class="fa-solid fa-users text-brand-primary text-base sm:text-lg"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Siswa / Peserta Didik</h3>
-                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Pengguna akhir. Melakukan presensi, melihat jadwal KBM, riwayat kehadiran, dan mengajukan izin secara mandiri.</p>
+                    <h3 class="text-base sm:text-lg font-bold text-brand-text-main mb-2 break-words whitespace-normal">Siswa & Peserta Didik</h3>
+                    <p class="text-xs sm:text-sm text-brand-text-muted leading-relaxed break-words">Melakukan presensi harian, melihat jadwal pelajaran, riwayat kehadiran, dan mengajukan izin/sakit secara mandiri.</p>
                 </div>
             </div>
         </div>
@@ -321,11 +315,11 @@
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 sm:w-80 sm:h-80 rounded-full bg-brand-primary/5 blur-3xl pointer-events-none"></div>
         
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full">
-            <h2 class="text-xl sm:text-3xl md:text-5xl font-bold text-brand-text-main mb-4 sm:mb-6 break-words whitespace-normal">Siap Menghilangkan Kecurangan Absensi?</h2>
-            <p class="text-brand-text-muted text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-2xl mx-auto w-full break-words whitespace-normal">Tingkatkan efisiensi, akurasi, dan kedisiplinan sekolah Anda dalam hitungan menit. Mulai gunakan HadirSekolah hari ini.</p>
+            <h2 class="text-xl sm:text-3xl md:text-5xl font-bold text-brand-text-main mb-4 sm:mb-6 break-words whitespace-normal">Siap Mewujudkan Kedisiplinan Digital di Sekolah Anda?</h2>
+            <p class="text-brand-text-muted text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-2xl mx-auto w-full break-words whitespace-normal">Tingkatkan efisiensi, akurasi, dan ketertiban sekolah dalam hitungan menit bersama HadirSekolah.</p>
             <div class="flex justify-center w-full">
                 <a href="/register?role=owner" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-4 rounded-xl font-bold text-sm sm:text-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-95 transition-all shadow-md shrink-0 text-center whitespace-normal break-words">
-                    <i class="fa-solid fa-paper-plane shrink-0"></i> Daftar Kepala Sekolah
+                    <i class="fa-solid fa-paper-plane shrink-0"></i> Daftarkan Sekolah Sekarang
                 </a>
             </div>
         </div>
@@ -343,11 +337,11 @@
             
             <div class="mt-8 pt-8 border-t border-brand-border/50 flex flex-col md:flex-row justify-between items-center gap-4 w-full">
                 <p class="text-brand-text-muted text-xs sm:text-sm font-medium w-full text-center md:text-left break-words whitespace-normal">
-                    HadirSekolah System &copy; 2026. All rights reserved.
+                    © 2026 Almas Alfatih, CTO PT Thortech. Hak Cipta Dilindungi.
                 </p>
                 <div class="w-full text-center md:text-right">
                     <div class="inline-block text-xs sm:text-sm font-medium text-brand-text-muted bg-brand-surface border border-brand-border px-3 sm:px-4 py-2 rounded-lg shadow-sm break-words whitespace-normal max-w-full">
-                        Developed & Managed by <span class="text-brand-primary font-bold break-words whitespace-normal">PT. Thortech Asiasoftware Enjiniring</span>
+                        Dibuat oleh <span class="text-brand-primary font-bold break-words whitespace-normal">Almas Alfatih</span> (CTO of PT Thortech Asiasoftware Enjiniring)
                     </div>
                 </div>
             </div>

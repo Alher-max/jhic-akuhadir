@@ -52,7 +52,7 @@
 
             <!-- Footer -->
             <div style="position:relative; z-index:10; font-size:11px; color:rgba(254,202,202,0.7); font-weight:500;">
-                © {{ date('Y') }} Almas Alfatih, CTO PT Thortech. Hak Cipta Dilindungi.
+                © 2026 Almas Alfatih, CTO PT Thortech. Hak Cipta Dilindungi.
             </div>
         </div>
 

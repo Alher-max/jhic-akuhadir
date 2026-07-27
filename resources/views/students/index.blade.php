@@ -14,7 +14,7 @@
         selectedStudent: null,
         previewUrl: null,
         createPhotoPreview: null,
-        parentOption: 'new',
+        parentOption: 'none',
         editForm: { id: null, name: '', nisn: '', nis: '', nik: '', gender: '', email: '', class_id: '', master_photo: null, parent_option: 'unchanged', parent_id: '', parent_name: '', father_name: '', mother_name: '', parent_phone: '', parent_email: '', current_parent_name: null, birth_place: '', birth_date: '', religion: '', address: '', blood_type: '', medical_notes: '' },
         openEditModal(student) {
             this.selectedStudent = student;

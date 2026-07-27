@@ -38,73 +38,77 @@
             <span class="font-bold text-sm tracking-wide">Koneksi internet terputus. Anda berada dalam mode offline.</span>
         </div>
 
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <div class="min-h-screen bg-gray-100 flex flex-col justify-between">
+            <div class="flex-1">
+                @include('layouts.navigation')
 
-            <!-- Global Alert & Notification Banner (Centralized for all roles) -->
-            @if(session('success') || session('error') || session('warning') || session('info') || $errors->any())
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                    @if(session('success'))
-                        <div class="mb-3 bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                                <span>{{ session('success') }}</span>
+                <!-- Global Alert & Notification Banner (Centralized for all roles) -->
+                @if(session('success') || session('error') || session('warning') || session('info') || $errors->any())
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                        @if(session('success'))
+                            <div class="mb-3 bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                    <span>{{ session('success') }}</span>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                    @if(session('error'))
-                        <div class="mb-3 bg-rose-50 border border-rose-300 text-rose-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-circle-exclamation text-rose-600"></i>
-                                <span>{{ session('error') }}</span>
+                        @endif
+                        @if(session('error'))
+                            <div class="mb-3 bg-rose-50 border border-rose-300 text-rose-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-exclamation text-rose-600"></i>
+                                    <span>{{ session('error') }}</span>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                    @if(session('warning'))
-                        <div class="mb-3 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                                <span>{{ session('warning') }}</span>
+                        @endif
+                        @if(session('warning'))
+                            <div class="mb-3 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                                    <span>{{ session('warning') }}</span>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                    @if(session('info'))
-                        <div class="mb-3 bg-sky-50 border border-sky-300 text-sky-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-circle-info text-sky-600"></i>
-                                <span>{{ session('info') }}</span>
+                        @endif
+                        @if(session('info'))
+                            <div class="mb-3 bg-sky-50 border border-sky-300 text-sky-800 px-4 py-3 rounded-xl shadow-sm flex items-center justify-between gap-3 text-sm" role="alert">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-info text-sky-600"></i>
+                                    <span>{{ session('info') }}</span>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                    @if ($errors->any())
-                        <div class="mb-3 bg-rose-50 border border-rose-300 text-rose-800 px-4 py-3 rounded-xl shadow-sm text-sm" role="alert">
-                            <div class="flex items-center gap-2 font-semibold mb-1">
-                                <i class="fa-solid fa-circle-xmark text-rose-600"></i>
-                                <span>Terdapat kesalahan input:</span>
+                        @endif
+                        @if ($errors->any())
+                            <div class="mb-3 bg-rose-50 border border-rose-300 text-rose-800 px-4 py-3 rounded-xl shadow-sm text-sm" role="alert">
+                                <div class="flex items-center gap-2 font-semibold mb-1">
+                                    <i class="fa-solid fa-circle-xmark text-rose-600"></i>
+                                    <span>Terdapat kesalahan input:</span>
+                                </div>
+                                <ul class="list-disc list-inside pl-5 space-y-0.5 text-xs text-rose-700">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
-                            <ul class="list-disc list-inside pl-5 space-y-0.5 text-xs text-rose-700">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                </div>
-            @endif
-
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                        @endif
                     </div>
-                </header>
-            @endisset
+                @endif
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <!-- Page Heading -->
+                @isset($header)
+                    <header class="bg-white shadow">
+                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
+
+                <!-- Page Content -->
+                <main>
+                    {{ $slot }}
+                </main>
+            </div>
+
+            <x-footer />
         </div>
 
         @if (config('app.env') === 'local')

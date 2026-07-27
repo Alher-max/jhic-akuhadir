@@ -172,7 +172,7 @@
                                     <div class="border border-gray-100 rounded-md p-3">
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="text-[11px] font-bold text-gray-700 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-rose-500"></i> Opsi 1: Validasi Geofencing GPS</div>
-                                            <button type="button" onclick="navigator.geolocation.getCurrentPosition(function(position) { document.getElementById('latitude_input').value = position.coords.latitude; document.getElementById('longitude_input').value = position.coords.longitude; })" class="text-[10px] bg-white border border-gray-300 text-gray-700 px-2 py-1 rounded hover:bg-gray-50 shadow-sm flex items-center gap-1 cursor-pointer">
+                                            <button type="button" onclick="fetchCurrentGpsLocation(this)" class="text-[10px] bg-white border border-gray-300 text-gray-700 px-2 py-1 rounded hover:bg-gray-50 shadow-sm flex items-center gap-1 cursor-pointer">
                                                 <i class="fa-solid fa-location-crosshairs text-amber-500"></i> Dapatkan Lokasi Saat Ini
                                             </button>
                                         </div>
@@ -419,6 +419,73 @@
         </div>
 
         <script>
+            function fetchCurrentGpsLocation(btnElement) {
+                if (window.isSecureContext === false && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    alert("Fitur GPS membutuhkan koneksi aman (HTTPS).");
+                    return;
+                }
+
+                if (!navigator.geolocation) {
+                    alert("Geolocation tidak didukung oleh browser Anda.");
+                    return;
+                }
+
+                const originalContent = btnElement.innerHTML;
+                btnElement.disabled = true;
+                btnElement.classList.add('opacity-60', 'cursor-not-allowed');
+                btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-amber-500"></i> Mencari Lokasi...';
+
+                function restoreButton() {
+                    btnElement.disabled = false;
+                    btnElement.classList.remove('opacity-60', 'cursor-not-allowed');
+                    btnElement.innerHTML = originalContent;
+                }
+
+                function handleSuccess(position) {
+                    const latInput = document.getElementById('latitude_input');
+                    const lngInput = document.getElementById('longitude_input');
+                    if (latInput) {
+                        latInput.value = position.coords.latitude;
+                        latInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    if (lngInput) {
+                        lngInput.value = position.coords.longitude;
+                        lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    restoreButton();
+                }
+
+                function handleError(error) {
+                    restoreButton();
+                    if (error.code === error.PERMISSION_DENIED) {
+                        alert("Izin lokasi ditolak. Harap izinkan akses lokasi di Pengaturan browser/iOS Anda.");
+                    } else if (error.code === error.POSITION_UNAVAILABLE || error.code === error.TIMEOUT) {
+                        alert("Gagal mendapatkan sinyal GPS. Silakan coba lagi atau salin koordinat langsung dari Google Maps.");
+                    } else {
+                        alert("Terjadi kesalahan saat mengambil lokasi GPS.");
+                    }
+                }
+
+                // Opsi 1: High Accuracy (10s timeout, maxAge 0)
+                navigator.geolocation.getCurrentPosition(
+                    handleSuccess,
+                    function(highAccError) {
+                        // Jika izin ditolak oleh pengguna, langsung tampilkan error tanpa retry fallback
+                        if (highAccError.code === highAccError.PERMISSION_DENIED) {
+                            handleError(highAccError);
+                            return;
+                        }
+                        // Fallback (Cadangan): Low Accuracy (10s timeout)
+                        navigator.geolocation.getCurrentPosition(
+                            handleSuccess,
+                            handleError,
+                            { enableHighAccuracy: false, timeout: 10000 }
+                        );
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            }
+
             function handleGpsPaste(e) {
                 const pastedData = (e.clipboardData || window.clipboardData).getData('text');
                 if (pastedData && pastedData.includes(',')) {
