@@ -79,45 +79,61 @@ class AttendanceController extends Controller
             }
         }
 
-        // Check if attendance already exists for today
-        $existing = Attendance::where('user_id', $user->id)
-            ->where('date', $today)
-            ->first();
+        $attendanceService = app(\App\Services\AttendanceService::class);
+        $tenant = $user->tenant;
+        $isNonFormal = $tenant && $attendanceService->isNonFormalSessionMode($tenant);
 
-        if ($existing) {
-            return redirect()->back()->with('error', 'Anda sudah melakukan clock-in hari ini.');
-        }
+        $classScheduleId = null;
+        $dayNameIndo = $attendanceService->getDayNameInIndonesian(now());
 
-        // Find applicable schedule for the user
-        $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
-            $query->where(function($q) use ($today) {
-                $q->where('type', 'non_routine')->where('specific_date', $today);
-            })->orWhere(function($q) use ($dayOfWeek) {
-                $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
-            });
-        })->first();
+        if ($isNonFormal) {
+            $classSchedule = $attendanceService->findActiveSession($user, now());
+            $classScheduleId = $classSchedule?->id;
 
-        // Fallback: jika tidak ada jadwal di DB, gunakan jadwal mock agar testing presensi tetap bisa berjalan
-        $isMockSchedule = false;
-        if (!$schedule) {
-            // Cek apakah ini jam kerja normal (06:00 - 23:59)
-            $currentHour = now()->hour;
-            if ($currentHour >= 6) {
-                $isMockSchedule = true;
-                $schedule = (object)[
-                    'start_time'         => '06:00:00',
-                    'end_time'           => '23:59:00',
-                    'grace_period_minutes' => 60,
-                ];
-            } else {
-                return redirect()->back()->with('error', 'Anda tidak memiliki jadwal wajib hadir hari ini.');
+            if ($attendanceService->hasAttendedSession($user, $today, $classScheduleId)) {
+                $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
+                return redirect()->back()->with('error', "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini.");
             }
-        }
 
-        // Check lateness
-        $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
-        $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
-        $status = now()->greaterThan($limitTime) ? 'late' : 'present';
+            $valResult = $attendanceService->validateAttendanceStatus($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
+            $status = $valResult['status'];
+        } else {
+            // Check if attendance already exists for today
+            if ($attendanceService->hasAttendedSession($user, $today, null)) {
+                return redirect()->back()->with('error', 'Anda sudah melakukan clock-in hari ini.');
+            }
+
+            // Find applicable schedule for the user
+            $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
+                $query->where(function($q) use ($today) {
+                    $q->where('type', 'non_routine')->where('specific_date', $today);
+                })->orWhere(function($q) use ($dayOfWeek) {
+                    $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
+                });
+            })->first();
+
+            // Fallback: jika tidak ada jadwal di DB, gunakan jadwal mock agar testing presensi tetap bisa berjalan
+            $isMockSchedule = false;
+            if (!$schedule) {
+                // Cek apakah ini jam kerja normal (06:00 - 23:59)
+                $currentHour = now()->hour;
+                if ($currentHour >= 6) {
+                    $isMockSchedule = true;
+                    $schedule = (object)[
+                        'start_time'         => '06:00:00',
+                        'end_time'           => '23:59:00',
+                        'grace_period_minutes' => 60,
+                    ];
+                } else {
+                    return redirect()->back()->with('error', 'Anda tidak memiliki jadwal wajib hadir hari ini.');
+                }
+            }
+
+            // Check lateness
+            $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
+            $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
+            $status = now()->greaterThan($limitTime) ? 'late' : 'present';
+        }
 
         // Handle Base64 Photo
         $photoPath = null;
@@ -148,6 +164,7 @@ class AttendanceController extends Controller
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
+            'class_schedule_id' => $classScheduleId,
             'date' => $today,
             'clock_in' => now(),
             'status' => $status,

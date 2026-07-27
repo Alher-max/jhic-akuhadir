@@ -61,6 +61,23 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
+    public function test_profile_information_can_be_updated_without_providing_email_field(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => 'Updated Name Without Email Field',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $this->assertSame('Updated Name Without Email Field', $user->refresh()->name);
+    }
+
     public function test_user_can_delete_their_account(): void
     {
         $user = User::factory()->create();

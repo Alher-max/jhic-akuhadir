@@ -10,6 +10,18 @@ use Illuminate\Validation\Rule;
 class ProfileUpdateRequest extends FormRequest
 {
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('email') || empty($this->email)) {
+            $this->merge([
+                'email' => $this->user()?->email,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -19,7 +31,7 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:10240'],
             // Profile fields
             'birth_place' => ['nullable', 'string', 'max:255'],
             'birth_date' => ['nullable', 'date'],

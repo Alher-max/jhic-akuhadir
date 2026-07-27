@@ -451,7 +451,7 @@
                                     <template x-if="createPhotoPreview">
                                         <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                                 </div>
                                 <template x-if="createPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
@@ -572,7 +572,7 @@
                                     <template x-if="editPhotoPreview">
                                         <img :src="editPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                                 </div>
                                 <template x-if="editPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">

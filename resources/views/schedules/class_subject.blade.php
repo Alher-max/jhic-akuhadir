@@ -263,12 +263,12 @@
                                             </div>
 
                                             <!-- Tombol Aksi Edit & Hapus (Selalu Terlihat Eksplisit) -->
-                                            <div class="flex items-center space-x-1 shrink-0">
+                                            <div class="flex items-center gap-1.5 shrink-0">
                                                 <button type="button" @click="openEditSchedule({{ json_encode($schedule) }})" class="px-2 py-1 bg-gray-100 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 rounded-md text-xs font-semibold border border-gray-200 transition inline-flex items-center gap-1" title="Edit Jadwal">
                                                     <i class="fa-solid fa-pen-to-square text-xs"></i>
                                                     <span>Edit</span>
                                                 </button>
-                                                <form id="delete-schedule-{{ $schedule->id }}" action="{{ route('class-schedules.destroy', $schedule->id) }}" method="POST" class="inline">
+                                                <form id="delete-schedule-{{ $schedule->id }}" action="{{ route('class-schedules.destroy', $schedule->id) }}" method="POST" class="inline-flex">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" @click="confirmDeleteSchedule('delete-schedule-{{ $schedule->id }}')" class="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-md text-xs font-semibold border border-red-200 transition inline-flex items-center gap-1" title="Hapus Jadwal">

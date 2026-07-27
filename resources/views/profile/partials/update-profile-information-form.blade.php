@@ -104,7 +104,7 @@
                 
                 <div>
                     <x-input-label for="email" :value="__('Alamat Email Aktif')" />
-                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full bg-gray-100 cursor-not-allowed text-gray-500" :value="old('email', $user->email)" disabled readonly />
+                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full bg-gray-100 cursor-not-allowed text-gray-500" :value="old('email', $user->email)" readonly />
                     <p class="text-xs text-gray-500 mt-1">Alamat email tidak dapat diubah (terkait kredensial login utama).</p>
                 </div>
 

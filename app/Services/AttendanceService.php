@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Attendance;
 use App\Models\AttendanceSchedule;
+use App\Models\ClassSchedule;
 use App\Models\Tenant;
+use App\Models\User;
 use Carbon\Carbon;
 
 class AttendanceService
@@ -30,6 +33,72 @@ class AttendanceService
     public function isNonFormalSessionMode(Tenant $tenant): bool
     {
         return $this->getAttendanceMode($tenant) === 'non_formal_session';
+    }
+
+    /**
+     * Mengonversi nama hari Carbon ke Bahasa Indonesia.
+     */
+    public function getDayNameInIndonesian(Carbon $date): string
+    {
+        $days = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu',
+        ];
+        return $days[(int)$date->format('N')] ?? 'Senin';
+    }
+
+    /**
+     * Mencari Sesi KBM (ClassSchedule) aktif untuk pengguna pada waktu tertentu.
+     */
+    public function findActiveSession(User $user, ?Carbon $now = null): ?ClassSchedule
+    {
+        $now = $now ?? Carbon::now();
+        $dayName = $this->getDayNameInIndonesian($now);
+        $timeStr = $now->format('H:i:s');
+
+        // Cari sesi KBM kelas siswa atau sesi pengajaran guru yang aktif di jam berjalan
+        $query = ClassSchedule::where('tenant_id', $user->tenant_id)
+            ->where('day_name', $dayName);
+
+        if (!empty($user->class_id)) {
+            $query->where('class_id', $user->class_id);
+        } else {
+            $query->where('teacher_id', $user->id);
+        }
+
+        $activeSession = (clone $query)
+            ->whereTime('start_time', '<=', $timeStr)
+            ->whereTime('end_time', '>=', $timeStr)
+            ->first();
+
+        // Fallback: Jika tidak ada sesi di jam eksak, ambil sesi terdekat hari ini
+        if (!$activeSession) {
+            $activeSession = $query->orderBy('start_time')->first();
+        }
+
+        return $activeSession;
+    }
+
+    /**
+     * Mengecek apakah pengguna sudah presensi pada sesi tertentu / hari ini.
+     */
+    public function hasAttendedSession(User $user, string $date, ?int $classScheduleId = null): bool
+    {
+        $query = Attendance::where('user_id', $user->id)
+            ->where('date', $date);
+
+        if ($classScheduleId) {
+            $query->where('class_schedule_id', $classScheduleId);
+        } else {
+            $query->whereNull('class_schedule_id');
+        }
+
+        return $query->exists();
     }
 
     /**

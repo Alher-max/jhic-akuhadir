@@ -102,26 +102,45 @@ class PwaAttendanceController extends Controller
         $today = now()->format('Y-m-d');
         $dayOfWeek = now()->format('N');
         
-        $existing = Attendance::where('user_id', $user->id)->where('date', $today)->first();
-        if ($existing) {
-            return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in hari ini.'], 400);
+        $attendanceService = app(\App\Services\AttendanceService::class);
+        $tenant = $user->tenant;
+        $isNonFormal = $tenant && $attendanceService->isNonFormalSessionMode($tenant);
+
+        $classScheduleId = null;
+        $dayNameIndo = $attendanceService->getDayNameInIndonesian(now());
+
+        if ($isNonFormal) {
+            $classSchedule = $attendanceService->findActiveSession($user, now());
+            $classScheduleId = $classSchedule?->id;
+
+            if ($attendanceService->hasAttendedSession($user, $today, $classScheduleId)) {
+                $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
+                return response()->json(['success' => false, 'message' => "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini."], 400);
+            }
+
+            $valResult = $attendanceService->validateAttendanceStatus($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
+            $status = $valResult['status'];
+        } else {
+            if ($attendanceService->hasAttendedSession($user, $today, null)) {
+                return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in hari ini.'], 400);
+            }
+
+            $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
+                $query->where(function($q) use ($today) {
+                    $q->where('type', 'non_routine')->where('specific_date', $today);
+                })->orWhere(function($q) use ($dayOfWeek) {
+                    $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
+                });
+            })->first();
+
+            if (!$schedule) {
+                return response()->json(['success' => false, 'message' => 'Tidak ada jadwal hadir hari ini.'], 400);
+            }
+
+            $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
+            $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
+            $status = now()->greaterThan($limitTime) ? 'late' : 'present';
         }
-
-        $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
-            $query->where(function($q) use ($today) {
-                $q->where('type', 'non_routine')->where('specific_date', $today);
-            })->orWhere(function($q) use ($dayOfWeek) {
-                $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
-            });
-        })->first();
-
-        if (!$schedule) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada jadwal hadir hari ini.'], 400);
-        }
-
-        $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
-        $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
-        $status = now()->greaterThan($limitTime) ? 'late' : 'present';
 
         $matchScore = $request->input('face_match_score') ? (float)$request->input('face_match_score') : null;
 
@@ -154,6 +173,7 @@ class PwaAttendanceController extends Controller
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
+            'class_schedule_id' => $classScheduleId,
             'date' => $today,
             'clock_in' => now(),
             'status' => $status,

@@ -323,40 +323,47 @@
             </div>
 
             <!-- Mata Pelajaran Hari Ini -->
-            @if($userType === 'student' && count($todayTimetable) > 0)
+            @if($userType === 'student')
             <div>
                 <h3 class="text-lg font-bold text-brand-text-main mb-4"><span class="material-symbols-outlined text-red-600 align-bottom mr-1.5">auto_stories</span> Mata Pelajaran Hari Ini</h3>
-                <div class="relative border-l-2 border-brand-primary/30 ml-3 pl-4 pb-2">
-                    @foreach($todayTimetable as $pelajaran)
-                        <div class="relative mb-5">
-                            <div class="absolute -left-[23px] top-1 w-3 h-3 bg-brand-primary rounded-full ring-4 ring-brand-bg"></div>
-                            <div class="bg-brand-surface border {{ $pelajaran['tipe'] === 'istirahat' ? 'border-amber-200 bg-amber-50' : ($pelajaran['tipe'] === 'upacara' ? 'border-rose-200 bg-rose-50' : 'border-brand-border') }} rounded-2xl p-3 shadow-sm">
-                                <div class="flex justify-between items-start mb-1">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">{{ $pelajaran['jam'] }}</span>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-800">{{ $pelajaran['waktu'] }}</span>
-                                </div>
-                                <h4 class="text-sm font-bold text-brand-text-main mt-1">{{ $pelajaran['mapel'] }}</h4>
-                                @if($pelajaran['tipe'] === 'pelajaran')
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-brand-text-muted font-medium">
-                                        <div class="flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">person</span>
-                                            {{ $pelajaran['guru'] }}
+                @if(count($todayTimetable) > 0)
+                    <div class="relative border-l-2 border-brand-primary/30 ml-3 pl-4 pb-2">
+                        @foreach($todayTimetable as $pelajaran)
+                            <div class="relative mb-5">
+                                <div class="absolute -left-[23px] top-1 w-3 h-3 bg-brand-primary rounded-full ring-4 ring-brand-bg"></div>
+                                <div class="bg-brand-surface border {{ $pelajaran['tipe'] === 'istirahat' ? 'border-amber-200 bg-amber-50' : ($pelajaran['tipe'] === 'upacara' ? 'border-rose-200 bg-rose-50' : 'border-brand-border') }} rounded-2xl p-3 shadow-sm">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">{{ $pelajaran['jam'] }}</span>
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-800">{{ $pelajaran['waktu'] }}</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-brand-text-main mt-1">{{ $pelajaran['mapel'] }}</h4>
+                                    @if($pelajaran['tipe'] === 'pelajaran')
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-brand-text-muted font-medium">
+                                            <div class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">person</span>
+                                                {{ $pelajaran['guru'] }}
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">meeting_room</span>
+                                                {{ $pelajaran['ruang'] }}
+                                            </div>
                                         </div>
-                                        <div class="flex items-center gap-1">
+                                    @elseif($pelajaran['tipe'] === 'upacara')
+                                        <div class="flex items-center gap-1 mt-2 text-xs text-brand-text-muted font-medium">
                                             <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">meeting_room</span>
                                             {{ $pelajaran['ruang'] }}
                                         </div>
-                                    </div>
-                                @elseif($pelajaran['tipe'] === 'upacara')
-                                    <div class="flex items-center gap-1 mt-2 text-xs text-brand-text-muted font-medium">
-                                        <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">meeting_room</span>
-                                        {{ $pelajaran['ruang'] }}
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="bg-brand-surface border border-brand-border rounded-2xl p-6 text-center text-gray-500 shadow-sm">
+                        <span class="material-symbols-outlined text-gray-300 text-4xl mb-2">event_busy</span>
+                        <p class="text-sm font-medium text-gray-600">Tidak ada jadwal mata pelajaran untuk hari ini.</p>
+                    </div>
+                @endif
             </div>
             @endif
 

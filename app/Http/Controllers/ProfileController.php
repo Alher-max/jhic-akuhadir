@@ -26,6 +26,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        $request->merge(['email' => $request->email ?? $request->user()->email]);
         $user = $request->user();
         
         $user->fill($request->validated());
