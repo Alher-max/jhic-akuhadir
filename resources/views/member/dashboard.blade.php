@@ -177,13 +177,18 @@
                         </span>
                     </div>
                 </div>
-                <!-- Logout Button -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" title="Keluar" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition border border-white/20 shrink-0">
-                        <span class="material-symbols-outlined">logout</span>
+                <!-- Header Action Buttons -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" @click="$dispatch('open-change-password-modal')" title="Ganti Password" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition border border-white/20">
+                        <span class="material-symbols-outlined text-[20px]">key</span>
                     </button>
-                </form>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" title="Keluar" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition border border-white/20">
+                            <span class="material-symbols-outlined text-[20px]">logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
@@ -348,15 +353,11 @@
                     </button>
                 @endif
                 
-                <div class="w-full mt-4 flex items-center gap-2">
-                    <a href="{{ route('member.leaves.create') }}" class="flex-1 inline-flex justify-center items-center py-3 border rounded-xl text-xs font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors">
-                        <span class="material-symbols-outlined text-[18px] mr-1.5">event_note</span>
+                <div class="w-full mt-4">
+                    <a href="{{ route('member.leaves.create') }}" class="w-full inline-flex justify-center items-center py-3 border rounded-xl text-sm font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors shadow-sm">
+                        <span class="material-symbols-outlined text-[18px] mr-2">event_note</span>
                         Ajukan Izin / Sakit
                     </a>
-                    <button type="button" @click="$dispatch('open-change-password-modal')" class="inline-flex justify-center items-center py-3 px-3.5 border rounded-xl text-xs font-semibold bg-brand-surface border-brand-border text-brand-text-muted hover:bg-brand-primary/5 transition-colors" title="Ganti Password">
-                        <span class="material-symbols-outlined text-[18px] mr-1">key</span>
-                        Ganti Password
-                    </button>
                 </div>
                 
                 @if(session('success'))
