@@ -172,7 +172,7 @@
                             {{ $className }}
                         </span>
                         <span class="inline-flex items-center gap-1 bg-white/15 backdrop-blur-sm text-white/90 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-white/20">
-                            <span class="material-symbols-outlined text-[13px]">person_tie</span>
+                            <span class="material-symbols-outlined text-[13px]">person</span>
                             Wali Kelas: {{ $homeroomTeacherName }}
                         </span>
                     </div>
