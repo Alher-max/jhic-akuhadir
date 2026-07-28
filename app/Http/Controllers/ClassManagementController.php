@@ -63,6 +63,12 @@ class ClassManagementController extends Controller
                 }
             ],
             'students_file' => ['nullable', 'file', 'mimes:csv,txt', 'max:2048']
+        ], [
+            'jenjang.required' => 'Jenjang kelas wajib dipilih.',
+            'tingkat.required' => 'Tingkat kelas wajib diisi.',
+            'nama_kelas.required' => 'Nama kelas / rombel wajib diisi.',
+            'wali_kelas_id.required' => 'Wali kelas wajib dipilih.',
+            'wali_kelas_id.exists' => 'Wali kelas yang dipilih tidak valid.',
         ]);
 
         $class = SchoolClass::create([
@@ -139,6 +145,12 @@ class ClassManagementController extends Controller
                     }
                 }
             ],
+        ], [
+            'jenjang.required' => 'Jenjang kelas wajib dipilih.',
+            'tingkat.required' => 'Tingkat kelas wajib diisi.',
+            'nama_kelas.required' => 'Nama kelas / rombel wajib diisi.',
+            'wali_kelas_id.required' => 'Wali kelas wajib dipilih.',
+            'wali_kelas_id.exists' => 'Wali kelas yang dipilih tidak valid.',
         ]);
 
         $class->update([

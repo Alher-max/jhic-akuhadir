@@ -5,7 +5,18 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showCreateModal: false, showEditClassModal: false, editClassForm: { id: '', jenjang: '', tingkat: '', nama_kelas: '', wali_kelas_id: '' }, showImport: false }">
+    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ 
+        showCreateModal: {{ $errors->any() && old('_method') !== 'PUT' ? 'true' : 'false' }}, 
+        showEditClassModal: {{ $errors->any() && old('_method') === 'PUT' ? 'true' : 'false' }}, 
+        editClassForm: { 
+            id: '{{ old('_method') === 'PUT' ? old('id', '') : '' }}', 
+            jenjang: '{{ old('_method') === 'PUT' ? old('jenjang', '') : '' }}', 
+            tingkat: '{{ old('_method') === 'PUT' ? old('tingkat', '') : '' }}', 
+            nama_kelas: '{{ old('_method') === 'PUT' ? addslashes(old('nama_kelas', '')) : '' }}', 
+            wali_kelas_id: '{{ old('_method') === 'PUT' ? old('wali_kelas_id', '') : '' }}' 
+        }, 
+        showImport: false 
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Halaman -->
             <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
@@ -245,51 +256,74 @@
                     
                     <form action="{{ route('operator.classes.store') }}" method="POST" enctype="multipart/form-data" class="mt-5">
                         @csrf
+                        @if($errors->any() && old('_method') !== 'PUT')
+                            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="text-xs font-semibold text-red-800 mb-1"><i class="fa-solid fa-circle-exclamation mr-1"></i> Gagal menyimpan kelas. Periksa input berikut:</p>
+                                <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="jenjang" class="block text-sm font-medium text-gray-700">Jenjang <span class="text-red-500">*</span></label>
-                                    <select name="jenjang" id="jenjang" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <select name="jenjang" id="jenjang" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('jenjang') border-red-500 @enderror">
                                         <option value="">-- Pilih Jenjang --</option>
                                         
                                         <optgroup label="Pendidikan Dasar">
-                                            <option value="SD">SD / MI / Paket A</option>
-                                            <option value="SMP">SMP / MTs / Paket B</option>
+                                            <option value="SD" {{ old('jenjang') == 'SD' ? 'selected' : '' }}>SD / MI / Paket A</option>
+                                            <option value="SMP" {{ old('jenjang') == 'SMP' ? 'selected' : '' }}>SMP / MTs / Paket B</option>
                                         </optgroup>
 
                                         <optgroup label="Pendidikan Menengah">
-                                            <option value="SMA">SMA / MA / Paket C</option>
-                                            <option value="SMK">SMK / MAK</option>
+                                            <option value="SMA" {{ old('jenjang') == 'SMA' ? 'selected' : '' }}>SMA / MA / Paket C</option>
+                                            <option value="SMK" {{ old('jenjang') == 'SMK' ? 'selected' : '' }}>SMK / MAK</option>
                                         </optgroup>
 
                                         <optgroup label="Pendidikan Anak Usia Dini">
-                                            <option value="TK">TK / RA / PAUD</option>
+                                            <option value="TK" {{ old('jenjang') == 'TK' ? 'selected' : '' }}>TK / RA / PAUD</option>
                                         </optgroup>
 
                                         <optgroup label="Lainnya">
-                                            <option value="LAINNYA">Lainnya / Umum</option>
+                                            <option value="LAINNYA" {{ old('jenjang') == 'LAINNYA' ? 'selected' : '' }}>Lainnya / Umum</option>
                                         </optgroup>
                                     </select>
+                                    @error('jenjang')
+                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
                                     <label for="tingkat" class="block text-sm font-medium text-gray-700">Tingkat <span class="text-red-500">*</span></label>
-                                    <input type="number" name="tingkat" id="tingkat" min="1" max="13" required placeholder="Cth: 1, 7, 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <input type="number" name="tingkat" id="tingkat" value="{{ old('tingkat') }}" min="1" max="13" required placeholder="Cth: 1, 7, 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('tingkat') border-red-500 @enderror">
+                                    @error('tingkat')
+                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                             
                             <div>
                                 <label for="nama_kelas" class="block text-sm font-medium text-gray-700">Nama Kelas / Rombel <span class="text-red-500">*</span></label>
-                                <input type="text" name="nama_kelas" id="nama_kelas" required placeholder="Cth: IX-A, X-IPA-1, XI-TKR-2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <input type="text" name="nama_kelas" id="nama_kelas" value="{{ old('nama_kelas') }}" required placeholder="Cth: IX-A, X-IPA-1, XI-TKR-2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('nama_kelas') border-red-500 @enderror">
+                                @error('nama_kelas')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                             
                             <div>
                                 <label for="wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas <span class="text-red-500">*</span></label>
-                                <select name="wali_kelas_id" id="wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="wali_kelas_id" id="wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('wali_kelas_id') border-red-500 @enderror">
                                     <option value="">-- Pilih Wali Kelas --</option>
                                     @foreach($teachers as $teacher)
-                                        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                        <option value="{{ $teacher->id }}" {{ old('wali_kelas_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('wali_kelas_id')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -322,11 +356,24 @@
                     <form :action="`{{ url('operator/classes') }}/${editClassForm.id}`" method="POST" class="mt-5">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" name="id" :value="editClassForm.id">
+
+                        @if($errors->any() && old('_method') === 'PUT')
+                            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="text-xs font-semibold text-red-800 mb-1"><i class="fa-solid fa-circle-exclamation mr-1"></i> Gagal memperbarui kelas. Periksa input berikut:</p>
+                                <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="edit_jenjang" class="block text-sm font-medium text-gray-700">Jenjang <span class="text-red-500">*</span></label>
-                                    <select name="jenjang" id="edit_jenjang" x-model="editClassForm.jenjang" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <select name="jenjang" id="edit_jenjang" x-model="editClassForm.jenjang" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('jenjang') border-red-500 @enderror">
                                         <option value="">-- Pilih Jenjang --</option>
                                         
                                         <optgroup label="Pendidikan Dasar">
@@ -347,26 +394,38 @@
                                             <option value="LAINNYA">Lainnya / Umum</option>
                                         </optgroup>
                                     </select>
+                                    @error('jenjang')
+                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
                                     <label for="edit_tingkat" class="block text-sm font-medium text-gray-700">Tingkat <span class="text-red-500">*</span></label>
-                                    <input type="number" name="tingkat" id="edit_tingkat" x-model="editClassForm.tingkat" min="1" max="13" required placeholder="Cth: 1, 7, 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <input type="number" name="tingkat" id="edit_tingkat" x-model="editClassForm.tingkat" min="1" max="13" required placeholder="Cth: 1, 7, 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('tingkat') border-red-500 @enderror">
+                                    @error('tingkat')
+                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                             
                             <div>
                                 <label for="edit_nama_kelas" class="block text-sm font-medium text-gray-700">Nama Kelas / Rombel <span class="text-red-500">*</span></label>
-                                <input type="text" name="nama_kelas" id="edit_nama_kelas" x-model="editClassForm.nama_kelas" required placeholder="Cth: IX-A, X-IPA-1, XI-TKR-2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <input type="text" name="nama_kelas" id="edit_nama_kelas" x-model="editClassForm.nama_kelas" required placeholder="Cth: IX-A, X-IPA-1, XI-TKR-2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('nama_kelas') border-red-500 @enderror">
+                                @error('nama_kelas')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                             
                             <div>
                                 <label for="edit_wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas <span class="text-red-500">*</span></label>
-                                <select name="wali_kelas_id" id="edit_wali_kelas_id" x-model="editClassForm.wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="wali_kelas_id" id="edit_wali_kelas_id" x-model="editClassForm.wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('wali_kelas_id') border-red-500 @enderror">
                                     <option value="">-- Pilih Wali Kelas --</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('wali_kelas_id')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
