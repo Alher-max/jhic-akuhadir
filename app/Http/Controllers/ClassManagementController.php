@@ -50,13 +50,14 @@ class ClassManagementController extends Controller
             'tingkat' => ['required', 'integer', 'min:1', 'max:13'],
             'nama_kelas' => ['required', 'string', 'max:255'],
             'wali_kelas_id' => [
-                'nullable', 
+                'required', 
                 'exists:users,id',
                 function ($attribute, $value, $fail) use ($tenantId) {
                     if ($value) {
-                        $user = User::where('id', $value)->where('tenant_id', $tenantId)->first();
+                        $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
+                        $user = User::where('id', $value)->where('tenant_id', $tenantId)->whereIn('role', $teacherRoles)->first();
                         if (!$user) {
-                            $fail('Wali kelas yang dipilih tidak valid.');
+                            $fail('Wali kelas yang dipilih tidak valid atau tidak berada di sekolah Anda.');
                         }
                     }
                 }
@@ -126,7 +127,7 @@ class ClassManagementController extends Controller
             'tingkat' => ['required', 'integer', 'min:1', 'max:13'],
             'nama_kelas' => ['required', 'string', 'max:255'],
             'wali_kelas_id' => [
-                'nullable', 
+                'required', 
                 'exists:users,id',
                 function ($attribute, $value, $fail) use ($tenantId) {
                     if ($value) {

@@ -283,16 +283,13 @@
                             </div>
                             
                             <div>
-                                <label for="wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas (Opsional)</label>
-                                <select name="wali_kelas_id" id="wali_kelas_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <option value="">-- Belum Ditugaskan --</option>
+                                <label for="wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas <span class="text-red-500">*</span></label>
+                                <select name="wali_kelas_id" id="wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <option value="">-- Pilih Wali Kelas --</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                     @endforeach
                                 </select>
-                                <div class="mt-2 flex justify-between items-center">
-                                    <p class="text-xs text-gray-500">Anda dapat menugaskan wali kelas nanti.</p>
-                                </div>
                             </div>
                         </div>
 
@@ -363,9 +360,9 @@
                             </div>
                             
                             <div>
-                                <label for="edit_wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas</label>
-                                <select name="wali_kelas_id" id="edit_wali_kelas_id" x-model="editClassForm.wali_kelas_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <option value="">-- Belum Ditugaskan --</option>
+                                <label for="edit_wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas <span class="text-red-500">*</span></label>
+                                <select name="wali_kelas_id" id="edit_wali_kelas_id" x-model="editClassForm.wali_kelas_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <option value="">-- Pilih Wali Kelas --</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                     @endforeach
