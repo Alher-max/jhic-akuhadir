@@ -103,11 +103,15 @@ class AdminDashboardController extends Controller
                 ->count();
         }
         
-        $availableClasses = collect();
-        $isWaliKelas = Auth::user()->role === 'wali_kelas';
+        $homeroomClasses = \App\Models\SchoolClass::where('wali_kelas_id', Auth::id())->get();
+        $isHomeroom = $homeroomClasses->isNotEmpty();
+        $homeroomClass = $homeroomClasses->first();
+        $isWaliKelas = $isHomeroom || Auth::user()->role === 'wali_kelas';
 
-        if ($isWaliKelas) {
-            $availableClasses = \App\Models\SchoolClass::where('wali_kelas_id', Auth::id())->get();
+        $availableClasses = collect();
+
+        if ($isHomeroom) {
+            $availableClasses = $homeroomClasses;
             $classIds = $availableClasses->pluck('id');
             
             $waliClassesCount = $availableClasses->count();
@@ -199,7 +203,8 @@ class AdminDashboardController extends Controller
             'waliTotalSiswa', 'waliHadirHariIni', 'waliIzinSakit', 'waliBelumAbsen', 'waliClassName', 'availableClasses',
             'opSiswaHadirTepat', 'opSiswaTerlambat', 'opSiswaIzinSakit', 'opSiswaAlpa',
             'opGuruHadir', 'opGuruIzinSakit', 'opRombelKosong', 'opPendingInvitations',
-            'sysGpsActive', 'sysWifiActive', 'sysWaReady', 'teachers', 'studentsForBantuAbsen'
+            'sysGpsActive', 'sysWifiActive', 'sysWaReady', 'teachers', 'studentsForBantuAbsen',
+            'isHomeroom', 'homeroomClass', 'homeroomClasses'
         ));
     }
 

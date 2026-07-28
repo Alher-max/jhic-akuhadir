@@ -32,6 +32,7 @@ class UpdateStudentRequest extends FormRequest
             'gender' => ['nullable', 'in:L,P'],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($studentId)],
             'class_id' => ['required', 'exists:school_classes,id'],
+            'is_active' => ['required', 'in:0,1,true,false'],
             'parent_option' => ['nullable', 'in:none,new,existing,unchanged'],
             'parent_name' => ['required_if:parent_option,new', 'nullable', 'string', 'max:255'],
             'father_name' => ['nullable', 'string', 'max:255'],

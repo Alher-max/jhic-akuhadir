@@ -94,7 +94,7 @@ class ClassScheduleController extends Controller
         $request->validate([
             'class_id' => 'required|exists:school_classes,id',
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'nullable|exists:users,id',
+            'teacher_id' => 'required|exists:users,id',
             'day_name' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'period_number' => 'required|integer|min:1',
             'start_time' => 'required',
@@ -102,6 +102,8 @@ class ClassScheduleController extends Controller
         ], [
             'class_id.required' => 'Kelas wajib dipilih.',
             'subject_id.required' => 'Mata pelajaran wajib dipilih.',
+            'teacher_id.required' => 'Guru pengampu wajib dipilih.',
+            'teacher_id.exists' => 'Guru pengampu yang dipilih tidak valid.',
             'day_name.required' => 'Hari wajib dipilih.',
             'period_number.required' => 'Jam ke- (period) wajib diisi.',
             'start_time.required' => 'Jam mulai wajib diisi.',

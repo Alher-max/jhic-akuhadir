@@ -110,10 +110,22 @@ class NonFormalAttendanceTest extends TestCase
         $daysMap = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
         $todayIndo = $daysMap[(int)now()->format('N')];
 
+        $teacher = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Guru Pengampu',
+            'email' => 'guru@lpkgaruda.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
         $session1 = ClassSchedule::create([
             'tenant_id' => $tenant->id,
             'class_id' => $schoolClass->id,
             'subject_id' => $subject1->id,
+            'teacher_id' => $teacher->id,
             'day_name' => $todayIndo,
             'period_number' => 1,
             'start_time' => '07:00:00',
@@ -124,6 +136,7 @@ class NonFormalAttendanceTest extends TestCase
             'tenant_id' => $tenant->id,
             'class_id' => $schoolClass->id,
             'subject_id' => $subject2->id,
+            'teacher_id' => $teacher->id,
             'day_name' => $todayIndo,
             'period_number' => 2,
             'start_time' => '09:30:00',

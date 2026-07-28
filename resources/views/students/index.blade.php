@@ -15,7 +15,7 @@
         previewUrl: null,
         createPhotoPreview: null,
         parentOption: 'none',
-        editForm: { id: null, name: '', nisn: '', nis: '', nik: '', gender: '', email: '', class_id: '', master_photo: null, parent_option: 'unchanged', parent_id: '', parent_name: '', father_name: '', mother_name: '', parent_phone: '', parent_email: '', current_parent_name: null, birth_place: '', birth_date: '', religion: '', address: '', blood_type: '', medical_notes: '' },
+        editForm: { id: null, name: '', nisn: '', nis: '', nik: '', gender: '', email: '', class_id: '', is_active: 1, master_photo: null, parent_option: 'unchanged', parent_id: '', parent_name: '', father_name: '', mother_name: '', parent_phone: '', parent_email: '', current_parent_name: null, birth_place: '', birth_date: '', religion: '', address: '', blood_type: '', medical_notes: '' },
         openEditModal(student) {
             this.selectedStudent = student;
             this.editForm.id = student.id;
@@ -26,6 +26,7 @@
             this.editForm.gender = student.gender || '';
             this.editForm.email = student.email;
             this.editForm.class_id = student.class_id;
+            this.editForm.is_active = student.is_active ? 1 : 0;
             this.editForm.master_photo = student.master_photo || null;
             this.editForm.parent_option = 'unchanged';
             this.editForm.parent_id = student.parent_id || '';

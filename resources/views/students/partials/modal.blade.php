@@ -320,6 +320,14 @@
                             <input type="email" name="email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: siswa@sekolah.sch.id">
                         </div>
                     </div>
+
+                    <div>
+                        <label for="edit_is_active" class="block text-sm font-medium text-gray-700">Status Keaktifan Akun <span class="text-red-500">*</span></label>
+                        <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            <option value="1">Aktif</option>
+                            <option value="0">Nonaktif</option>
+                        </select>
+                    </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Foto Master Wajah (Perbarui)</label>

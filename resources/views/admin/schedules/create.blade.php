@@ -81,9 +81,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <!-- Guru Pengampu -->
                             <div>
-                                <x-input-label for="teacher_id" value="Pilih Guru Pengampu / Pengajar (Opsional)" />
-                                <select id="teacher_id" name="teacher_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                    <option value="">-- Tidak Ditugaskan --</option>
+                                <x-input-label for="teacher_id" value="Pilih Guru Pengampu / Pengajar *" />
+                                <select id="teacher_id" name="teacher_id" required class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">-- Pilih Guru Pengampu --</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                     @endforeach

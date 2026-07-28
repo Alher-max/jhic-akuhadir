@@ -87,7 +87,7 @@ class ScheduleController extends Controller
             'end_time' => 'required|date_format:H:i|after:start_time',
             'grace_period_minutes' => 'required|integer|min:0',
             'class_id' => 'nullable|exists:school_classes,id',
-            'teacher_id' => 'nullable|exists:users,id',
+            'teacher_id' => 'required|exists:users,id',
             'participant_type' => 'required|in:class,manual',
             'users' => 'nullable|array',
             'users.*' => 'exists:users,id'

@@ -474,13 +474,16 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Guru Pengampu (Opsional)</label>
-                        <select id="select-teacher" name="teacher_id" x-model="scheduleForm.teacher_id" class="w-full">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Guru Pengampu <span class="text-red-500">*</span></label>
+                        <select id="select-teacher" name="teacher_id" x-model="scheduleForm.teacher_id" required class="w-full">
                             <option value="">-- Pilih Guru Pengampu --</option>
                             @foreach($teachers as $teacher)
                                 <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                             @endforeach
                         </select>
+                        @if($teachers->isEmpty())
+                            <p class="mt-1 text-xs text-amber-600">Belum ada data guru. Silakan daftarkan guru terlebih dahulu di menu Kelola Guru.</p>
+                        @endif
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">

@@ -216,6 +216,7 @@ class StudentManagementController extends Controller
             'medical_notes' => $request->medical_notes,
             'parent_id' => $parentId,
             'class_id' => $request->class_id,
+            'is_active' => (bool)$request->is_active,
         ];
 
         if ($request->hasFile('master_photo')) {
