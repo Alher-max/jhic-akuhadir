@@ -154,7 +154,13 @@ class StudentManagementController extends Controller
             'email_verified_at' => Carbon::now(),
         ]);
 
-        return redirect()->back()->with('success', 'Siswa dan data Orang Tua berhasil ditambahkan.');
+        $hasParentData = !empty($parentId) || $request->filled('father_name') || $request->filled('mother_name') || $request->filled('parent_phone');
+
+        $message = $hasParentData 
+            ? 'Siswa dan data Orang Tua berhasil ditambahkan.' 
+            : 'Data siswa berhasil ditambahkan.';
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**
