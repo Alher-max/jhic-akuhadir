@@ -198,4 +198,104 @@ class OperatorParentManagementTest extends TestCase
         $this->assertStringContainsString('@hadirsekolah.id', $parent->email);
         $this->assertEquals($tenant->id, $parent->tenant_id);
     }
+
+    public function test_linking_duplicate_relationship_to_same_student_is_rejected(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id'            => $tenant->id,
+            'role'                 => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'student',
+            'name'      => 'Ananda Pratama',
+        ]);
+
+        // Ayah pertama sudah terhubung
+        $parentAyah1 = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'parent',
+            'name'      => 'Bapak Pertama',
+        ]);
+        $parentAyah1->students()->attach($student->id, ['relationship' => 'Ayah']);
+
+        // Operator mencoba menautkan Ayah kedua ke siswa yang sama → harus ditolak
+        $parentAyah2 = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'parent',
+            'name'      => 'Bapak Kedua',
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.link-student', $parentAyah2->id), [
+            'student_id'   => $student->id,
+            'relationship' => 'Ayah',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        // Pivot table tidak boleh bertambah entry untuk parent kedua
+        $this->assertDatabaseMissing('parent_student', [
+            'parent_id'    => $parentAyah2->id,
+            'student_id'   => $student->id,
+            'relationship' => 'Ayah',
+        ]);
+    }
+
+    public function test_linking_different_relationship_to_student_with_existing_link_succeeds(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id'            => $tenant->id,
+            'role'                 => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'student',
+            'name'      => 'Bunga Melati',
+        ]);
+
+        // Ayah sudah terhubung
+        $parentAyah = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'parent',
+            'name'      => 'Bapak Suharjo',
+        ]);
+        $parentAyah->students()->attach($student->id, ['relationship' => 'Ayah']);
+
+        // Operator menautkan Ibu (hubungan berbeda) → harus berhasil
+        $parentIbu = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role'      => 'parent',
+            'name'      => 'Ibu Rahayu',
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.link-student', $parentIbu->id), [
+            'student_id'   => $student->id,
+            'relationship' => 'Ibu',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('parent_student', [
+            'parent_id'    => $parentIbu->id,
+            'student_id'   => $student->id,
+            'relationship' => 'Ibu',
+        ]);
+
+        // Ayah lama tetap ada
+        $this->assertDatabaseHas('parent_student', [
+            'parent_id'    => $parentAyah->id,
+            'student_id'   => $student->id,
+            'relationship' => 'Ayah',
+        ]);
+    }
 }

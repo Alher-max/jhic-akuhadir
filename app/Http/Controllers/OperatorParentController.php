@@ -96,18 +96,36 @@ class OperatorParentController extends Controller
         }
 
         $request->validate([
-            'student_id' => 'required|exists:users,id',
+            'student_id'   => 'required|exists:users,id',
             'relationship' => 'required|in:Ayah,Ibu,Wali',
         ], [
-            'student_id.required' => 'Pilihan siswa wajib diisi.',
-            'student_id.exists' => 'Siswa yang dipilih tidak terdaftar.',
+            'student_id.required'   => 'Pilihan siswa wajib diisi.',
+            'student_id.exists'     => 'Siswa yang dipilih tidak terdaftar.',
             'relationship.required' => 'Hubungan keluarga wajib dipilih.',
-            'relationship.in' => 'Hubungan keluarga harus berupa Ayah, Ibu, atau Wali.',
+            'relationship.in'       => 'Hubungan keluarga harus berupa Ayah, Ibu, atau Wali.',
         ]);
 
         $student = User::where('tenant_id', $tenantId)
             ->where('role', 'student')
             ->findOrFail($request->student_id);
+
+        // Validasi: cegah hubungan duplikat (misal: dua 'Ayah' untuk siswa yang sama)
+        // Cari parent LAIN yang sudah terhubung ke siswa ini dengan relationship yang sama,
+        // kecuali parent yang sedang aktif (boleh update relationship-nya sendiri).
+        $conflictingParent = User::where('role', 'parent')
+            ->where('id', '!=', $parent->id)
+            ->whereHas('students', function ($q) use ($student, $request) {
+                $q->where('users.id', $student->id)
+                  ->where('parent_student.relationship', $request->relationship);
+            })
+            ->first();
+
+        if ($conflictingParent) {
+            return redirect()->back()->with(
+                'error',
+                "Siswa {$student->name} sudah terhubung dengan {$request->relationship} lain ({$conflictingParent->name}). Harap lepas tautan lama terlebih dahulu."
+            );
+        }
 
         $parent->students()->syncWithoutDetaching([
             $student->id => ['relationship' => $request->relationship]
