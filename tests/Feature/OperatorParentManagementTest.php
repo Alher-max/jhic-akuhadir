@@ -1,0 +1,144 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+
+use Tests\TestCase;
+
+class OperatorParentManagementTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function createTenant(): Tenant
+    {
+        return Tenant::create([
+            'name' => 'SMK Negeri 1 Test',
+            'code' => 'SCH999',
+            'slug' => 'smkn1test',
+        ]);
+    }
+
+    public function test_operator_can_view_parents_list(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $parent = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'parent',
+            'name' => 'Bapak Subagyo',
+        ]);
+
+        $response = $this->actingAs($operator)->get(route('operator.parents.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Bapak Subagyo');
+        $response->assertSee('Daftar Orang Tua');
+    }
+
+    public function test_operator_can_link_student_to_parent(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $parent = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'parent',
+            'name' => 'Ibu Rahmawati',
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'student',
+            'name' => 'Ananda Rizky',
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.link-student', $parent->id), [
+            'student_id' => $student->id,
+            'relationship' => 'Ibu',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('parent_student', [
+            'parent_id' => $parent->id,
+            'student_id' => $student->id,
+            'relationship' => 'Ibu',
+        ]);
+    }
+
+    public function test_operator_can_unlink_student_from_parent(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $parent = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'parent',
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'student',
+        ]);
+
+        $parent->students()->attach($student->id, ['relationship' => 'Ayah']);
+
+        $response = $this->actingAs($operator)->delete(route('operator.parents.unlink-student', [$parent->id, $student->id]));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('parent_student', [
+            'parent_id' => $parent->id,
+            'student_id' => $student->id,
+        ]);
+    }
+
+    public function test_operator_can_reset_parent_password(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $parent = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'parent',
+            'parent_phone' => '081234567890',
+            'password' => Hash::make('oldpassword'),
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.reset-password', $parent->id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertTrue($parent->fresh()->must_change_password);
+        $this->assertFalse($parent->fresh()->is_password_changed);
+        $this->assertTrue(Hash::check('081234567890', $parent->fresh()->password));
+    }
+}
