@@ -11,9 +11,11 @@ use Illuminate\Support\Str;
 
 class AttendanceSettingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $tenant = Auth::user()->tenant;
         $tenantId = Auth::user()->tenant_id;
+        $tab = $request->query('tab', 'umum');
         
         // Dapatkan atau buat default settings jika belum ada
         $settings = AttendanceSetting::firstOrCreate(
@@ -33,7 +35,21 @@ class AttendanceSettingController extends Controller
 
         $devices = AttendanceDevice::where('tenant_id', $tenantId)->get();
 
-        return view('attendance-settings.index', compact('settings', 'devices'));
+        return view('attendance-settings.index', compact('settings', 'devices', 'tab', 'tenant'));
+    }
+
+    public function updateTimezone(Request $request)
+    {
+        $request->validate([
+            'timezone' => 'required|string|in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura',
+        ]);
+
+        $tenant = Auth::user()->tenant;
+        if ($tenant) {
+            $tenant->update(['timezone' => $request->timezone]);
+        }
+
+        return back()->with('success', 'Zona waktu sekolah berhasil diperbarui.');
     }
 
     public function updateSettings(Request $request)

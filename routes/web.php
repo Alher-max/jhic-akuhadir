@@ -139,6 +139,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         // Attendance Settings
         Route::get('/dashboard/attendance-settings', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'index'])->name('attendance-settings.index');
         Route::put('/dashboard/attendance-settings', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'updateSettings'])->name('attendance-settings.update');
+        Route::put('/dashboard/attendance-settings/timezone', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'updateTimezone'])->name('attendance-settings.update-timezone');
         Route::post('/dashboard/attendance-settings/devices', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'storeDevice'])->name('attendance-settings.devices.store');
         Route::delete('/dashboard/attendance-settings/devices/{id}', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'destroyDevice'])->name('attendance-settings.devices.destroy');
 

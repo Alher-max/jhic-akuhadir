@@ -20,8 +20,13 @@
             
             <!-- Bar Menu Tab Navigasi Pengaturan Presensi -->
             <div class="flex items-center gap-2 p-1.5 bg-brand-surface rounded-2xl border border-brand-border shadow-xs w-full sm:w-auto self-start">
-                <a href="{{ route('attendance-settings.index') }}"
-                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-settings.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                <a href="{{ route('attendance-settings.index', ['tab' => 'umum']) }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ $tab === 'umum' ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Umum</span>
+                </a>
+                <a href="{{ route('attendance-settings.index', ['tab' => 'alat']) }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ $tab === 'alat' ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                     <span>Alat</span>
                 </a>
@@ -37,45 +42,67 @@
                 </a>
             </div>
 
-            <!-- BAGIAN 1: KONFIGURASI 5 METODE PRESENSI -->
-            <form action="{{ route('attendance-settings.update') }}" method="POST">
-                @csrf
-                @method('PUT')
-                
+            @if($tab === 'umum')
+                <!-- TAB 1: UMUM (KONFIGURASI WILAYAH & WAKTU) -->
                 <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border p-6 mb-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-lg font-bold text-brand-text-main">Metode Presensi Aktif</h3>
-                            <p class="text-sm text-brand-text-muted mt-1">Nyalakan atau matikan metode yang didukung oleh institusi Anda.</p>
-                        </div>
-                        <button type="submit" class="bg-brand-primary text-white hover:bg-brand-primary/90 font-semibold py-2 px-6 rounded-lg text-sm transition shadow-sm">
-                            Simpan Pengaturan
-                        </button>
-                    </div>
-
-                    <!-- Zona Waktu Sekolah (Multi-Tenant SaaS) -->
-                    <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-globe text-brand-primary text-lg"></i>
+                    <form action="{{ route('attendance-settings.update-timezone') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="flex items-center justify-between mb-6">
                             <div>
-                                <h4 class="text-sm font-bold text-gray-900">Zona Waktu Sekolah (Timezone)</h4>
-                                <p class="text-xs text-gray-500">Pilih zona waktu lokal sekolah untuk perhitungan jam presensi dan jadwal KBM.</p>
+                                <h3 class="text-lg font-bold text-brand-text-main flex items-center gap-2">
+                                    <i class="fa-solid fa-globe text-brand-primary"></i>
+                                    Konfigurasi Wilayah & Waktu
+                                </h3>
+                                <p class="text-sm text-brand-text-muted mt-1">Atur zona waktu lokal sekolah untuk perhitungan presensi, toleransi keterlambatan, dan jam KBM.</p>
                             </div>
+                            <button type="submit" class="bg-brand-primary text-white hover:bg-brand-primary/90 font-semibold py-2 px-6 rounded-lg text-sm transition shadow-sm">
+                                Simpan Zona Waktu
+                            </button>
                         </div>
-                        <select name="timezone" class="w-full md:w-1/2 bg-white border border-gray-300 rounded-lg text-xs font-semibold p-2.5 focus:ring-brand-primary focus:border-brand-primary">
-                            <option value="Asia/Jakarta" {{ (Auth::user()->tenant->timezone ?? 'Asia/Jakarta') === 'Asia/Jakarta' ? 'selected' : '' }}>
-                                WIB - Waktu Indonesia Barat (UTC+7)
-                            </option>
-                            <option value="Asia/Makassar" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Makassar' ? 'selected' : '' }}>
-                                WITA - Waktu Indonesia Tengah (UTC+8)
-                            </option>
-                            <option value="Asia/Jayapura" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Jayapura' ? 'selected' : '' }}>
-                                WIT - Waktu Indonesia Timur (UTC+9)
-                            </option>
-                        </select>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <label for="timezone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                Zona Waktu Sekolah (Timezone)
+                            </label>
+                            <select id="timezone" name="timezone" class="w-full md:w-1/2 bg-white border border-gray-300 rounded-lg text-xs font-semibold p-3 focus:ring-brand-primary focus:border-brand-primary">
+                                <option value="Asia/Jakarta" {{ (Auth::user()->tenant->timezone ?? 'Asia/Jakarta') === 'Asia/Jakarta' ? 'selected' : '' }}>
+                                    WIB - Waktu Indonesia Barat (UTC+7)
+                                </option>
+                                <option value="Asia/Makassar" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Makassar' ? 'selected' : '' }}>
+                                    WITA - Waktu Indonesia Tengah (UTC+8)
+                                </option>
+                                <option value="Asia/Jayapura" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Jayapura' ? 'selected' : '' }}>
+                                    WIT - Waktu Indonesia Timur (UTC+9)
+                                </option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-2">
+                                Perubahan zona waktu secara otomatis berlaku pada seluruh jadwal KBM, waktu presensi, dan toleransi keterlambatan di sekolah ini.
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            @endif
+
+            @if($tab === 'alat')
+                <!-- TAB 2: ALAT (KONFIGURASI METODE PRESENSI) -->
+                <form action="{{ route('attendance-settings.update') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border p-6 mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-brand-text-main">Metode Presensi Aktif</h3>
+                                <p class="text-sm text-brand-text-muted mt-1">Nyalakan atau matikan metode yang didukung oleh institusi Anda.</p>
+                            </div>
+                            <button type="submit" class="bg-brand-primary text-white hover:bg-brand-primary/90 font-semibold py-2 px-6 rounded-lg text-sm transition shadow-sm">
+                                Simpan Pengaturan
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
                         <!-- 1. Aplikasi (Mobile / PWA Clock-In) -->
                         <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors md:col-span-2" 
@@ -387,6 +414,7 @@
                     </table>
                 </div>
             </div>
+            @endif
 
         </div>
 
