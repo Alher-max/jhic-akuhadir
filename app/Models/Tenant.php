@@ -18,4 +18,14 @@ class Tenant extends Model
     {
         return $this->hasMany(Location::class);
     }
+
+    public function isDailyArrivalMode(): bool
+    {
+        return ($this->attendance_mode ?? 'daily_arrival') === 'daily_arrival';
+    }
+
+    public function isSessionBasedMode(): bool
+    {
+        return ($this->attendance_mode ?? 'daily_arrival') === 'session_based';
+    }
 }

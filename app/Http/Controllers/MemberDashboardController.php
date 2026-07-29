@@ -37,16 +37,88 @@ class MemberDashboardController extends Controller
         $now = Carbon::now();
         $todayDayOfWeek = $now->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
         $todayDate = $now->format('Y-m-d');
-        
-        $currentSchedule = $user->schedules()
-            ->where(function($query) use ($todayDayOfWeek, $todayDate) {
-                $query->where(function($q) use ($todayDayOfWeek) {
-                    $q->where('type', 'routine')->where('day_of_week', $todayDayOfWeek);
-                })->orWhere(function($q) use ($todayDate) {
-                    $q->where('type', 'non_routine')->where('specific_date', $todayDate);
+        $currentTimeStr = $now->format('H:i:s');
+
+        $attendanceService = app(\App\Services\AttendanceService::class);
+        $dayNameIndo = $attendanceService->getDayNameInIndonesian($now);
+
+        $currentSchedule = null;
+
+        // 1. Cek Sesi KBM (ClassSchedule) jika siswa memiliki kelas
+        if ($user->class_id) {
+            $classSchedules = ClassSchedule::with(['subject'])
+                ->where('tenant_id', $user->tenant_id)
+                ->where('class_id', $user->class_id)
+                ->where('day_name', $dayNameIndo)
+                ->orderBy('start_time', 'asc')
+                ->get();
+
+            if ($classSchedules->isNotEmpty()) {
+                // Cari sesi KBM yang sedang aktif (waktu saat ini berada di rentang start_time dan end_time)
+                $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
+                    $start = Carbon::parse($cs->start_time)->format('H:i:s');
+                    $end = Carbon::parse($cs->end_time)->format('H:i:s');
+                    return $currentTimeStr >= $start && $currentTimeStr <= $end;
                 });
-            })
-            ->first();
+
+                // Jika tidak ada sesi di menit ini, ambil sesi mendatang terdekat atau sesi pertama hari ini
+                if (!$activeSession) {
+                    $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
+                        return Carbon::parse($cs->end_time)->format('H:i:s') >= $currentTimeStr;
+                    }) ?? $classSchedules->first();
+                }
+
+                if ($activeSession) {
+                    $currentSchedule = (object)[
+                        'id' => $activeSession->id,
+                        'name' => 'Sesi KBM: ' . ($activeSession->subject->name ?? 'Mata Pelajaran'),
+                        'start_time' => $activeSession->start_time,
+                        'end_time' => $activeSession->end_time,
+                        'grace_period_minutes' => $user->tenant->session_late_tolerance_minutes ?? 15,
+                    ];
+                }
+            }
+        }
+
+        // 2. Jika tidak ada ClassSchedule, cek jadwal shift/rutin dari tabel schedules
+        if (!$currentSchedule) {
+            $currentSchedule = $user->schedules()
+                ->where(function($query) use ($todayDayOfWeek, $todayDate) {
+                    $query->where(function($q) use ($todayDayOfWeek) {
+                        $q->where('type', 'routine')->where('day_of_week', $todayDayOfWeek);
+                    })->orWhere(function($q) use ($todayDate) {
+                        $q->where('type', 'non_routine')->where('specific_date', $todayDate);
+                    });
+                })
+                ->first();
+        }
+
+        // 3. Cek Jadwal Sekolah Harian (AttendanceSchedule)
+        if (!$currentSchedule) {
+            $attendanceSchedule = \App\Models\AttendanceSchedule::where('tenant_id', $user->tenant_id)
+                ->where('day_name', $dayNameIndo)
+                ->where('is_active', true)
+                ->first();
+
+            if ($attendanceSchedule) {
+                $currentSchedule = (object)[
+                    'name' => 'Presensi Sekolah Harian',
+                    'start_time' => $attendanceSchedule->time_in,
+                    'end_time' => $attendanceSchedule->time_out,
+                    'grace_period_minutes' => $attendanceSchedule->late_tolerance_minutes ?? 15,
+                ];
+            }
+        }
+
+        // 4. Fallback: Jam kerja/sekolah normal (06:00 - 23:59)
+        if (!$currentSchedule && $now->hour >= 6 && $todayDayOfWeek <= 6) {
+            $currentSchedule = (object)[
+                'name' => 'Jadwal Presensi Sekolah',
+                'start_time' => '06:00:00',
+                'end_time' => '23:59:00',
+                'grace_period_minutes' => 60,
+            ];
+        }
 
         // Fetch weekly attendances
         $startOfWeek = clone $now;

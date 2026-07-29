@@ -32,6 +32,7 @@ class AttendanceSetting extends Model
         'method_rfid' => 'boolean',
         'method_qrcode' => 'boolean',
         'method_biometric' => 'boolean',
+        'method_pwa' => 'boolean',
         'method_manual' => 'boolean',
         'method_wifi' => 'boolean',
         'is_liveness_active' => 'boolean',

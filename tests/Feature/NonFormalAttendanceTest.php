@@ -15,20 +15,21 @@ class NonFormalAttendanceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_save_non_formal_session_mode_setting(): void
+    public function test_can_save_unified_session_based_mode_setting_by_operator(): void
     {
         $tenant = Tenant::create([
-            'name' => 'LPK Garuda',
-            'code' => 'LPKGAR',
-            'slug' => 'lpk-garuda',
-            'attendance_mode' => 'formal_daily',
+            'name' => 'Sekolah Garudayan',
+            'code' => 'GARUDA',
+            'slug' => 'sekolah-garudayan',
+            'attendance_mode' => 'daily_arrival',
             'session_late_tolerance_minutes' => 10,
+            'onboarding_completed' => true,
         ]);
 
         $operator = User::create([
             'tenant_id' => $tenant->id,
             'name' => 'Operator Admin',
-            'email' => 'operator@lpkgaruda.id',
+            'email' => 'operator@garuda.sch.id',
             'password' => bcrypt('password'),
             'role' => 'operator',
             'is_active' => true,
@@ -46,7 +47,7 @@ class NonFormalAttendanceTest extends TestCase
         ]);
 
         $response = $this->actingAs($operator)->post(route('attendance-schedules.update'), [
-            'attendance_mode' => 'non_formal_session',
+            'attendance_mode' => 'session_based',
             'session_late_tolerance_minutes' => 15,
             'schedules' => [
                 [
@@ -62,24 +63,71 @@ class NonFormalAttendanceTest extends TestCase
         $response->assertRedirect();
         $tenant->refresh();
 
-        $this->assertEquals('non_formal_session', $tenant->attendance_mode);
+        $this->assertEquals('session_based', $tenant->attendance_mode);
         $this->assertEquals(15, $tenant->session_late_tolerance_minutes);
     }
 
-    public function test_non_formal_attendance_allows_multiple_sessions_per_day(): void
+    public function test_teacher_role_cannot_modify_attendance_schedules_or_modes(): void
     {
         $tenant = Tenant::create([
-            'name' => 'LPK Garuda',
-            'code' => 'LPKGAR',
-            'slug' => 'lpk-garuda',
-            'attendance_mode' => 'non_formal_session',
+            'name' => 'Sekolah Garudayan',
+            'code' => 'GARUDA2',
+            'slug' => 'sekolah-garudayan-2',
+            'attendance_mode' => 'daily_arrival',
+            'onboarding_completed' => true,
+        ]);
+
+        $teacher = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Guru Mata Pelajaran',
+            'email' => 'guru@garuda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'teacher',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $schedule = \App\Models\AttendanceSchedule::create([
+            'tenant_id' => $tenant->id,
+            'day_name' => 'Senin',
+            'time_in' => '07:00:00',
+            'time_out' => '14:00:00',
+            'late_tolerance_minutes' => 15,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($teacher)->post(route('attendance-schedules.update'), [
+            'attendance_mode' => 'session_based',
+            'schedules' => [
+                [
+                    'id' => $schedule->id,
+                    'time_in' => '07:00:00',
+                    'time_out' => '14:00:00',
+                    'late_tolerance_minutes' => 15,
+                    'is_active' => 1,
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_session_based_attendance_records_dual_presence_properly(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Sekolah Garudayan',
+            'code' => 'GARUDA3',
+            'slug' => 'sekolah-garudayan-3',
+            'attendance_mode' => 'session_based',
             'session_late_tolerance_minutes' => 10,
+            'onboarding_completed' => true,
         ]);
 
         $student = User::create([
             'tenant_id' => $tenant->id,
-            'name' => 'Siswa Non Formal',
-            'email' => 'siswa@lpkgaruda.id',
+            'name' => 'Siswa Utama',
+            'email' => 'siswa@garuda.sch.id',
             'password' => bcrypt('password'),
             'role' => 'student',
             'is_active' => true,
@@ -89,9 +137,9 @@ class NonFormalAttendanceTest extends TestCase
 
         $schoolClass = SchoolClass::create([
             'tenant_id' => $tenant->id,
-            'jenjang' => 'SMK',
+            'jenjang' => 'SMA',
             'tingkat' => '10',
-            'nama_kelas' => 'Sesi Pagi',
+            'nama_kelas' => 'X IPA 1',
         ]);
         $student->update(['class_id' => $schoolClass->id]);
 
@@ -113,7 +161,7 @@ class NonFormalAttendanceTest extends TestCase
         $teacher = User::create([
             'tenant_id' => $tenant->id,
             'name' => 'Guru Pengampu',
-            'email' => 'guru@lpkgaruda.id',
+            'email' => 'guru2@garuda.sch.id',
             'password' => bcrypt('password'),
             'role' => 'guru',
             'is_active' => true,
@@ -150,23 +198,25 @@ class NonFormalAttendanceTest extends TestCase
         $this->assertDatabaseHas('attendances', [
             'user_id' => $student->id,
             'tenant_id' => $tenant->id,
+            'attendance_type' => 'class',
             'class_schedule_id' => $session1->id,
             'date' => now()->format('Y-m-d'),
         ]);
 
-        // Simulated Presensi Sesi 2 (Multiple Sessions per day)
+        // Simulated Presensi Sesi 2
         $attendanceService = app(\App\Services\AttendanceService::class);
-        $this->assertFalse($attendanceService->hasAttendedSession($student, now()->format('Y-m-d'), $session2->id));
+        $this->assertFalse($attendanceService->hasAttendedClassSession($student, now()->format('Y-m-d'), $session2->id));
 
         Attendance::create([
             'user_id' => $student->id,
             'tenant_id' => $tenant->id,
+            'attendance_type' => 'class',
             'class_schedule_id' => $session2->id,
             'date' => now()->format('Y-m-d'),
             'clock_in' => now(),
             'status' => 'present',
         ]);
 
-        $this->assertTrue($attendanceService->hasAttendedSession($student, now()->format('Y-m-d'), $session2->id));
+        $this->assertTrue($attendanceService->hasAttendedClassSession($student, now()->format('Y-m-d'), $session2->id));
     }
 }

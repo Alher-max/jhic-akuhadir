@@ -26,7 +26,7 @@
                     };
                 @endphp
                 <div class="hidden space-x-6 sm:-my-px sm:ms-8 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard') || request()->routeIs('teacher.dashboard') || request()->routeIs('homeroom.dashboard')">
                         {{ __('Dasbor') }}
                     </x-nav-link>
                 </div>
@@ -57,6 +57,13 @@
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profil Saya') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="$isOperatorAdmin ? route('operator.support-tickets.index') : route('support-tickets.index')">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-headset text-amber-500"></i>
+                                <span>{{ __('Bantuan Operator') }}</span>
+                            </span>
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -145,6 +152,13 @@
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="$isOperatorAdmin ? route('operator.support-tickets.index') : route('support-tickets.index')">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-amber-500"></i>
+                        <span>{{ __('Bantuan Operator') }}</span>
+                    </div>
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->

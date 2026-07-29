@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-slate-800 leading-tight flex items-center gap-2">
-            <i class="fa-solid fa-chalkboard-user text-red-600"></i>
-            <span>{{ __('Dasbor Guru') }}</span>
+            <i class="fa-solid fa-user-tie text-red-600"></i>
+            <span>{{ __('Dasbor Wali Kelas') }}</span>
         </h2>
     </x-slot>
 
@@ -50,7 +50,7 @@
     }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
-            <!-- ===== BANNER SAMBUTAN WALI KELAS & GURU ===== -->
+            <!-- ===== BANNER SAMBUTAN WALI KELAS ===== -->
             @if(auth()->user()->tenant)
             @php
                 $tenant = $tenant ?? auth()->user()->tenant;
@@ -61,42 +61,22 @@
                     'slate' => 'from-slate-700 to-slate-900',
                     default => 'from-red-600 to-red-700'
                 };
-                $homerooms = auth()->user()->homeroomClasses;
             @endphp
             <div class="rounded-2xl border border-white/10 shadow-lg bg-gradient-to-br {{ $gradientClass }} p-6 text-white relative overflow-hidden">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/15 pb-5 mb-4">
                     <div>
-                        <h2 class="text-2xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2 mb-1.5">
-                            <span>Selamat datang, {{ auth()->user()->name }}!</span>
-                            @if($homerooms && $homerooms->count() > 0)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
-                                    <i class="fa-solid fa-star"></i> Wali Kelas: {{ $homerooms->map(fn($c) => $c->full_name)->implode(', ') }}
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-white/90 text-xs font-medium backdrop-blur-sm">
-                                    <i class="fa-solid fa-graduation-cap"></i> Guru Pengajar
-                                </span>
-                            @endif
-                        </h2>
-                        <p class="text-white/80 text-sm font-medium">
-                            @if($isHomeroom)
-                                {{ $tenant->name ?? 'Sekolah' }} — Pantau kedisiplinan siswa, proses pengajuan izin, dan kelola aktivitas pembelajaran kelas binaan Anda.
-                            @else
-                                {{ $tenant->name ?? 'Sekolah' }} — Pantau jadwal pelajaran KBM dan bantuan pencatatan presensi siswa.
-                            @endif
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold backdrop-blur-md mb-2">
+                            <i class="fa-solid fa-user-tie"></i> Wali Kelas
+                        </div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+                            Selamat Datang, {{ auth()->user()->name }} 👋
+                        </h1>
+                        <p class="text-white/80 text-sm mt-1">
+                            Anda mengelola <strong class="text-white underline underline-offset-4 decoration-white/40">{{ $waliClassName ?? 'Kelas Binaan' }}</strong> di {{ $tenant->name ?? 'Sekolah' }}.
                         </p>
                     </div>
 
-                    <!-- Kode Sekolah Badge -->
-                    <div class="bg-black/30 border border-white/20 px-3.5 py-2 rounded-xl text-xs font-mono flex items-center gap-2 backdrop-blur-sm">
-                        <span class="text-white/70">Kode Sekolah:</span>
-                        <strong class="text-amber-300 tracking-widest text-sm">{{ $tenant->code ?? 'SCH-001' }}</strong>
-                    </div>
-                </div>
-
-                <!-- Tombol Pintas Akses Cepat Guru -->
-                <div class="flex flex-wrap items-center gap-3">
-                    @if($isHomeroom)
+                    <div class="flex flex-wrap items-center gap-3">
                         <a href="{{ route('admin.leaves.index') }}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm">
                             <i class="fa-solid fa-envelope-open-text text-slate-900"></i> Persetujuan Izin Siswa
                             @if(($pendingLeavesCount ?? 0) > 0)
@@ -109,174 +89,82 @@
                         <a href="{{ route('students.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
                             <i class="fa-solid fa-users"></i> Siswa Binaan
                         </a>
-                    @endif
 
-                    <a href="{{ route('support-tickets.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-headset text-amber-300"></i> Bantuan Operator
-                    </a>
-
-                    <button type="button" @click="openBantuAbsen = true" class="bg-white hover:bg-slate-100 text-red-700 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm cursor-pointer">
-                        <i class="fa-solid fa-user-check text-red-600"></i> Bantu Absen
-                    </button>
-                </div>
-            </div>
-            @endif
-
-            <!-- ===== PRIORITAS UTAMA: JADWAL MENGAJAR HARI INI ===== -->
-            <div class="bg-brand-surface rounded-2xl border border-brand-border shadow-sm p-6 space-y-5">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-100 text-red-700 border border-red-200">
-                                <i class="fa-solid fa-calendar-day me-1"></i> Hari {{ $todayDayName ?? 'Senin' }}
-                            </span>
-                            <span class="text-xs text-gray-400 font-medium">{{ date('d F Y') }}</span>
-                        </div>
-                        <h3 class="text-lg font-extrabold text-gray-900 mt-1 flex items-center gap-2">
-                            <i class="fa-solid fa-chalkboard-user text-brand-primary"></i> Jadwal Mengajar Hari Ini
-                        </h3>
-                        <p class="text-xs text-gray-500 mt-0.5">
-                            Daftar kelas & mata pelajaran yang dijadwalkan untuk Anda ampu hari ini.
-                        </p>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2">
-                        @if(in_array(auth()->user()->role, ['operator', 'admin', 'admin_dapodik']))
-                        <a href="{{ route('class-schedules.index') }}" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition inline-flex items-center gap-1.5">
-                            <i class="fa-solid fa-calendar-days"></i> Kelola Semua Jadwal
+                        <a href="{{ route('support-tickets.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-headset text-amber-300"></i> Bantuan Operator
                         </a>
-                        @endif
-                        <button type="button" @click="openBantuAbsen = true" class="px-4 py-2 bg-brand-primary hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-sm transition inline-flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-user-check"></i> Bantu Absen Kelas
+
+                        <button type="button" @click="openBantuAbsen = true" class="bg-white hover:bg-slate-100 text-red-700 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm cursor-pointer">
+                            <i class="fa-solid fa-user-check text-red-600"></i> Bantu Absen
                         </button>
                     </div>
                 </div>
-
-                <!-- Table Schedule -->
-                <div class="overflow-x-auto border border-gray-200 rounded-xl">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
-                            <tr>
-                                <th class="p-3.5 w-16 text-center">Slot</th>
-                                <th class="p-3.5">Waktu / Jam KBM</th>
-                                <th class="p-3.5">Mata Pelajaran</th>
-                                <th class="p-3.5">Kelas & Rombel</th>
-                                <th class="p-3.5">Materi / Topik Pembahasan</th>
-                                <th class="p-3.5 text-right">Aksi KBM</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 text-gray-700 font-medium">
-                            @forelse($todayTeacherSchedules ?? [] as $sch)
-                                <tr class="hover:bg-gray-50/80 transition">
-                                    <td class="p-3.5 text-center font-extrabold text-gray-900">
-                                        <span class="w-7 h-7 rounded-lg bg-gray-100 border border-gray-200 inline-flex items-center justify-center text-xs">
-                                            {{ $sch->period_number }}
-                                        </span>
-                                    </td>
-                                    <td class="p-3.5 whitespace-nowrap">
-                                        <span class="font-bold text-gray-900 block">
-                                            {{ substr($sch->start_time, 0, 5) }} - {{ substr($sch->end_time, 0, 5) }} WIB
-                                        </span>
-                                        <span class="text-[10px] text-gray-400">Jam Ke-{{ $sch->period_number }}</span>
-                                    </td>
-                                    <td class="p-3.5">
-                                        <span class="font-bold text-gray-900 text-sm block">{{ $sch->subject->name ?? 'Mata Pelajaran' }}</span>
-                                        <span class="text-[10px] text-gray-400">Kode: {{ $sch->subject->code ?? '-' }}</span>
-                                    </td>
-                                    <td class="p-3.5 whitespace-nowrap">
-                                        <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold text-xs">
-                                            {{ $sch->schoolClass->full_name ?? 'Kelas' }}
-                                        </span>
-                                    </td>
-                                    <td class="p-3.5 text-gray-500 italic">
-                                        {{ $sch->topic ?? 'Pengajaran reguler KBM di kelas.' }}
-                                    </td>
-                                    <td class="p-3.5 text-right whitespace-nowrap">
-                                        <button type="button" @click="openBantuAbsen = true" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-clipboard-user"></i> Absen Kelas
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="p-8 text-center text-gray-400 font-medium">
-                                        <i class="fa-solid fa-calendar-xmark text-4xl text-gray-300 mb-2 block"></i>
-                                        <span class="font-bold text-gray-600 block text-sm">Tidak Ada Jadwal Mengajar Hari Ini ({{ $todayDayName ?? 'Senin' }})</span>
-                                        <span class="text-xs text-gray-400">Anda tidak memiliki jam KBM terdaftar untuk hari ini. Silakan periksa jadwal mingguan Anda.</span>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
             </div>
-
-            <!-- ===== KOMPONEN SEKUNDER: RINGKASAN REKAP ABSENSI SISWA ===== -->
-            @if($isHomeroom)
-                <!-- STATISTIK UNTUK WALI KELAS -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Card 1: Total Siswa Binaan -->
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Siswa Binaan</p>
-                            <h3 class="text-2xl font-extrabold text-slate-800">{{ $waliTotalSiswa ?? 0 }}</h3>
-                            <p class="text-xs text-slate-400 mt-1 font-medium">{{ $waliClassName ?? 'Kelas Binaan' }}</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-user-graduate"></i>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: Siswa Hadir Hari Ini -->
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Siswa Hadir Hari Ini</p>
-                            <h3 class="text-2xl font-extrabold text-emerald-600">{{ $waliHadirHariIni ?? 0 }}</h3>
-                            <p class="text-xs text-slate-400 mt-1 font-medium">Telah presensi hari ini</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </div>
-                    </div>
-
-                    <!-- Card 3: Siswa Izin / Sakit -->
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Siswa Izin / Sakit</p>
-                            <h3 class="text-2xl font-extrabold text-amber-600">{{ $waliIzinSakit ?? 0 }}</h3>
-                            <p class="text-xs text-slate-400 mt-1 font-medium">Memiliki surat / dispensasi</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-hospital-user"></i>
-                        </div>
-                    </div>
-
-                    <!-- Card 4: Permohonan Izin Menunggu -->
-                    <a href="{{ route('admin.leaves.index') }}" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:border-amber-400 transition-all group">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Persetujuan Izin</p>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-2xl font-extrabold text-red-600">{{ $pendingLeavesCount ?? 0 }}</h3>
-                                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">Pending</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1 font-medium group-hover:text-red-600 transition-colors">Klik untuk memproses &rarr;</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold group-hover:bg-red-600 group-hover:text-white transition-all">
-                            <i class="fa-solid fa-envelope-open-text"></i>
-                        </div>
-                    </a>
-                </div>
             @endif
 
-            <!-- ===== TABEL FEED LOG PRESENSI HARI INI ===== -->
+            <!-- ===== KARTU RINGKASAN STATISTIK WALI KELAS ===== -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card 1: Total Siswa Binaan -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Siswa Binaan</p>
+                        <h3 class="text-2xl font-extrabold text-slate-800">{{ $waliTotalSiswa ?? 0 }}</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">{{ $waliClassName ?? 'Kelas Binaan' }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2: Siswa Hadir Hari Ini -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Siswa Hadir Hari Ini</p>
+                        <h3 class="text-2xl font-extrabold text-emerald-600">{{ $waliHadirHariIni ?? 0 }}</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Telah presensi hari ini</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3: Siswa Izin / Sakit -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Siswa Izin / Sakit</p>
+                        <h3 class="text-2xl font-extrabold text-amber-600">{{ $waliIzinSakit ?? 0 }}</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Memiliki surat / dispensasi</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4: Permohonan Izin Menunggu -->
+                <a href="{{ route('admin.leaves.index') }}" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:border-amber-400 transition-all group">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Persetujuan Izin</p>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-2xl font-extrabold text-red-600">{{ $pendingLeavesCount ?? 0 }}</h3>
+                            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">Pending</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 font-medium group-hover:text-red-600 transition-colors">Klik untuk memproses &rarr;</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold group-hover:bg-red-600 group-hover:text-white transition-all">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ===== TABEL FEED LOG PRESENSI KELAS BINAAN HARI INI ===== -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div>
                         <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
                             <i class="fa-solid fa-clock-rotate-left text-red-600"></i>
-                            <span>Catatan Kehadiran Siswa Hari Ini</span>
+                            <span>Catatan Kehadiran Siswa Kelas Binaan Hari Ini</span>
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Menampilkan rekaman presensi siswa dari kelas yang Anda ampu hari ini.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Menampilkan seluruh rekaman presensi masuk/keluar siswa kelas binaan Anda hari ini.</p>
                     </div>
                     <a href="{{ route('attendances.index') }}" class="text-xs font-semibold text-red-600 hover:text-red-700 flex items-center gap-1">
                         <span>Lihat Semua Log</span>
@@ -321,24 +209,22 @@
                                                     @click="previewPhotoUrl = '{{ $photoUrl }}'; previewPhotoName = '{{ addslashes(optional($attendance->user)->name ?? '') }}'; openPhotoModal = true" 
                                                     class="group relative inline-block focus:outline-none cursor-pointer"
                                                     title="Klik untuk lihat foto bukti berukuran penuh">
-                                                <img src="{{ $photoUrl }}" 
-                                                     alt="{{ optional($attendance->user)->name }}" 
-                                                     class="w-10 h-10 rounded-xl object-cover border-2 border-slate-200 shadow-sm group-hover:border-red-500 group-hover:scale-105 transition-all mx-auto">
-                                                <span class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-2xs transition-opacity">
+                                                <img src="{{ $photoUrl }}" alt="Wajah" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-2xs group-hover:scale-110 group-hover:border-red-500 transition-all">
+                                                <div class="absolute -bottom-1 -right-1 bg-slate-900/70 text-white rounded-full w-4 h-4 flex items-center justify-center text-3xs shadow-xs">
                                                     <i class="fa-solid fa-magnifying-glass"></i>
-                                                </span>
+                                                </div>
                                             </button>
                                         @else
-                                            <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold mx-auto" title="Belum ada foto">
-                                                <i class="fa-solid fa-user text-slate-300"></i>
-                                            </div>
+                                            <span class="inline-flex items-center gap-1 text-2xs text-slate-400 italic">
+                                                <i class="fa-solid fa-user-slash text-slate-300"></i> No Photo
+                                            </span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-3.5 text-xs text-slate-500">
-                                        {{ optional(optional($attendance->user)->schoolClass)->nama_kelas ?? '-' }}
+                                    <td class="px-6 py-3.5 text-xs text-slate-600 font-medium">
+                                        {{ optional(optional($attendance->user)->schoolClass)->full_name ?? (optional(optional($attendance->user)->schoolClass)->nama_kelas ?? '-') }}
                                     </td>
                                     <td class="px-6 py-3.5">
-                                        <div class="flex flex-col items-start gap-1">
+                                        <div class="flex items-center gap-2">
                                             <div>
                                                 @if($attendance->status === 'present')
                                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -380,36 +266,30 @@
                                 <tr>
                                     <td colspan="6" class="px-6 py-10 text-center text-slate-400 text-xs">
                                         <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-300 block"></i>
-                                        Belum ada catatan presensi siswa untuk hari ini.
+                                        Belum ada catatan presensi siswa kelas binaan untuk hari ini.
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-
-                @if(method_exists($attendances, 'links') && $attendances->hasPages())
-                    <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                        {{ $attendances->links() }}
-                    </div>
-                @endif
             </div>
 
         </div>
 
-        <!-- ===== MODAL BANTU ABSEN (PRESENSI MANUAL GURU) ===== -->
+        <!-- ===== MODAL BANTU ABSEN (PRESENSI MANUAL WALI KELAS) ===== -->
         <div x-show="openBantuAbsen" 
-             x-transition:enter="transition ease-out duration-300"
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+             x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             style="display: none;"
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+             x-transition:leave-end="opacity-0">
             
-            <div @click.outside="openBantuAbsen = false"
-                 class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
+            <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-100"
+                 @click.away="openBantuAbsen = false">
                 
                 <!-- Modal Header -->
                 <div class="bg-gradient-to-r from-red-600 to-red-700 p-5 text-white flex items-center justify-between">
@@ -419,7 +299,7 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-lg leading-tight">Bantu Absen Siswa</h3>
-                            <p class="text-white/80 text-xs">Pencatatan Presensi Manual oleh Guru / Wali Kelas</p>
+                            <p class="text-white/80 text-xs">Pencatatan Presensi Manual oleh Wali Kelas</p>
                         </div>
                     </div>
                     <button type="button" @click="openBantuAbsen = false" class="text-white/70 hover:text-white transition-colors text-xl font-bold p-1 cursor-pointer">
@@ -532,11 +412,11 @@
                         <i class="fa-solid fa-circle-info text-emerald-600 text-sm mt-0.5"></i>
                         <div>
                             <strong class="font-bold block">Pencatatan Jam Otomatis (Audit Trail)</strong>
-                            <span>Waktu kehadiran siswa akan dicatat secara otomatis sesuai detik saat Anda mengeklik tombol <strong>Clock In</strong>. ID Guru pengabsen akan tercatat di sistem audit log.</span>
+                            <span>Waktu kehadiran siswa akan dicatat secara otomatis sesuai detik saat Anda mengeklik tombol <strong>Clock In</strong>. ID Wali Kelas pengabsen akan tercatat di sistem audit log.</span>
                         </div>
                     </div>
 
-                    <!-- Catatan Guru -->
+                    <!-- Catatan Wali Kelas -->
                     <div>
                         <label for="notes" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Alasan / Catatan Kendala (Opsional)
@@ -559,46 +439,37 @@
             </div>
         </div>
 
-        <!-- ===== MODAL LIGHTBOX PRATINJAU FOTO BUKTI / WAJAH ===== -->
+        <!-- Modal Preview Foto Bukti Presensi -->
         <div x-show="openPhotoModal" 
-             x-transition:enter="transition ease-out duration-300"
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-xs"
+             x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             style="display: none;"
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            
-            <div @click.outside="openPhotoModal = false"
-                 class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-                
-                <!-- Header -->
-                <div class="bg-slate-900 p-4 text-white flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-camera text-red-500 text-lg"></i>
-                        <div>
-                            <h3 class="font-bold text-sm" x-text="previewPhotoName || 'Foto Bukti Presensi'"></h3>
-                            <p class="text-2xs text-slate-400">Verifikasi Wajah / Snapshot Clock-In</p>
-                        </div>
-                    </div>
-                    <button type="button" @click="openPhotoModal = false" class="text-slate-400 hover:text-white transition-colors text-xl font-bold p-1 cursor-pointer">
+             x-transition:leave-end="opacity-0">
+            <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-100 relative"
+                 @click.away="openPhotoModal = false">
+                <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
+                    <h3 class="font-bold text-sm truncate flex items-center gap-2">
+                        <i class="fa-solid fa-image text-red-500"></i>
+                        <span x-text="'Foto Bukti: ' + previewPhotoName"></span>
+                    </h3>
+                    <button type="button" @click="openPhotoModal = false" class="text-slate-400 hover:text-white transition-colors text-xl font-bold p-1">
                         &times;
                     </button>
                 </div>
-
-                <!-- Body / Full Image -->
-                <div class="p-4 bg-slate-900 flex justify-center items-center">
-                    <img :src="previewPhotoUrl" alt="Foto Wajah" class="max-h-96 w-full object-contain rounded-2xl border border-slate-800 shadow-lg">
+                <div class="p-4 bg-slate-950 flex items-center justify-center min-h-[300px]">
+                    <img :src="previewPhotoUrl" alt="Foto Wajah" class="max-h-[70vh] w-auto rounded-lg object-contain shadow-lg">
                 </div>
-
-                <!-- Footer -->
-                <div class="p-3.5 bg-slate-50 border-t border-slate-100 text-center">
-                    <button type="button" @click="openPhotoModal = false" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer">
-                        Tutup Pratinjau
+                <div class="p-3 bg-slate-50 border-t border-slate-100 text-right">
+                    <button type="button" @click="openPhotoModal = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl text-xs transition-colors">
+                        Tutup
                     </button>
                 </div>
             </div>
         </div>
+
     </div>
 </x-app-layout>

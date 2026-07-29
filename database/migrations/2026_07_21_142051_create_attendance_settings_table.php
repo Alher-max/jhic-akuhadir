@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('attendance_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->boolean('method_rfid')->default(true);
-            $table->boolean('method_qrcode')->default(true);
+            $table->boolean('method_rfid')->default(false);
+            $table->boolean('method_qrcode')->default(false);
             $table->boolean('method_biometric')->default(false);
-            $table->boolean('method_manual')->default(true);
+            $table->boolean('method_manual')->default(false);
             $table->boolean('method_wifi')->default(false);
             $table->json('wifi_allowed_ssids')->nullable();
             $table->json('wifi_allowed_macs')->nullable();

@@ -74,13 +74,21 @@ class AdminDashboardController extends Controller
             ->where('status', 'pending')
             ->count();
 
+        $opPendingTickets = \App\Models\SupportTicket::where('tenant_id', $tenantId)
+            ->where('status', 'pending')
+            ->count();
+
         $sudahHadirHariIni = \App\Models\Attendance::where('tenant_id', $tenantId)
             ->whereDate('date', clone \Carbon\Carbon::today())
             ->count();
 
         $opSetting = \App\Models\AttendanceSetting::where('tenant_id', $tenantId)->first();
+        $sysPwaActive = $opSetting ? (bool) $opSetting->method_pwa : true; // Default true per requirements if setting exists
+        $sysRfidActive = $opSetting ? (bool) $opSetting->method_rfid : false;
+        $sysQrcodeActive = $opSetting ? (bool) $opSetting->method_qrcode : false;
+        $sysBiometricActive = $opSetting ? (bool) $opSetting->method_biometric : false;
+        $sysWifiActive = $opSetting ? (bool) $opSetting->method_wifi : false;
         $sysGpsActive = $opSetting ? ($opSetting->latitude && $opSetting->longitude) : false;
-        $sysWifiActive = $opSetting ? $opSetting->method_wifi : false;
         
         $waConfigKey = config('services.wa.api_key') 
             ?: config('services.whatsapp.api_key') 
@@ -146,6 +154,40 @@ class AdminDashboardController extends Controller
 
             $waliBelumAbsen = $waliTotalSiswa - $waliHadirHariIni - $waliIzinSakit;
             if ($waliBelumAbsen < 0) $waliBelumAbsen = 0;
+        }
+
+        $dayMap = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu',
+        ];
+        $todayDayName = $dayMap[date('N')] ?? 'Senin';
+
+        $todayTeacherSchedules = \App\Models\ClassSchedule::where('tenant_id', $tenantId)
+            ->where('teacher_id', Auth::id())
+            ->where('day_name', $todayDayName)
+            ->with(['schoolClass', 'subject'])
+            ->orderBy('period_number', 'asc')
+            ->orderBy('start_time', 'asc')
+            ->get();
+
+        $isTeacherRole = in_array(Auth::user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel', 'manager_teacher']);
+        $teacherTaughtClassIds = collect();
+
+        if ($isTeacherRole) {
+            $teacherTaughtClassIds = $todayTeacherSchedules->pluck('class_id')->filter();
+            if ($isHomeroom && isset($homeroomClasses)) {
+                $teacherTaughtClassIds = $teacherTaughtClassIds->merge($homeroomClasses->pluck('id'));
+            }
+            $teacherTaughtClassIds = $teacherTaughtClassIds->unique()->values();
+
+            $availableClasses = \App\Models\SchoolClass::where('tenant_id', $tenantId)
+                ->whereIn('id', $teacherTaughtClassIds)
+                ->get();
         } else {
             $availableClasses = \App\Models\SchoolClass::where('tenant_id', $tenantId)->get();
         }
@@ -155,7 +197,11 @@ class AdminDashboardController extends Controller
             ->where('tenant_id', $tenantId)
             ->where('date', $today);
 
-        if ($isWaliKelas && $availableClasses->isNotEmpty()) {
+        if ($isTeacherRole) {
+            $query->whereHas('user', function ($q) use ($teacherTaughtClassIds) {
+                $q->whereIn('class_id', $teacherTaughtClassIds);
+            });
+        } elseif ($isWaliKelas && $availableClasses->isNotEmpty()) {
             $classIds = $availableClasses->pluck('id');
             $query->whereHas('user', function ($q) use ($classIds) {
                 $q->whereIn('class_id', $classIds);
@@ -186,33 +232,37 @@ class AdminDashboardController extends Controller
 
         $studentsForBantuAbsen = \App\Models\User::where('tenant_id', $tenantId)
             ->where('role', 'student')
-            ->when($isWaliKelas && $availableClasses->isNotEmpty(), function($q) use ($availableClasses) {
-                $q->whereIn('class_id', $availableClasses->pluck('id'));
-            })
             ->with('schoolClass')
             ->orderBy('name')
             ->get();
 
-        $viewName = in_array(Auth::user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel', 'manager_teacher'])
-            ? 'teacher.dashboard'
-            : 'dashboard';
+        $viewName = match(true) {
+            request()->routeIs('homeroom.dashboard') => 'homeroom.dashboard',
+            in_array(Auth::user()->role, ['teacher', 'wali_kelas', 'guru', 'guru_mapel', 'manager_teacher']) => 'teacher.dashboard',
+            default => 'dashboard'
+        };
 
         return view($viewName, compact(
             'totalSiswa', 'totalGuruStaff', 'totalRombel', 'sudahHadirHariIni', 
             'attendances', 'pendingLeavesCount', 'tenant', 
             'waliTotalSiswa', 'waliHadirHariIni', 'waliIzinSakit', 'waliBelumAbsen', 'waliClassName', 'availableClasses',
             'opSiswaHadirTepat', 'opSiswaTerlambat', 'opSiswaIzinSakit', 'opSiswaAlpa',
-            'opGuruHadir', 'opGuruIzinSakit', 'opRombelKosong', 'opPendingInvitations',
-            'sysGpsActive', 'sysWifiActive', 'sysWaReady', 'teachers', 'studentsForBantuAbsen',
-            'isHomeroom', 'homeroomClass', 'homeroomClasses'
+            'opGuruHadir', 'opGuruIzinSakit', 'opRombelKosong', 'opPendingInvitations', 'opPendingTickets',
+            'opSetting', 'sysPwaActive', 'sysRfidActive', 'sysQrcodeActive', 'sysBiometricActive', 'sysWifiActive', 'sysGpsActive', 'sysWaReady', 'teachers', 'studentsForBantuAbsen',
+            'isHomeroom', 'homeroomClass', 'homeroomClasses', 'todayDayName', 'todayTeacherSchedules'
         ));
+    }
+
+    public function homeroomIndex()
+    {
+        return $this->index();
     }
 
     public function storeManualAttendance(Request $request)
     {
         $request->validate([
             'student_id' => 'required|exists:users,id',
-            'status' => 'required|in:present,late',
+            'status' => 'nullable|in:present,late',
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -222,23 +272,42 @@ class AdminDashboardController extends Controller
             ->findOrFail($request->student_id);
 
         $today = \Carbon\Carbon::today()->format('Y-m-d');
-        $now = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
-        $notes = $request->notes ?: 'Presensi manual dibantu oleh Guru / Wali Kelas';
+        $now = \Carbon\Carbon::now();
+
+        // Calculate status automatically based on cut-off time if not explicitly passed
+        if ($request->filled('status')) {
+            $status = $request->status;
+        } else {
+            $setting = \App\Models\AttendanceSetting::where('tenant_id', $tenantId)->first();
+            $lateCutoff = $setting ? ($setting->start_time ?? '07:15:00') : '07:15:00';
+            $status = ($now->format('H:i:s') > $lateCutoff) ? 'late' : 'present';
+        }
+
+        // Audit Trail: Record Teacher Name & ID in database notes for traceability
+        $teacherName = Auth::user()->name;
+        $teacherId = Auth::id();
+        $auditTrailNote = "Bantu absen (Clock In) oleh Guru: {$teacherName} (ID: {$teacherId})";
+
+        $notes = $request->notes 
+            ? ($request->notes . " | " . $auditTrailNote) 
+            : $auditTrailNote;
 
         \App\Models\Attendance::updateOrCreate(
             [
                 'user_id' => $student->id,
                 'tenant_id' => $tenantId,
                 'date' => $today,
+                'class_schedule_id' => null,
             ],
             [
-                'clock_in' => $now,
-                'status' => $request->status,
+                'attendance_type' => 'school',
+                'clock_in' => $now->format('Y-m-d H:i:s'),
+                'status' => $status,
                 'notes' => $notes,
             ]
         );
 
-        return redirect()->back()->with('success', "Presensi {$student->name} berhasil dicatat oleh Guru!");
+        return redirect()->back()->with('success', "Clock In presensi {$student->name} berhasil dicatat oleh Guru {$teacherName}!");
     }
 
     public function resetStudentPhoto($id)

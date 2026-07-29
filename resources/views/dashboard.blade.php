@@ -112,31 +112,31 @@
                 <div class="mt-3 flex flex-wrap items-center gap-2.5">
                     @if($isTeacherRole)
                         <!-- Tombol Pintas Khusus Wali Kelas / Guru -->
-                        <a href="{{ route('attendances.index') }}" class="bg-white/90 hover:bg-white text-red-700 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-clipboard-user"></i> Input Presensi Kelas
+                        <a href="{{ route('attendances.index') }}" class="h-9 bg-white/90 hover:bg-white text-red-700 backdrop-blur-md font-semibold px-4 rounded-xl shadow-sm transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-clipboard-user"></i> <span class="leading-none">Input Presensi Kelas</span>
                         </a>
-                        <a href="{{ route('students.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-user-graduate"></i> Siswa Binaan
+                        <a href="{{ route('students.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-user-graduate"></i> <span class="leading-none">Siswa Binaan</span>
                         </a>
-                        <a href="{{ route('class-schedules.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-calendar-days"></i> KBM & Kegiatan
+                        <a href="{{ route('class-schedules.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-calendar-days"></i> <span class="leading-none">Jadwal</span>
                         </a>
                     @else
-                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah -->
-                        <a href="{{ route('students.index') }}" class="bg-white/90 hover:bg-white text-red-700 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-user-graduate"></i> Kelola Siswa
+                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah (Urutan Alfabetis) -->
+                        <a href="{{ route('attendance-settings.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-sliders"></i> <span class="leading-none">Alat</span>
                         </a>
-                        <a href="{{ route('operator.classes.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-chalkboard"></i> Kelola Kelas
+                        <a href="{{ route('operator.teachers.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-chalkboard-user"></i> <span class="leading-none">Guru</span>
                         </a>
-                        <a href="{{ route('operator.teachers.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-chalkboard-user"></i> Kelola Guru
+                        <a href="{{ route('class-schedules.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-calendar-days"></i> <span class="leading-none">Jadwal</span>
                         </a>
-                        <a href="{{ route('attendance-settings.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-sliders"></i> Pengaturan Presensi
+                        <a href="{{ route('operator.classes.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-chalkboard"></i> <span class="leading-none">Kelas</span>
                         </a>
-                        <a href="{{ route('class-schedules.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-calendar-days"></i> KBM & Kegiatan
+                        <a href="{{ route('students.index') }}" class="h-9 bg-white/90 hover:bg-white text-red-700 backdrop-blur-md font-semibold px-4 rounded-xl shadow-sm transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-user-graduate"></i> <span class="leading-none">Siswa</span>
                         </a>
                     @endif
                 </div>
@@ -344,37 +344,103 @@
                                     </div>
                                     @endif
 
-                                    <!-- Placeholder Tiket Bantuan -->
-                                    <div class="flex items-center gap-2 text-sm text-gray-500 py-2 border-t border-gray-100 mt-2">
+                                    <!-- Tiket Bantuan Kendala Operator -->
+                                    @if(($opPendingTickets ?? 0) > 0)
+                                    <a href="{{ route('operator.support-tickets.index') }}" class="flex items-start gap-3 p-3 bg-amber-50 border border-amber-100 rounded-xl hover:bg-amber-100/70 transition mt-2">
+                                        <i class="fa-solid fa-headset text-amber-500 mt-0.5"></i>
+                                        <div>
+                                            <p class="text-sm font-semibold text-amber-800">Tiket Bantuan Kendala</p>
+                                            <p class="text-xs text-amber-600 font-medium">{{ $opPendingTickets }} permintaan bantuan mengantre.</p>
+                                        </div>
+                                    </a>
+                                    @else
+                                    <a href="{{ route('operator.support-tickets.index') }}" class="flex items-center gap-2 text-sm text-gray-500 py-2 border-t border-gray-100 mt-2 hover:text-brand-primary transition">
                                         <i class="fa-solid fa-check-circle text-emerald-500"></i> 0 Permintaan Bantuan Kendala.
-                                    </div>
+                                    </a>
+                                    @endif
                                 </div>
                             </div>
 
-                            <!-- SYSTEM HEALTH -->
+                            <!-- SYSTEM HEALTH / STATUS SISTEM & ALAT PRESENSI -->
                             <div class="bg-white rounded-2xl shadow-sm border border-brand-border p-5">
-                                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-heart-pulse text-brand-primary"></i> Status Sistem</h3>
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                                        <i class="fa-solid fa-heart-pulse text-brand-primary"></i> Status Sistem & Alat
+                                    </h3>
+                                    <a href="{{ route('attendance-settings.index') }}" class="text-[11px] font-semibold text-brand-primary hover:underline flex items-center gap-1">
+                                        <i class="fa-solid fa-sliders text-xs"></i> Kelola
+                                    </a>
+                                </div>
+
+                                <div class="space-y-2.5">
+                                    <!-- 1. Aplikasi (Mobile PWA) -->
+                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-2 h-2 rounded-full {{ $sysGpsActive ? 'bg-emerald-500' : 'bg-gray-300' }}"></div>
-                                            <span class="text-sm text-gray-700">GPS & Lokasi</span>
+                                            <div class="w-2 h-2 rounded-full {{ ($sysPwaActive ?? false) ? 'bg-emerald-500 shadow-xs' : 'bg-gray-300' }}"></div>
+                                            <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-mobile-screen-button text-xs {{ ($sysPwaActive ?? false) ? 'text-sky-600' : 'text-gray-400' }}"></i>
+                                                Aplikasi (PWA & GPS)
+                                            </span>
                                         </div>
-                                        <span class="text-[10px] font-semibold {{ $sysGpsActive ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-100' }} px-2 py-0.5 rounded-md border {{ $sysGpsActive ? 'border-emerald-200' : 'border-gray-200' }}">{{ $sysGpsActive ? 'Aktif' : 'Nonaktif' }}</span>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysPwaActive ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
+                                            {{ ($sysPwaActive ?? false) ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
                                     </div>
-                                    <div class="flex items-center justify-between">
+
+                                    <!-- 2. RFID / Tap Card -->
+                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-2 h-2 rounded-full {{ $sysWifiActive ? 'bg-emerald-500' : 'bg-gray-300' }}"></div>
-                                            <span class="text-sm text-gray-700">Wi-Fi Gateway</span>
+                                            <div class="w-2 h-2 rounded-full {{ ($sysRfidActive ?? false) ? 'bg-emerald-500 shadow-xs' : 'bg-gray-300' }}"></div>
+                                            <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                                                <i class="fa-regular fa-id-card text-xs {{ ($sysRfidActive ?? false) ? 'text-indigo-600' : 'text-gray-400' }}"></i>
+                                                RFID / Tap Card
+                                            </span>
                                         </div>
-                                        <span class="text-[10px] font-semibold {{ $sysWifiActive ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-100' }} px-2 py-0.5 rounded-md border {{ $sysWifiActive ? 'border-emerald-200' : 'border-gray-200' }}">{{ $sysWifiActive ? 'Aktif' : 'Nonaktif' }}</span>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysRfidActive ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
+                                            {{ ($sysRfidActive ?? false) ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
                                     </div>
-                                    <div class="flex items-center justify-between">
+
+                                    <!-- 3. QR Code Scanner -->
+                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-2 h-2 rounded-full {{ $sysWaReady ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300' }}"></div>
-                                            <span class="text-sm text-gray-700">WA Notif API</span>
+                                            <div class="w-2 h-2 rounded-full {{ ($sysQrcodeActive ?? false) ? 'bg-emerald-500 shadow-xs' : 'bg-gray-300' }}"></div>
+                                            <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-qrcode text-xs {{ ($sysQrcodeActive ?? false) ? 'text-emerald-600' : 'text-gray-400' }}"></i>
+                                                QR Code Scanner
+                                            </span>
                                         </div>
-                                        <span class="text-[10px] font-semibold {{ $sysWaReady ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-100' }} px-2 py-0.5 rounded-md border {{ $sysWaReady ? 'border-emerald-200' : 'border-gray-200' }}">{{ $sysWaReady ? 'Connected' : 'Offline' }}</span>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysQrcodeActive ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
+                                            {{ ($sysQrcodeActive ?? false) ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- 4. Mesin Biometrik -->
+                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 rounded-full {{ ($sysBiometricActive ?? false) ? 'bg-emerald-500 shadow-xs' : 'bg-gray-300' }}"></div>
+                                            <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-fingerprint text-xs {{ ($sysBiometricActive ?? false) ? 'text-amber-600' : 'text-gray-400' }}"></i>
+                                                Mesin Biometrik
+                                            </span>
+                                        </div>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysBiometricActive ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
+                                            {{ ($sysBiometricActive ?? false) ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- 6. WA Notif API -->
+                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition border-t border-gray-100 pt-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 rounded-full {{ ($sysWaReady ?? false) ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300' }}"></div>
+                                            <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                                                <i class="fa-brands fa-whatsapp text-xs {{ ($sysWaReady ?? false) ? 'text-emerald-600' : 'text-gray-400' }}"></i>
+                                                WA Notif API
+                                            </span>
+                                        </div>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysWaReady ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
+                                            {{ ($sysWaReady ?? false) ? 'Terhubung' : 'Offline' }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

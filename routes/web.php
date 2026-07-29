@@ -41,11 +41,18 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Dashboard Smart Dispatcher
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
+        $homeroomClasses = \App\Models\SchoolClass::where('tenant_id', auth()->user()->tenant_id ?? 0)
+            ->where('wali_kelas_id', auth()->id())
+            ->get();
+        $isHomeroom = $homeroomClasses->isNotEmpty() || $role === 'wali_kelas';
+
         if (in_array($role, ['headmaster', 'kepala_sekolah', 'owner'])) {
             return redirect()->route('headmaster.dashboard');
         } elseif (in_array($role, ['operator', 'admin_dapodik', 'admin'])) {
             return redirect()->route('operator.dashboard');
-        } elseif (in_array($role, ['teacher', 'guru', 'wali_kelas', 'manager_teacher'])) {
+        } elseif ($isHomeroom) {
+            return redirect()->route('homeroom.dashboard');
+        } elseif (in_array($role, ['teacher', 'guru', 'guru_mapel', 'manager_teacher'])) {
             return redirect()->route('teacher.dashboard');
         } elseif ($role === 'parent') {
             return redirect()->route('parent.dashboard');
@@ -66,6 +73,11 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
         Route::post('/teacher/manual-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeManualAttendance'])->name('teacher.manual-attendance');
         Route::post('/teacher/students/{id}/reset-photo', [\App\Http\Controllers\AdminDashboardController::class, 'resetStudentPhoto'])->name('teacher.students.reset-photo');
+    });
+
+    // Homeroom Dashboard Route (Strict Role: homeroom teacher / wali kelas)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
+        Route::get('/homeroom/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'homeroomIndex'])->name('homeroom.dashboard');
     });
 
     // Admin & Wali Kelas Routes (Operational Management)
@@ -123,6 +135,15 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::put('/dashboard/attendance-settings', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'updateSettings'])->name('attendance-settings.update');
         Route::post('/dashboard/attendance-settings/devices', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'storeDevice'])->name('attendance-settings.devices.store');
         Route::delete('/dashboard/attendance-settings/devices/{id}', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'destroyDevice'])->name('attendance-settings.devices.destroy');
+
+        // Student Cards Management (Kartu Pelajar)
+        Route::get('/dashboard/student-cards', [\App\Http\Controllers\Admin\StudentCardController::class, 'index'])->name('student-cards.index');
+        Route::post('/dashboard/student-cards/print', [\App\Http\Controllers\Admin\StudentCardController::class, 'printCards'])->name('student-cards.print');
+
+        // Support Tickets Management (Operator)
+        Route::get('/operator/support-tickets', [\App\Http\Controllers\SupportTicketController::class, 'operatorIndex'])->name('operator.support-tickets.index');
+        Route::get('/operator/support-tickets/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'operatorShow'])->name('operator.support-tickets.show');
+        Route::put('/operator/support-tickets/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'operatorUpdate'])->name('operator.support-tickets.update');
     });
 
     // Wali Kelas & Kepala Sekolah Routes (Leave Management & Reports)
@@ -166,6 +187,11 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Support Tickets (User Submission & History)
+    Route::get('/support-tickets', [\App\Http\Controllers\SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::post('/support-tickets', [\App\Http\Controllers\SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('/support-tickets/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'show'])->name('support-tickets.show');
 
     Route::get('/onboarding', [\App\Http\Controllers\OnboardingController::class, 'index'])->name('onboarding');
     Route::post('/onboarding', [\App\Http\Controllers\OnboardingController::class, 'store']);

@@ -58,7 +58,11 @@ class TeacherManualAttendanceTest extends TestCase
             'tenant_id' => $tenant->id,
             'user_id' => $student->id,
             'status' => 'present',
-            'notes' => 'Presensi manual disetujui guru (lupa HP)',
         ]);
+
+        $attendance = Attendance::where('user_id', $student->id)->first();
+        $this->assertNotNull($attendance);
+        $this->assertStringContainsString('Presensi manual disetujui guru (lupa HP)', $attendance->notes);
+        $this->assertStringContainsString('Bantu absen (Clock In) oleh Guru: Guru Penguji', $attendance->notes);
     }
 }

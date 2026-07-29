@@ -142,7 +142,11 @@
 </head>
 <body class="font-sans antialiased bg-brand-bg text-brand-text-main">
     @php
-        $lastEndTime = $currentSchedule ? \Carbon\Carbon::parse($currentSchedule->end_time, 'UTC')->setTimezone('Asia/Jakarta')->toIso8601String() : '';
+        $lastEndTime = '';
+        if ($currentSchedule && !empty($currentSchedule->end_time)) {
+            $endTimeStr = strlen($currentSchedule->end_time) === 5 ? $currentSchedule->end_time . ':00' : $currentSchedule->end_time;
+            $lastEndTime = \Carbon\Carbon::parse(date('Y-m-d') . ' ' . $endTimeStr)->toIso8601String();
+        }
     @endphp
     <div class="min-h-screen flex flex-col md:max-w-md md:mx-auto md:bg-brand-surface md:shadow-xl md:min-h-screen relative border-x border-brand-border"
          x-data="digitalClock()"
@@ -179,6 +183,9 @@
                 </div>
                 <!-- Header Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0">
+                    <a href="{{ route('support-tickets.index') }}" title="Bantuan Operator" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition border border-white/20">
+                        <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                    </a>
                     <button type="button" @click="$dispatch('open-change-password-modal')" title="Ganti Password" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition border border-white/20">
                         <span class="material-symbols-outlined text-[20px]">key</span>
                     </button>
@@ -194,6 +201,22 @@
 
         <!-- Main Content -->
         <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-6 -mt-6">
+
+            <!-- Bantuan Operator Sekolah Widget -->
+            <div class="w-full bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3 text-amber-900">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl">support_agent</span>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900">Bantuan Operator Sekolah</h4>
+                        <p class="text-[11px] text-gray-600">Ada kendala presensi, akun, atau aplikasi? Laporkan di sini.</p>
+                    </div>
+                </div>
+                <a href="{{ route('support-tickets.index') }}" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow-xs whitespace-nowrap flex items-center gap-1 shrink-0">
+                    <span class="material-symbols-outlined text-sm">chat</span> Bantuan
+                </a>
+            </div>
 
             @if(auth()->check() && !auth()->user()->is_password_changed)
                 <!-- Banner Penawaran Ganti Password Bawaan -->
@@ -238,10 +261,10 @@
                         <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Jadwal Hari Ini</span>
                         <h4 class="text-sm font-semibold text-gray-800">{{ $currentSchedule->name }}</h4>
                         <p class="text-xs text-gray-500 mt-1">
-                            Jam Belajar: <span class="font-medium">{{ \Carbon\Carbon::parse($currentSchedule->start_time, 'UTC')->setTimezone('Asia/Jakarta')->format('H:i') }} - {{ \Carbon\Carbon::parse($currentSchedule->end_time, 'UTC')->setTimezone('Asia/Jakarta')->format('H:i') }} WIB</span>
+                            Jam Belajar: <span class="font-medium">{{ \Carbon\Carbon::parse($currentSchedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($currentSchedule->end_time)->format('H:i') }} WIB</span>
                         </p>
                         <span class="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md">
-                            Toleransi s/d {{ \Carbon\Carbon::parse($currentSchedule->start_time, 'UTC')->addMinutes($currentSchedule->grace_period_minutes)->setTimezone('Asia/Jakarta')->format('H:i') }}
+                            Toleransi s/d {{ \Carbon\Carbon::parse($currentSchedule->start_time)->addMinutes($currentSchedule->grace_period_minutes ?? 15)->format('H:i') }}
                         </span>
                     </div>
                 @else

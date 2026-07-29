@@ -19,10 +19,11 @@ class AttendanceSettingController extends Controller
         $settings = AttendanceSetting::firstOrCreate(
             ['tenant_id' => $tenantId],
             [
-                'method_rfid' => true,
-                'method_qrcode' => true,
+                'method_pwa' => true,
+                'method_rfid' => false,
+                'method_qrcode' => false,
                 'method_biometric' => false,
-                'method_manual' => true,
+                'method_manual' => false,
                 'method_wifi' => false,
                 'wifi_allowed_ssids' => [],
                 'wifi_allowed_macs' => [],

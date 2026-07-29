@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+        <h2 class="font-semibold text-xl text-brand-text-main leading-tight flex items-center gap-2">
             <i class="fa-solid fa-mobile-screen-button text-brand-primary"></i>
-            {{ __('Pengelolaan Alat & Metode Presensi') }}
+            {{ __('Pengaturan Alat & Lainnya') }}
         </h2>
     </x-slot>
 
@@ -23,12 +23,17 @@
                 <a href="{{ route('attendance-settings.index') }}"
                    class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-settings.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
                     <i class="fa-solid fa-mobile-screen-button"></i>
-                    <span>Alat & Metode Presensi</span>
+                    <span>Alat</span>
                 </a>
                 <a href="{{ route('attendance-schedules.index') }}"
                    class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('attendance-schedules.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
                     <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span>Jam Operasional & Keterlambatan</span>
+                    <span>Keterlambatan</span>
+                </a>
+                <a href="{{ route('student-cards.index') }}"
+                   class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 {{ request()->routeIs('student-cards.*') ? 'bg-brand-primary text-white font-medium shadow-sm' : 'bg-brand-surface border border-brand-border text-brand-text-muted hover:bg-brand-primary/5' }}">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>Kartu</span>
                 </a>
             </div>
 
@@ -50,112 +55,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
-                        <!-- 1. RFID -->
-                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
-                             :class="method_rfid ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
-                             @click="method_rfid = !method_rfid">
-                            <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_rfid ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'">
-                                            <i class="fa-regular fa-id-card text-xl"></i>
-                                        </div>
-                                        <span class="font-bold text-gray-900">RFID / Tap Card</span>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
-                                        <input type="checkbox" name="method_rfid" x-model="method_rfid" value="1" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500 leading-relaxed mb-4">Presensi cepat dengan menempelkan kartu ID/RFID ke mesin reader IoT terpasang.</p>
-                            </div>
-                            
-                            <div x-show="method_rfid" @click.stop>
-                                <div class="bg-white p-3 rounded-lg border border-gray-100 mt-2">
-                                    <div class="text-xs font-semibold text-gray-600 mb-1">API Secret Key (Untuk Mesin)</div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="text" readonly value="{{ $settings->rfid_secret_key }}" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-500" />
-                                        <label class="flex items-center cursor-pointer">
-                                            <input type="checkbox" name="generate_new_key" value="1" class="text-rose-600 focus:ring-rose-600 h-4 w-4 border-gray-300 rounded mr-2">
-                                            <span class="text-xs text-gray-600 whitespace-nowrap">Reset Key</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 2. QR Code -->
-                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
-                             :class="method_qrcode ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
-                             @click="method_qrcode = !method_qrcode">
-                            <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_qrcode ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'">
-                                            <i class="fa-solid fa-qrcode text-xl"></i>
-                                        </div>
-                                        <span class="font-bold text-gray-900">QR Code Scanner</span>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
-                                        <input type="checkbox" name="method_qrcode" x-model="method_qrcode" value="1" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500 leading-relaxed">Presensi via pemindaian QR Code di HP atau kios scanner sekolah.</p>
-                            </div>
-                        </div>
-
-                        <!-- 3. Biometric -->
-                        <!-- 3. Physical Biometric -->
-                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
-                             :class="method_biometric ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
-                             @click="method_biometric = !method_biometric">
-                            <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_biometric ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'">
-                                            <i class="fa-solid fa-fingerprint text-xl"></i>
-                                        </div>
-                                        <span class="font-bold text-gray-900">👆 Mesin Biometrik Fisik</span>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
-                                        <input type="checkbox" name="method_biometric" x-model="method_biometric" value="1" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500 leading-relaxed mb-4">Presensi menggunakan mesin absensi biometrik fisik terintegrasi (seperti mesin sidik jari/wajah IP) yang terpasang di area sekolah.</p>
-                            </div>
-
-                            <div x-show="method_biometric" @click.stop>
-                                <div class="bg-white p-3 rounded-lg border border-gray-100 mt-2">
-                                    <label class="block text-xs font-semibold text-gray-600 mb-1">IP Address / Secret Key Integrasi</label>
-                                    <input type="text" name="biometric_ip_address" value="{{ $settings->biometric_ip_address }}" placeholder="Cth: 192.168.1.100 atau SecretKey123" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. Manual -->
-                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
-                             :class="method_manual ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
-                             @click="method_manual = !method_manual">
-                            <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_manual ? 'bg-rose-100 text-rose-600' : 'bg-gray-100 text-gray-500'">
-                                            <i class="fa-solid fa-clipboard-check text-xl"></i>
-                                        </div>
-                                        <span class="font-bold text-gray-900">📝 Presensi Manual</span>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
-                                        <input type="checkbox" name="method_manual" x-model="method_manual" value="1" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500 leading-relaxed">Pencatatan kehadiran langsung oleh Guru Kelas / Operator di Dasbor.</p>
-                            </div>
-                        </div>
-
-                        <!-- 5. PWA (Mobile Clock-In) -->
+                        <!-- 1. Aplikasi (Mobile / PWA Clock-In) -->
                         <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors md:col-span-2" 
                              :class="method_pwa ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
                              @click="method_pwa = !method_pwa">
@@ -165,7 +65,7 @@
                                         <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_pwa ? 'bg-sky-100 text-sky-600' : 'bg-gray-100 text-gray-500'">
                                             <i class="fa-solid fa-mobile-screen-button text-xl"></i>
                                         </div>
-                                        <span class="font-bold text-gray-900">📱 Absen Mandiri via PWA (Mobile Clock-In)</span>
+                                        <span class="font-bold text-gray-900">📱 Aplikasi</span>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer" @click.stop>
                                         <input type="checkbox" name="method_pwa" x-model="method_pwa" value="1" class="sr-only peer">
@@ -276,6 +176,110 @@
                                     </div>
 
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. RFID -->
+                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
+                             :class="method_rfid ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
+                             @click="method_rfid = !method_rfid">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_rfid ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'">
+                                            <i class="fa-regular fa-id-card text-xl"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-900">RFID / Tap Card</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
+                                        <input type="checkbox" name="method_rfid" x-model="method_rfid" value="1" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-4">Presensi cepat dengan menempelkan kartu ID/RFID ke mesin reader IoT terpasang.</p>
+                            </div>
+                            
+                            <div x-show="method_rfid" @click.stop>
+                                <div class="bg-white p-3 rounded-lg border border-gray-100 mt-2">
+                                    <div class="text-xs font-semibold text-gray-600 mb-1">API Secret Key (Untuk Mesin)</div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" readonly value="{{ $settings->rfid_secret_key }}" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-500" />
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="checkbox" name="generate_new_key" value="1" class="text-rose-600 focus:ring-rose-600 h-4 w-4 border-gray-300 rounded mr-2">
+                                            <span class="text-xs text-gray-600 whitespace-nowrap">Reset Key</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. QR Code -->
+                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
+                             :class="method_qrcode ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
+                             @click="method_qrcode = !method_qrcode">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_qrcode ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'">
+                                            <i class="fa-solid fa-qrcode text-xl"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-900">QR Code Scanner</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
+                                        <input type="checkbox" name="method_qrcode" x-model="method_qrcode" value="1" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed">Presensi via pemindaian QR Code di HP atau kios scanner sekolah.</p>
+                            </div>
+                        </div>
+
+                        <!-- 4. Mesin Biometrik Fisik -->
+                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
+                             :class="method_biometric ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
+                             @click="method_biometric = !method_biometric">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_biometric ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'">
+                                            <i class="fa-solid fa-fingerprint text-xl"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-900">👆 Mesin Biometrik Fisik</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
+                                        <input type="checkbox" name="method_biometric" x-model="method_biometric" value="1" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-4">Presensi menggunakan mesin absensi biometrik fisik terintegrasi (seperti mesin sidik jari/wajah IP) yang terpasang di area sekolah.</p>
+                            </div>
+
+                            <div x-show="method_biometric" @click.stop>
+                                <div class="bg-white p-3 rounded-lg border border-gray-100 mt-2">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">IP Address / Secret Key Integrasi</label>
+                                    <input type="text" name="biometric_ip_address" value="{{ $settings->biometric_ip_address }}" placeholder="Cth: 192.168.1.100 atau SecretKey123" class="block w-full bg-white border-gray-300 rounded-md text-xs text-gray-700 shadow-sm focus:ring-rose-600 focus:border-rose-600" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Presensi Manual -->
+                        <div class="border rounded-xl p-5 shadow-sm flex flex-col justify-between cursor-pointer transition-colors" 
+                             :class="method_manual ? 'border-rose-600 bg-rose-50/10' : 'border-gray-200 bg-white'"
+                             @click="method_manual = !method_manual">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="method_manual ? 'bg-rose-100 text-rose-600' : 'bg-gray-100 text-gray-500'">
+                                            <i class="fa-solid fa-clipboard-check text-xl"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-900">📝 Presensi Manual</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer" @click.stop>
+                                        <input type="checkbox" name="method_manual" x-model="method_manual" value="1" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed">Pencatatan kehadiran langsung oleh Guru Kelas / Operator di Dasbor.</p>
                             </div>
                         </div>
 

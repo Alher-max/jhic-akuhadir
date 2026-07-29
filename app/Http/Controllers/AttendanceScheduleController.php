@@ -10,6 +10,7 @@ class AttendanceScheduleController extends Controller
 {
     /**
      * Menampilkan dan menginisialisasi jam operasional presensi 7 hari kerja.
+     * Akses eksklusif untuk Operator / Admin Sekolah.
      */
     public function index()
     {
@@ -17,9 +18,9 @@ class AttendanceScheduleController extends Controller
         $tenantId = $user->tenant_id;
 
         $roleLower = strtolower($user->role ?? '');
-        $allowedRoles = ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin', 'manager_teacher', 'manager', 'owner', 'super_admin'];
+        $allowedRoles = ['operator', 'admin_dapodik', 'admin', 'super_admin'];
         if (!in_array($roleLower, $allowedRoles)) {
-            abort(403, 'Akses tidak diizinkan. Pengaturan Jam Presensi hanya untuk Operator / Admin Sekolah.');
+            abort(403, 'Akses tidak diizinkan. Pengaturan Jam & Mode Presensi hanya dapat diakses melalui Dasbor Operator Sekolah.');
         }
 
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
@@ -53,7 +54,7 @@ class AttendanceScheduleController extends Controller
     }
 
     /**
-     * Memperbarui batch jam operasional presensi.
+     * Memperbarui batch jam operasional presensi & mode presensi operator.
      */
     public function update(Request $request)
     {
@@ -61,13 +62,13 @@ class AttendanceScheduleController extends Controller
         $tenantId = $user->tenant_id;
 
         $roleLower = strtolower($user->role ?? '');
-        $allowedRoles = ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin', 'manager_teacher', 'manager', 'owner', 'super_admin'];
+        $allowedRoles = ['operator', 'admin_dapodik', 'admin', 'super_admin'];
         if (!in_array($roleLower, $allowedRoles)) {
-            abort(403, 'Akses tidak diizinkan. Pengaturan Jam Presensi hanya untuk Operator / Admin Sekolah.');
+            abort(403, 'Akses tidak diizinkan. Pengaturan Jam & Mode Presensi hanya dapat dikelola oleh Operator Sekolah.');
         }
 
         $request->validate([
-            'attendance_mode' => 'nullable|in:formal_daily,non_formal_session',
+            'attendance_mode' => 'nullable|in:daily_arrival,session_based,formal_daily,non_formal_session',
             'session_late_tolerance_minutes' => 'nullable|integer|min:0|max:180',
             'schedules' => 'required|array',
             'schedules.*.id' => 'required|exists:attendance_schedules,id',
@@ -76,10 +77,14 @@ class AttendanceScheduleController extends Controller
             'schedules.*.late_tolerance_minutes' => 'required|integer|min:0|max:180',
         ]);
 
+        $modeInput = $request->input('attendance_mode', 'daily_arrival');
+        if ($modeInput === 'formal_daily') $modeInput = 'daily_arrival';
+        if ($modeInput === 'non_formal_session') $modeInput = 'session_based';
+
         $tenant = \App\Models\Tenant::find($tenantId);
         if ($tenant) {
             $tenant->update([
-                'attendance_mode' => $request->input('attendance_mode', 'formal_daily'),
+                'attendance_mode' => $modeInput,
                 'session_late_tolerance_minutes' => $request->input('session_late_tolerance_minutes', 10),
             ]);
         }
@@ -96,6 +101,6 @@ class AttendanceScheduleController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Pengaturan jam & mode presensi berhasil disimpan.');
+        return redirect()->back()->with('success', 'Pengaturan jam & mode presensi operator berhasil disimpan.');
     }
 }

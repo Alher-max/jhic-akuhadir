@@ -71,20 +71,13 @@ class PwaAttendanceController extends Controller
             }
         }
 
-        // 2. Validasi Wi-Fi (Jika opsi 3 aktif)
-        if ($settings->method_wifi) {
-            $ssid = $request->input('wifi_ssid'); // Asumsi dikirim dari FE jika memungkinkan, atau sekadar bypass di simulasi
-            // Biasanya SSId tidak bisa diambil dari browser murni tanpa Native App/PWA spesifik API, 
-            // Namun kita sediakan logikanya sesuai skema.
-        }
-
-        // 3. Simpan Snapshot (Base64)
+        // 2. Simpan Snapshot (Base64)
         $photoPath = null;
         if ($request->has('image_snapshot')) {
-            $image = $request->input('image_snapshot'); // data:image/jpeg;base64,...
+            $image = $request->input('image_snapshot');
             if (preg_match('/^data:image\/(\w+);base64,/', $image, $type)) {
                 $image = substr($image, strpos($image, ',') + 1);
-                $type = strtolower($type[1]); // jpg, png, etc
+                $type = strtolower($type[1]);
                 
                 if (in_array($type, ['jpg', 'jpeg', 'png'])) {
                     $image = base64_decode($image);
@@ -98,53 +91,47 @@ class PwaAttendanceController extends Controller
             }
         }
 
-        // 4. Proses Absensi (Jadwal & Lateness)
+        // 3. Proses Absensi (Jadwal & Lateness berdasarkan Arsitektur Baru)
         $today = now()->format('Y-m-d');
-        $dayOfWeek = now()->format('N');
         
         $attendanceService = app(\App\Services\AttendanceService::class);
         $tenant = $user->tenant;
-        $isNonFormal = $tenant && $attendanceService->isNonFormalSessionMode($tenant);
+        $isSessionBased = $tenant && $attendanceService->isSessionBasedMode($tenant);
 
         $classScheduleId = null;
+        $attendanceType = 'school';
         $dayNameIndo = $attendanceService->getDayNameInIndonesian(now());
 
-        if ($isNonFormal) {
+        if ($isSessionBased) {
             $classSchedule = $attendanceService->findActiveSession($user, now());
             $classScheduleId = $classSchedule?->id;
 
-            if ($attendanceService->hasAttendedSession($user, $today, $classScheduleId)) {
-                $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
-                return response()->json(['success' => false, 'message' => "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini."], 400);
+            if ($classScheduleId) {
+                if ($attendanceService->hasAttendedClassSession($user, $today, $classScheduleId)) {
+                    $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
+                    return response()->json(['success' => false, 'message' => "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini."], 400);
+                }
+                $attendanceType = 'class';
+            } else {
+                if ($attendanceService->hasAttendedSchool($user, $today)) {
+                    return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'], 400);
+                }
             }
 
-            $valResult = $attendanceService->validateAttendanceStatus($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
             $status = $valResult['status'];
         } else {
-            if ($attendanceService->hasAttendedSession($user, $today, null)) {
-                return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in hari ini.'], 400);
+            if ($attendanceService->hasAttendedSchool($user, $today)) {
+                return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'], 400);
             }
 
-            $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
-                $query->where(function($q) use ($today) {
-                    $q->where('type', 'non_routine')->where('specific_date', $today);
-                })->orWhere(function($q) use ($dayOfWeek) {
-                    $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
-                });
-            })->first();
-
-            if (!$schedule) {
-                return response()->json(['success' => false, 'message' => 'Tidak ada jadwal hadir hari ini.'], 400);
-            }
-
-            $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
-            $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
-            $status = now()->greaterThan($limitTime) ? 'late' : 'present';
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo);
+            $status = $valResult['status'];
         }
 
         $matchScore = $request->input('face_match_score') ? (float)$request->input('face_match_score') : null;
 
-        // Tangkap IP Client & Validasi Wi-Fi Sekolah (Mode Fleksibel)
+        // Tangkap IP Client & Validasi Wi-Fi Sekolah
         $clientIp = $request->ip();
         $isWifiVerified = false;
 
@@ -173,6 +160,7 @@ class PwaAttendanceController extends Controller
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
+            'attendance_type' => $attendanceType,
             'class_schedule_id' => $classScheduleId,
             'date' => $today,
             'clock_in' => now(),

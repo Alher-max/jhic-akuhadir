@@ -12,27 +12,46 @@ use Carbon\Carbon;
 class AttendanceService
 {
     /**
-     * Mengambil mode presensi aktif tenant.
+     * Mengambil mode presensi aktif tenant (daily_arrival | session_based).
      */
     public function getAttendanceMode(Tenant $tenant): string
     {
-        return $tenant->attendance_mode ?? 'formal_daily';
+        $mode = $tenant->attendance_mode ?? 'daily_arrival';
+        if ($mode === 'formal_daily') return 'daily_arrival';
+        if ($mode === 'non_formal_session') return 'session_based';
+        return $mode;
     }
 
     /**
-     * Mengecek apakah tenant menggunakan Mode Presensi Sekolah Formal Harian.
+     * Mengecek apakah tenant menggunakan Mode Presensi Kedatangan Harian.
+     */
+    public function isDailyArrivalMode(Tenant $tenant): bool
+    {
+        return $this->getAttendanceMode($tenant) === 'daily_arrival';
+    }
+
+    /**
+     * Mengecek apakah tenant menggunakan Mode Presensi Per Sesi / Jam Pembelajaran.
+     */
+    public function isSessionBasedMode(Tenant $tenant): bool
+    {
+        return $this->getAttendanceMode($tenant) === 'session_based';
+    }
+
+    /**
+     * Alias untuk kompatibilitas.
      */
     public function isFormalDailyMode(Tenant $tenant): bool
     {
-        return $this->getAttendanceMode($tenant) === 'formal_daily';
+        return $this->isDailyArrivalMode($tenant);
     }
 
     /**
-     * Mengecek apakah tenant menggunakan Mode Presensi Non-Formal / Sesi KBM.
+     * Alias untuk kompatibilitas.
      */
     public function isNonFormalSessionMode(Tenant $tenant): bool
     {
-        return $this->getAttendanceMode($tenant) === 'non_formal_session';
+        return $this->isSessionBasedMode($tenant);
     }
 
     /**
@@ -61,7 +80,6 @@ class AttendanceService
         $dayName = $this->getDayNameInIndonesian($now);
         $timeStr = $now->format('H:i:s');
 
-        // Cari sesi KBM kelas siswa atau sesi pengajaran guru yang aktif di jam berjalan
         $query = ClassSchedule::where('tenant_id', $user->tenant_id)
             ->where('day_name', $dayName);
 
@@ -76,7 +94,6 @@ class AttendanceService
             ->whereTime('end_time', '>=', $timeStr)
             ->first();
 
-        // Fallback: Jika tidak ada sesi di jam eksak, ambil sesi terdekat hari ini
         if (!$activeSession) {
             $activeSession = $query->orderBy('start_time')->first();
         }
@@ -85,32 +102,50 @@ class AttendanceService
     }
 
     /**
-     * Mengecek apakah pengguna sudah presensi pada sesi tertentu / hari ini.
+     * Mengecek apakah pengguna sudah presensi Hadir di Sekolah pada tanggal tertentu.
      */
-    public function hasAttendedSession(User $user, string $date, ?int $classScheduleId = null): bool
+    public function hasAttendedSchool(User $user, string $date): bool
     {
-        $query = Attendance::where('user_id', $user->id)
-            ->where('date', $date);
-
-        if ($classScheduleId) {
-            $query->where('class_schedule_id', $classScheduleId);
-        } else {
-            $query->whereNull('class_schedule_id');
-        }
-
-        return $query->exists();
+        return Attendance::where('user_id', $user->id)
+            ->where('date', $date)
+            ->where(function ($q) {
+                $q->where('attendance_type', 'school')
+                  ->orWhereNull('class_schedule_id');
+            })
+            ->exists();
     }
 
     /**
-     * Memvalidasi status kehadiran (present / late) berdasarkan mode presensi tenant.
+     * Mengecek apakah pengguna sudah presensi Hadir di Kelas untuk sesi KBM tertentu.
      */
-    public function validateAttendanceStatus(Tenant $tenant, string $checkInTime, string $dayName, $classSchedule = null): array
+    public function hasAttendedClassSession(User $user, string $date, int $classScheduleId): bool
+    {
+        return Attendance::where('user_id', $user->id)
+            ->where('date', $date)
+            ->where('class_schedule_id', $classScheduleId)
+            ->exists();
+    }
+
+    /**
+     * Wrapper kompatibilitas pengecekan presensi.
+     */
+    public function hasAttendedSession(User $user, string $date, ?int $classScheduleId = null): bool
+    {
+        if ($classScheduleId) {
+            return $this->hasAttendedClassSession($user, $date, $classScheduleId);
+        }
+        return $this->hasAttendedSchool($user, $date);
+    }
+
+    /**
+     * Memvalidasi status keterlambatan presensi sekolah berdasarkan konfigurasi operator.
+     */
+    public function validateSchoolAttendance(Tenant $tenant, string $checkInTime, string $dayName, $classSchedule = null): array
     {
         $mode = $this->getAttendanceMode($tenant);
         $checkIn = Carbon::parse($checkInTime);
 
-        if ($mode === 'non_formal_session' && $classSchedule) {
-            // Mode Non-Formal / Sesi KBM
+        if ($mode === 'session_based' && $classSchedule) {
             $sessionStart = Carbon::parse($classSchedule->start_time);
             $tolerance = $tenant->session_late_tolerance_minutes ?? 10;
             $lateLimit = (clone $sessionStart)->addMinutes($tolerance);
@@ -118,14 +153,13 @@ class AttendanceService
             $isLate = $checkIn->greaterThan($lateLimit);
 
             return [
-                'mode' => 'non_formal_session',
+                'mode' => 'session_based',
                 'status' => $isLate ? 'late' : 'present',
                 'target_time' => $sessionStart->format('H:i'),
                 'tolerance_minutes' => $tolerance,
                 'is_late' => $isLate,
             ];
         } else {
-            // Mode Formal Harian
             $schedule = AttendanceSchedule::where('tenant_id', $tenant->id)
                 ->where('day_name', $dayName)
                 ->first();
@@ -139,12 +173,17 @@ class AttendanceService
             $isLate = $checkIn->greaterThan($lateLimit);
 
             return [
-                'mode' => 'formal_daily',
+                'mode' => 'daily_arrival',
                 'status' => $isLate ? 'late' : 'present',
                 'target_time' => $scheduleStart->format('H:i'),
                 'tolerance_minutes' => $tolerance,
                 'is_late' => $isLate,
             ];
         }
+    }
+
+    public function validateAttendanceStatus(Tenant $tenant, string $checkInTime, string $dayName, $classSchedule = null): array
+    {
+        return $this->validateSchoolAttendance($tenant, $checkInTime, $dayName, $classSchedule);
     }
 }

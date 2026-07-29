@@ -47,6 +47,11 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         return $this->hasMany(Attendance::class);
     }
 
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
     public function parent()
     {
         return $this->belongsTo(User::class, 'parent_id');

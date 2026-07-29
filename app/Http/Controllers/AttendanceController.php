@@ -25,7 +25,6 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $now = now();
         $today = $now->format('Y-m-d');
-        $dayOfWeek = $now->format('N');
 
         $tenant = $user->tenant;
         if ($tenant && $tenant->attendance_method === 'gps') {
@@ -38,7 +37,6 @@ class AttendanceController extends Controller
 
             $isFallback = $request->input('is_fallback') == '1';
             
-            // Bypass geofencing for fallback if required (based on user request)
             if (!$isFallback) {
                 $actualDistance = 0;
                 $isValidLocation = false;
@@ -62,7 +60,7 @@ class AttendanceController extends Controller
                             }
                         }
                     } else {
-                        // Default koordinat SMPN 1 Pleret / Acuan Tenant
+                        // Default titik acuan sekolah / Tenant
                         $targetLat = $tenant->gps_lat ?? -7.8732;
                         $targetLng = $tenant->gps_lng ?? 110.3956;
                         $targetRadius = $tenant->gps_radius ?? 100;
@@ -81,58 +79,37 @@ class AttendanceController extends Controller
 
         $attendanceService = app(\App\Services\AttendanceService::class);
         $tenant = $user->tenant;
-        $isNonFormal = $tenant && $attendanceService->isNonFormalSessionMode($tenant);
+        $isSessionBased = $tenant && $attendanceService->isSessionBasedMode($tenant);
 
         $classScheduleId = null;
+        $attendanceType = 'school';
         $dayNameIndo = $attendanceService->getDayNameInIndonesian(now());
 
-        if ($isNonFormal) {
+        if ($isSessionBased) {
             $classSchedule = $attendanceService->findActiveSession($user, now());
             $classScheduleId = $classSchedule?->id;
 
-            if ($attendanceService->hasAttendedSession($user, $today, $classScheduleId)) {
-                $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
-                return redirect()->back()->with('error', "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini.");
-            }
-
-            $valResult = $attendanceService->validateAttendanceStatus($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
-            $status = $valResult['status'];
-        } else {
-            // Check if attendance already exists for today
-            if ($attendanceService->hasAttendedSession($user, $today, null)) {
-                return redirect()->back()->with('error', 'Anda sudah melakukan clock-in hari ini.');
-            }
-
-            // Find applicable schedule for the user
-            $schedule = $user->schedules()->where(function($query) use ($today, $dayOfWeek) {
-                $query->where(function($q) use ($today) {
-                    $q->where('type', 'non_routine')->where('specific_date', $today);
-                })->orWhere(function($q) use ($dayOfWeek) {
-                    $q->where('type', 'routine')->where('day_of_week', $dayOfWeek);
-                });
-            })->first();
-
-            // Fallback: jika tidak ada jadwal di DB, gunakan jadwal mock agar testing presensi tetap bisa berjalan
-            $isMockSchedule = false;
-            if (!$schedule) {
-                // Cek apakah ini jam kerja normal (06:00 - 23:59)
-                $currentHour = now()->hour;
-                if ($currentHour >= 6) {
-                    $isMockSchedule = true;
-                    $schedule = (object)[
-                        'start_time'         => '06:00:00',
-                        'end_time'           => '23:59:00',
-                        'grace_period_minutes' => 60,
-                    ];
-                } else {
-                    return redirect()->back()->with('error', 'Anda tidak memiliki jadwal wajib hadir hari ini.');
+            if ($classScheduleId) {
+                if ($attendanceService->hasAttendedClassSession($user, $today, $classScheduleId)) {
+                    $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
+                    return redirect()->back()->with('error', "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini.");
+                }
+                $attendanceType = 'class';
+            } else {
+                if ($attendanceService->hasAttendedSchool($user, $today)) {
+                    return redirect()->back()->with('error', 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.');
                 }
             }
 
-            // Check lateness
-            $startTime = \Carbon\Carbon::parse($today . ' ' . $schedule->start_time);
-            $limitTime = $startTime->copy()->addMinutes($schedule->grace_period_minutes);
-            $status = now()->greaterThan($limitTime) ? 'late' : 'present';
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
+            $status = $valResult['status'];
+        } else {
+            if ($attendanceService->hasAttendedSchool($user, $today)) {
+                return redirect()->back()->with('error', 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.');
+            }
+
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo);
+            $status = $valResult['status'];
         }
 
         // Handle Base64 Photo
@@ -141,7 +118,7 @@ class AttendanceController extends Controller
             $imageData = $request->input('image_data');
             if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
                 $imageData = substr($imageData, strpos($imageData, ',') + 1);
-                $type = strtolower($type[1]); // jpg, png, jpeg
+                $type = strtolower($type[1]);
                 if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
                     throw new \Exception('invalid image type');
                 }
@@ -152,7 +129,6 @@ class AttendanceController extends Controller
             }
         }
 
-        // Check for Fallback mode
         $notes = null;
         if ($request->input('is_fallback') == '1') {
             $notes = 'Presensi menggunakan fitur Upload Foto Manual (Fallback).';
@@ -164,6 +140,7 @@ class AttendanceController extends Controller
         Attendance::create([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
+            'attendance_type' => $attendanceType,
             'class_schedule_id' => $classScheduleId,
             'date' => $today,
             'clock_in' => now(),
@@ -217,7 +194,6 @@ class AttendanceController extends Controller
                             }
                         }
                     } else {
-                        // Default koordinat SMPN 1 Pleret / Acuan Tenant
                         $targetLat = $tenant->gps_lat ?? -7.8732;
                         $targetLng = $tenant->gps_lng ?? 110.3956;
                         $targetRadius = $tenant->gps_radius ?? 100;
@@ -236,6 +212,10 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::where('user_id', $user->id)
             ->where('date', $today)
+            ->where(function($q) {
+                $q->where('attendance_type', 'school')
+                  ->orWhereNull('class_schedule_id');
+            })
             ->first();
 
         if (!$attendance) {

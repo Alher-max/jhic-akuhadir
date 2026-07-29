@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendance_settings', function (Blueprint $table) {
-            $table->boolean('method_pwa')->default(false)->after('method_biometric');
+            $table->boolean('method_pwa')->default(true)->after('method_biometric');
             $table->string('biometric_ip_address')->nullable()->after('method_pwa');
         });
     }

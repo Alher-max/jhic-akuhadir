@@ -11,6 +11,7 @@ class Attendance extends Model
     protected $fillable = [
         'user_id',
         'tenant_id',
+        'attendance_type',
         'class_schedule_id',
         'date',
         'clock_in',
@@ -36,5 +37,15 @@ class Attendance extends Model
     public function classSchedule()
     {
         return $this->belongsTo(\App\Models\ClassSchedule::class, 'class_schedule_id');
+    }
+
+    public function isSchoolLevel(): bool
+    {
+        return ($this->attendance_type ?? 'school') === 'school';
+    }
+
+    public function isClassLevel(): bool
+    {
+        return $this->attendance_type === 'class' || !is_null($this->class_schedule_id);
     }
 }
