@@ -5,7 +5,51 @@
         </h2>
     </x-slot>
 
-    <div class="py-12" x-data="{ showLinkModal: false, activeParentId: null, activeParentName: '' }">
+    <div class="py-12" x-data="{ 
+        showLinkModal: false, 
+        activeParentId: null, 
+        activeParentName: '',
+        searchQuery: '',
+        selectedStudentId: '',
+        selectedStudentLabel: '',
+        showDropdown: false,
+        allStudentsList: [
+            @foreach($allStudents as $st)
+            {
+                id: '{{ $st->id }}',
+                name: '{{ addslashes($st->name) }}',
+                className: '{{ addslashes($st->schoolClass->nama_kelas ?? "Tanpa Kelas") }}',
+                nisn: '{{ addslashes($st->nisn ?: "-") }}'
+            },
+            @endforeach
+        ],
+        get filteredStudents() {
+            if (!this.searchQuery) return this.allStudentsList;
+            const q = this.searchQuery.toLowerCase();
+            return this.allStudentsList.filter(s => 
+                s.name.toLowerCase().includes(q) || 
+                s.className.toLowerCase().includes(q) || 
+                s.nisn.toLowerCase().includes(q)
+            );
+        },
+        selectStudent(st) {
+            this.selectedStudentId = st.id;
+            this.selectedStudentLabel = st.name + ' (' + st.className + ') - NISN: ' + st.nisn;
+            this.showDropdown = false;
+            this.searchQuery = '';
+        },
+        clearStudentSelection() {
+            this.selectedStudentId = '';
+            this.selectedStudentLabel = '';
+            this.searchQuery = '';
+        },
+        openLinkModal(parentId, parentName) {
+            this.activeParentId = parentId;
+            this.activeParentName = parentName;
+            this.clearStudentSelection();
+            this.showLinkModal = true;
+        }
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Alert Flash Message -->
@@ -107,7 +151,7 @@
                                         <div class="flex items-center justify-end gap-2">
                                             <!-- Tombol Hubungkan Anak -->
                                             <button type="button" 
-                                                    @click="activeParentId = {{ $parent->id }}; activeParentName = '{{ addslashes($parent->name) }}'; showLinkModal = true;"
+                                                    @click="openLinkModal({{ $parent->id }}, '{{ addslashes($parent->name) }}')"
                                                     class="bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition shadow-2xs flex items-center gap-1.5">
                                                 <i class="fa-solid fa-link"></i>
                                                 <span>Tautkan Anak</span>
@@ -161,22 +205,68 @@
                 <form :action="'{{ url('/operator/parents') }}/' + activeParentId + '/link-student'" method="POST" class="p-6 space-y-4">
                     @csrf
                     
-                    <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-xs text-sky-900 font-medium">
-                        Orang Tua / Wali: <strong x-text="activeParentName"></strong>
+                    <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-xs text-sky-900 font-medium flex items-center justify-between">
+                        <div>
+                            <span class="text-sky-600">Orang Tua / Wali:</span>
+                            <strong class="ml-1" x-text="activeParentName"></strong>
+                        </div>
                     </div>
 
+                    <!-- Searchable Combobox Siswa -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
                             Pilih Siswa / Anak <span class="text-rose-500">*</span>
                         </label>
-                        <select name="student_id" required class="w-full bg-white border border-gray-300 rounded-xl text-xs font-semibold p-3 focus:ring-brand-primary focus:border-brand-primary">
-                            <option value="">-- Pilih Siswa --</option>
-                            @foreach($allStudents as $st)
-                                <option value="{{ $st->id }}">
-                                    {{ $st->name }} ({{ $st->schoolClass->nama_kelas ?? 'Tanpa Kelas' }}) - NISN: {{ $st->nisn ?: '-' }}
-                                </option>
-                            @endforeach
-                        </select>
+                        
+                        <!-- Hidden Input bound to selectedStudentId -->
+                        <input type="hidden" name="student_id" x-model="selectedStudentId" required>
+
+                        <!-- Box Tampilan Siswa yang Telah Dipilih -->
+                        <template x-if="selectedStudentId">
+                            <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 font-semibold shadow-2xs">
+                                <div class="flex items-center gap-2 min-w-0 pr-2">
+                                    <i class="fa-solid fa-circle-check text-emerald-600 text-sm shrink-0"></i>
+                                    <span class="truncate" x-text="selectedStudentLabel"></span>
+                                </div>
+                                <button type="button" @click="clearStudentSelection()" class="text-emerald-700 hover:text-rose-600 font-bold p-1 rounded transition shrink-0" title="Ganti Pilihan Siswa">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
+                        </template>
+
+                        <!-- Live Search Input & Dropdown -->
+                        <template x-if="!selectedStudentId">
+                            <div class="relative" @click.away="showDropdown = false">
+                                <div class="relative flex items-center">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-gray-400 text-xs"></i>
+                                    <input type="text" 
+                                           x-model="searchQuery" 
+                                           @focus="showDropdown = true" 
+                                           @input="showDropdown = true"
+                                           placeholder="Ketik nama, NISN, atau kelas siswa..." 
+                                           class="w-full bg-white border border-gray-300 rounded-xl text-xs font-medium pl-9 pr-3 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                </div>
+
+                                <!-- Dropdown List Siswa Hasil Live Search -->
+                                <div x-show="showDropdown" x-cloak class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto z-50 divide-y divide-gray-100">
+                                    <template x-for="st in filteredStudents" :key="st.id">
+                                        <div @click="selectStudent(st)" class="p-3 hover:bg-brand-primary/5 cursor-pointer transition flex items-center justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-gray-900 text-xs truncate" x-text="st.name"></div>
+                                                <div class="text-[11px] text-gray-500 font-mono mt-0.5" x-text="'NISN: ' + st.nisn"></div>
+                                            </div>
+                                            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold border border-slate-200 shrink-0" x-text="st.className"></span>
+                                        </div>
+                                    </template>
+                                    
+                                    <template x-if="filteredStudents.length === 0">
+                                        <div class="p-4 text-center text-xs text-gray-400 font-medium">
+                                            Tidak ditemukan siswa dengan kata kunci "<span class="font-bold text-gray-600" x-text="searchQuery"></span>"
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
                     </div>
 
                     <div>
