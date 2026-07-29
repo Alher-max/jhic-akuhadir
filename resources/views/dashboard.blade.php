@@ -112,7 +112,7 @@
                             <i class="fa-solid fa-calendar-days"></i> <span class="leading-none">Jadwal</span>
                         </a>
                     @else
-                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah (Urutan Alfabetis: Guru, Jadwal, Kelas, Pengaturan, Siswa) -->
+                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah (Urutan Alfabetis: Guru, Jadwal, Kelas, Orang Tua, Pengaturan, Siswa) -->
                         <a href="{{ route('operator.teachers.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-chalkboard-user"></i> <span class="leading-none">Guru</span>
                         </a>
@@ -121,6 +121,9 @@
                         </a>
                         <a href="{{ route('operator.classes.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-chalkboard"></i> <span class="leading-none">Kelas</span>
+                        </a>
+                        <a href="{{ route('operator.parents.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-users-line"></i> <span class="leading-none">Orang Tua</span>
                         </a>
                         <a href="{{ route('attendance-settings.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-sliders"></i> <span class="leading-none">Pengaturan</span>

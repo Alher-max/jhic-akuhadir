@@ -104,6 +104,26 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         return $this->hasMany(SchoolClass::class, 'wali_kelas_id');
     }
 
+    /**
+     * Relasi untuk Orang Tua -> Siswa (Anak-anaknya).
+     */
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id')
+                    ->withPivot('relationship')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Relasi untuk Siswa -> Orang Tua (Ayah/Ibu/Wali).
+     */
+    public function parents()
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id')
+                    ->withPivot('relationship')
+                    ->withTimestamps();
+    }
+
     public static function getTeacherRoles(): array
     {
         return [
