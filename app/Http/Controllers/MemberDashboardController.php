@@ -21,13 +21,14 @@ class MemberDashboardController extends Controller
         $user = Auth::user();
         $user->load(['schoolClass.waliKelas', 'tenant']);
 
-        // Cari jadwal aktif untuk pengguna ini hari ini (Timezone Asia/Jakarta)
-        $now = Carbon::now('Asia/Jakarta');
+        // Cari jadwal aktif untuk pengguna ini hari ini (Timezone dinamis per tenant)
+        $tz = $user->tenant->timezone ?? config('app.timezone', 'Asia/Jakarta');
+        $now = Carbon::now($tz);
         $todayDayOfWeek = $now->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
         $todayDate = $now->format('Y-m-d');
         $currentTimeStr = $now->format('H:i:s');
 
-        // Fetch today's attendance (Timezone WIB)
+        // Fetch today's attendance (Timezone Tenant)
         $todayAttendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', $todayDate)
             ->first();
@@ -55,16 +56,16 @@ class MemberDashboardController extends Controller
 
             if ($classSchedules->isNotEmpty()) {
                 // Cari sesi KBM yang sedang aktif (waktu saat ini berada di rentang start_time dan end_time)
-                $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
-                    $start = Carbon::parse($cs->start_time, 'Asia/Jakarta')->format('H:i:s');
-                    $end = Carbon::parse($cs->end_time, 'Asia/Jakarta')->format('H:i:s');
+                $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr, $tz) {
+                    $start = Carbon::parse($cs->start_time, $tz)->format('H:i:s');
+                    $end = Carbon::parse($cs->end_time, $tz)->format('H:i:s');
                     return $currentTimeStr >= $start && $currentTimeStr <= $end;
                 });
 
                 // Jika tidak ada sesi di menit ini, ambil sesi mendatang terdekat atau sesi pertama hari ini
                 if (!$activeSession) {
-                    $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
-                        return Carbon::parse($cs->end_time, 'Asia/Jakarta')->format('H:i:s') >= $currentTimeStr;
+                    $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr, $tz) {
+                        return Carbon::parse($cs->end_time, $tz)->format('H:i:s') >= $currentTimeStr;
                     }) ?? $classSchedules->first();
                 }
 
@@ -125,9 +126,9 @@ class MemberDashboardController extends Controller
 
         $canClockIn = false;
         if (!$hasClockedIn && $currentSchedule && !$todayLeave) {
-            $startTimeStr = Carbon::parse($currentSchedule->start_time, 'Asia/Jakarta')->format('H:i:s');
-            $endTimeStr = Carbon::parse($currentSchedule->end_time, 'Asia/Jakarta')->format('H:i:s');
-            $earliestAllowed = Carbon::parse($currentSchedule->start_time, 'Asia/Jakarta')->subMinutes(60)->format('H:i:s');
+            $startTimeStr = Carbon::parse($currentSchedule->start_time, $tz)->format('H:i:s');
+            $endTimeStr = Carbon::parse($currentSchedule->end_time, $tz)->format('H:i:s');
+            $earliestAllowed = Carbon::parse($currentSchedule->start_time, $tz)->subMinutes(60)->format('H:i:s');
 
             if ($currentTimeStr >= $earliestAllowed && $currentTimeStr <= $endTimeStr) {
                 $canClockIn = true;
