@@ -52,19 +52,6 @@
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <!-- Alert Flash Message -->
-            @if(session('success'))
-                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-sm font-medium flex items-center justify-between shadow-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                    <button type="button" @click="$el.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
-                </div>
-            @endif
-
             <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border p-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
                     <div>
