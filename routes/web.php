@@ -134,6 +134,8 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::post('/operator/teachers', [\App\Http\Controllers\TeacherManagementController::class, 'store'])->name('operator.teachers.store');
         Route::put('/operator/teachers/{teacher}', [\App\Http\Controllers\TeacherManagementController::class, 'update'])->name('operator.teachers.update');
         Route::delete('/operator/teachers/{teacher}', [\App\Http\Controllers\TeacherManagementController::class, 'destroy'])->name('operator.teachers.destroy');
+        Route::post('/operator/teachers/{teacher}/reset-password', [\App\Http\Controllers\TeacherManagementController::class, 'resetPassword'])->name('operator.teachers.reset-password');
+        
         // Parent Management
         Route::get('/operator/parents', [\App\Http\Controllers\OperatorParentController::class, 'index'])->name('operator.parents.index');
         

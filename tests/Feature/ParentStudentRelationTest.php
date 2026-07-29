@@ -13,7 +13,7 @@ class ParentStudentRelationTest extends TestCase
 
     public function test_parent_and_student_belongs_to_many_relationship(): void
     {
-        $tenant = Tenant::create(['name' => 'Test School', 'code' => 'SCH01']);
+        $tenant = Tenant::create(['name' => 'Test School', 'code' => 'SCH01', 'slug' => 'test-school']);
 
         $parent = User::factory()->create([
             'tenant_id' => $tenant->id,
@@ -39,7 +39,7 @@ class ParentStudentRelationTest extends TestCase
 
     public function test_operator_can_access_parent_management_index_page(): void
     {
-        $tenant = Tenant::create(['name' => 'Test School', 'code' => 'SCH01']);
+        $tenant = Tenant::create(['name' => 'Test School', 'code' => 'SCH01', 'slug' => 'test-school']);
 
         $operator = User::factory()->create([
             'tenant_id' => $tenant->id,
