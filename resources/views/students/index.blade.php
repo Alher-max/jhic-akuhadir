@@ -187,6 +187,15 @@
                                                 <i class="fa-solid fa-eye text-xs"></i><i
                                                     class="fa-solid fa-pen-to-square"></i> Lihat / Edit
                                             </button>
+                                            <form action="{{ route('students.reset-password', $student->id) }}" method="POST"
+                                                class="inline m-0"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin mereset password siswa {{ addslashes($student->name) }} ke password default ({{ $student->getDefaultPassword() }})?');">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition inline-flex items-center gap-1">
+                                                    <i class="fa-solid fa-key text-xs"></i> Reset Password
+                                                </button>
+                                            </form>
                                             <form action="{{ route('students.destroy', $student->id) }}" method="POST"
                                                 class="inline m-0"
                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($student->name) }}?');">

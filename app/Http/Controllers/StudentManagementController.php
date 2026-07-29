@@ -431,9 +431,18 @@ class StudentManagementController extends Controller
      */
     public function resetPassword($id)
     {
-        $student = Student::findOrFail($id);
-        if ($student->tenant_id !== Auth::user()->tenant_id) {
-            abort(403);
+        $user = Auth::user();
+        $tenantId = $user->tenant_id;
+        $student = Student::where('tenant_id', $tenantId)->findOrFail($id);
+
+        // Validasi Otorisasi jika role adalah guru / wali kelas
+        if (in_array($user->role, ['guru', 'wali_kelas', 'teacher', 'guru_mapel'])) {
+            $isHomeroom = SchoolClass::where('id', $student->class_id)
+                                    ->where('wali_kelas_id', $user->id)
+                                    ->exists();
+            if (!$isHomeroom && $user->homeroomClasses->isEmpty()) {
+                abort(403, 'Anda hanya berhak mereset password siswa di kelas binaan Anda.');
+            }
         }
 
         $newPassword = $student->getDefaultPassword();
@@ -444,6 +453,6 @@ class StudentManagementController extends Controller
             'is_password_changed' => false,
         ]);
 
-        return redirect()->back()->with('success', "Password siswa {$student->name} berhasil direset menjadi default: '{$newPassword}'");
+        return redirect()->back()->with('success', "Password siswa {$student->name} berhasil di-reset ke: {$newPassword}");
     }
 }

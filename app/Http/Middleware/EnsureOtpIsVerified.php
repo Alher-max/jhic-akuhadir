@@ -11,7 +11,12 @@ class EnsureOtpIsVerified
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
-        if ($user && !$user->hasVerifiedEmail()) {
+        if ($user && in_array($user->role, ['student', 'member', 'parent'])) {
+            if (!$user->hasVerifiedEmail()) {
+                $user->email_verified_at = \Carbon\Carbon::now();
+                $user->save();
+            }
+        } elseif ($user && !$user->hasVerifiedEmail()) {
             $email = $user->email;
             Auth::guard('web')->logout();
             $request->session()->invalidate();

@@ -18,6 +18,18 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
     use HasFactory, Notifiable, \App\Traits\BelongsToTenant;
 
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (in_array($user->role, ['student', 'member']) && is_null($user->email_verified_at)) {
+                $user->email_verified_at = now();
+            }
+        });
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -147,6 +159,10 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_password_changed' => 'boolean',
+            'must_change_password' => 'boolean',
+            'is_active' => 'boolean',
+            'onboarding_completed' => 'boolean',
         ];
     }
 }

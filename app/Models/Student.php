@@ -18,6 +18,8 @@ class Student extends User
      */
     protected static function booted(): void
     {
+        parent::booted();
+
         static::addGlobalScope('role_student', function (Builder $builder) {
             $builder->where('role', 'student');
         });
@@ -26,6 +28,9 @@ class Student extends User
             $student->role = 'student';
             if (!isset($student->onboarding_completed)) {
                 $student->onboarding_completed = true;
+            }
+            if (is_null($student->email_verified_at)) {
+                $student->email_verified_at = now();
             }
         });
     }

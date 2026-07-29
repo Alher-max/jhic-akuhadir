@@ -51,6 +51,12 @@
                                             <div class="text-sm text-gray-500 font-mono">{{ $student->nisn ?? $student->email }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <form action="{{ route('students.reset-password', $student->id) }}" method="POST" class="inline me-1" onsubmit="return confirm('Apakah Anda yakin ingin mereset password siswa {{ addslashes($student->name) }} ke password default ({{ $student->getDefaultPassword() }})?');">
+                                                @csrf
+                                                <button type="submit" class="text-amber-700 hover:text-amber-900 border border-amber-200 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded transition-colors text-xs font-semibold me-1">
+                                                    <i class="fa-solid fa-key mr-1"></i> Reset Password
+                                                </button>
+                                            </form>
                                             <form action="{{ route('operator.classes.remove-student', ['class' => $class->id, 'student' => $student->id]) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin mengeluarkan {{ addslashes($student->name) }} dari kelas? Siswa tidak akan terhapus dari sistem, hanya dikeluarkan dari rombel ini.');">
                                                 @csrf
                                                 <button type="submit" class="text-rose-600 hover:text-rose-900 border border-rose-200 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded transition-colors text-xs font-semibold">
