@@ -291,16 +291,28 @@
                             (Disetujui)
                         </div>
                     </button>
-                @elseif(!$todayAttendance)
-                    @if($currentSchedule)
-                        <!-- KONDISI 1: Belum Absen -->
-                        <form method="POST" action="{{ route('member.clock-in') }}" class="w-full" x-ref="clockInForm">
+                @elseif($hasClockedIn)
+                    @if(!$todayAttendance?->clock_out && !in_array($todayAttendance?->status, ['sick', 'permission', 'duty_trip']))
+                        <!-- KONDISI A1: Sudah Clock In, Belum Pulang -->
+                        <div class="w-full flex flex-col gap-3 mb-4">
+                            <div class="bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl py-3 px-4 font-bold text-sm tracking-wider flex items-center justify-center gap-2 shadow-inner">
+                                <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                STATUS: HADIR ({{ \Carbon\Carbon::parse($todayAttendance->clock_in_time)->format('H:i') }} WIB)
+                            </div>
+                            
+                            <div x-show="endTime !== null" class="w-full bg-brand-surface border border-brand-border rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
+                                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1" x-text="isTimeToGoHome ? 'Status' : 'Sisa Waktu Pulang'"></span>
+                                <div class="text-2xl font-black tabular-nums tracking-wider"
+                                     :class="isTimeToGoHome ? 'text-emerald-500 animate-pulse' : 'text-brand-primary'"
+                                     x-text="remainingTime">
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ route('member.clock-out') }}" class="w-full">
                             @csrf
                             <input type="hidden" name="latitude" :value="lat">
                             <input type="hidden" name="longitude" :value="lng">
-                            <input type="hidden" name="image_data" x-ref="imageDataInput">
-                            <input type="hidden" name="is_fallback" :value="isFallback">
-                            <input type="file" accept="image/*" capture="user" x-ref="fallbackInput" class="hidden" @change="handleFallbackUpload($event)">
                             
                             <template x-if="isGpsRequired && gpsError">
                                 <div class="mb-3 w-full bg-rose-50 text-rose-600 border border-rose-200 rounded-xl py-2 px-3 font-semibold text-xs text-center">
@@ -314,42 +326,31 @@
                                 </div>
                             </template>
 
-                            <button type="button" @click.prevent="openCamera()"
-                                    class="w-full bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-95 transition-all shadow-sm rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[24px]">login</span>
-                                Presensi Masuk
+                            <button type="submit" :disabled="isGpsRequired && (!lat || isLoadingGps)"
+                                    :class="(isGpsRequired && (!lat || isLoadingGps)) ? 'opacity-60 cursor-not-allowed' : ''"
+                                    class="w-full bg-rose-600 text-white hover:bg-rose-700 active:scale-95 transition-all shadow-sm rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[24px]">logout</span>
+                                PULANG
                             </button>
                         </form>
                     @else
-                        <!-- TIDAK ADA JADWAL -->
-                        <button disabled class="w-full relative rounded-2xl bg-gray-200 p-1 shadow-inner cursor-not-allowed">
-                            <div class="relative bg-gray-100 text-gray-400 border border-gray-200 rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[24px] opacity-50">block</span>
-                                LIBUR / OFF
+                        <!-- KONDISI A2: Sudah Selesai Keduanya -->
+                        <button disabled class="w-full relative rounded-2xl bg-gray-300 p-1 shadow-inner cursor-not-allowed">
+                            <div class="relative bg-gray-200 text-gray-600 rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[24px] text-emerald-600">check_circle</span>
+                                ✓ Absensi Hari Ini Selesai
                             </div>
                         </button>
                     @endif
-                @elseif(!$todayAttendance?->clock_out && !in_array($todayAttendance?->status, ['sick', 'permission', 'duty_trip']))
-                    <!-- KONDISI 2: Sudah Masuk, Belum Pulang -->
-                    <div class="w-full flex flex-col gap-3 mb-4">
-                        <div class="bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl py-3 px-4 font-bold text-sm tracking-wider flex items-center justify-center gap-2 shadow-inner">
-                            <span class="material-symbols-outlined text-[20px]">check_circle</span>
-                            STATUS: HADIR
-                        </div>
-                        
-                        <div x-show="endTime !== null" class="w-full bg-brand-surface border border-brand-border rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
-                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1" x-text="isTimeToGoHome ? 'Status' : 'Sisa Waktu Pulang'"></span>
-                            <div class="text-2xl font-black tabular-nums tracking-wider"
-                                 :class="isTimeToGoHome ? 'text-emerald-500 animate-pulse' : 'text-brand-primary'"
-                                 x-text="remainingTime">
-                            </div>
-                        </div>
-                    </div>
-
-                    <form method="POST" action="{{ route('member.clock-out') }}" class="w-full">
+                @elseif($canClockIn)
+                    <!-- KONDISI B: Belum Absen & Dalam Jam KBM Valid -->
+                    <form method="POST" action="{{ route('member.clock-in') }}" class="w-full" x-ref="clockInForm">
                         @csrf
                         <input type="hidden" name="latitude" :value="lat">
                         <input type="hidden" name="longitude" :value="lng">
+                        <input type="hidden" name="image_data" x-ref="imageDataInput">
+                        <input type="hidden" name="is_fallback" :value="isFallback">
+                        <input type="file" accept="image/*" capture="user" x-ref="fallbackInput" class="hidden" @change="handleFallbackUpload($event)">
                         
                         <template x-if="isGpsRequired && gpsError">
                             <div class="mb-3 w-full bg-rose-50 text-rose-600 border border-rose-200 rounded-xl py-2 px-3 font-semibold text-xs text-center">
@@ -363,19 +364,18 @@
                             </div>
                         </template>
 
-                        <button type="submit" :disabled="isGpsRequired && (!lat || isLoadingGps)"
-                                :class="(isGpsRequired && (!lat || isLoadingGps)) ? 'opacity-60 cursor-not-allowed' : ''"
-                                class="w-full bg-rose-600 text-white hover:bg-rose-700 active:scale-95 transition-all shadow-sm rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined text-[24px]">logout</span>
-                            PULANG
+                        <button type="button" @click.prevent="openCamera()"
+                                class="w-full bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-95 transition-all shadow-sm rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[24px]">login</span>
+                            Clock In / Presensi Sekarang
                         </button>
                     </form>
                 @else
-                    <!-- KONDISI 3: Sudah Selesai Keduanya atau Absensi di-sync oleh Izin -->
-                    <button disabled class="w-full relative rounded-2xl bg-gray-300 p-1 shadow-inner cursor-not-allowed">
-                        <div class="relative bg-gray-200 text-gray-500 rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined text-[24px]">check_circle</span>
-                            Absensi Hari Ini Selesai
+                    <!-- KONDISI C: Luar Jam / Batas Waktu Habis / Belum Dibuka -->
+                    <button disabled class="w-full relative rounded-2xl bg-gray-200 p-1 shadow-inner cursor-not-allowed">
+                        <div class="relative bg-gray-100 text-gray-500 border border-gray-300 rounded-xl py-4 font-bold text-base tracking-wider flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[24px] text-gray-400">schedule</span>
+                            Presensi Belum Dibuka / Batas Waktu Habis
                         </div>
                     </button>
                 @endif

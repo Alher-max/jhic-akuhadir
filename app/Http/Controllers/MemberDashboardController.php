@@ -21,23 +21,23 @@ class MemberDashboardController extends Controller
         $user = Auth::user();
         $user->load(['schoolClass.waliKelas', 'tenant']);
 
-        // Fetch today's attendance
+        // Cari jadwal aktif untuk pengguna ini hari ini (Timezone Asia/Jakarta)
+        $now = Carbon::now('Asia/Jakarta');
+        $todayDayOfWeek = $now->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
+        $todayDate = $now->format('Y-m-d');
+        $currentTimeStr = $now->format('H:i:s');
+
+        // Fetch today's attendance (Timezone WIB)
         $todayAttendance = Attendance::where('user_id', $user->id)
-            ->where('date', date('Y-m-d'))
+            ->whereDate('date', $todayDate)
             ->first();
 
         // Check if there is an approved leave for today
         $todayLeave = LeaveRequest::where('user_id', $user->id)
             ->where('status', 'approved')
-            ->where('start_date', '<=', date('Y-m-d'))
-            ->where('end_date', '>=', date('Y-m-d'))
+            ->where('start_date', '<=', $todayDate)
+            ->where('end_date', '>=', $todayDate)
             ->first();
-
-        // Cari jadwal aktif untuk pengguna ini hari ini
-        $now = Carbon::now();
-        $todayDayOfWeek = $now->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
-        $todayDate = $now->format('Y-m-d');
-        $currentTimeStr = $now->format('H:i:s');
 
         $attendanceService = app(\App\Services\AttendanceService::class);
         $dayNameIndo = $attendanceService->getDayNameInIndonesian($now);
@@ -56,15 +56,15 @@ class MemberDashboardController extends Controller
             if ($classSchedules->isNotEmpty()) {
                 // Cari sesi KBM yang sedang aktif (waktu saat ini berada di rentang start_time dan end_time)
                 $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
-                    $start = Carbon::parse($cs->start_time)->format('H:i:s');
-                    $end = Carbon::parse($cs->end_time)->format('H:i:s');
+                    $start = Carbon::parse($cs->start_time, 'Asia/Jakarta')->format('H:i:s');
+                    $end = Carbon::parse($cs->end_time, 'Asia/Jakarta')->format('H:i:s');
                     return $currentTimeStr >= $start && $currentTimeStr <= $end;
                 });
 
                 // Jika tidak ada sesi di menit ini, ambil sesi mendatang terdekat atau sesi pertama hari ini
                 if (!$activeSession) {
                     $activeSession = $classSchedules->first(function ($cs) use ($currentTimeStr) {
-                        return Carbon::parse($cs->end_time)->format('H:i:s') >= $currentTimeStr;
+                        return Carbon::parse($cs->end_time, 'Asia/Jakarta')->format('H:i:s') >= $currentTimeStr;
                     }) ?? $classSchedules->first();
                 }
 
@@ -118,6 +118,20 @@ class MemberDashboardController extends Controller
                 'end_time' => '23:59:00',
                 'grace_period_minutes' => 60,
             ];
+        }
+
+        // Calculation of Button States (hasClockedIn & canClockIn)
+        $hasClockedIn = $todayAttendance && !empty($todayAttendance->clock_in_time);
+
+        $canClockIn = false;
+        if (!$hasClockedIn && $currentSchedule && !$todayLeave) {
+            $startTimeStr = Carbon::parse($currentSchedule->start_time, 'Asia/Jakarta')->format('H:i:s');
+            $endTimeStr = Carbon::parse($currentSchedule->end_time, 'Asia/Jakarta')->format('H:i:s');
+            $earliestAllowed = Carbon::parse($currentSchedule->start_time, 'Asia/Jakarta')->subMinutes(60)->format('H:i:s');
+
+            if ($currentTimeStr >= $earliestAllowed && $currentTimeStr <= $endTimeStr) {
+                $canClockIn = true;
+            }
         }
 
         // Fetch weekly attendances
@@ -226,6 +240,8 @@ class MemberDashboardController extends Controller
             'todayAttendance',
             'todayLeave',
             'currentSchedule',
+            'hasClockedIn',
+            'canClockIn',
             'weeklyAttendances',
             'userType',
             'weeklySchedules',
