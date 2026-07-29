@@ -326,17 +326,15 @@ class TeacherManagementController extends Controller
             abort(403);
         }
 
-        $defaultPassword = 'hadiryuk123';
-        if (!empty($teacher->nisn)) {
-            $defaultPassword = $teacher->nisn;
-        }
+        $teacher->load('profile');
+        $newPassword = $teacher->getDefaultPassword();
 
         $teacher->update([
-            'password' => Hash::make($defaultPassword),
+            'password' => Hash::make($newPassword),
             'must_change_password' => true,
         ]);
 
-        return redirect()->back()->with('success', "Password {$teacher->name} berhasil direset menjadi default: '{$defaultPassword}'");
+        return redirect()->back()->with('success', "Password {$teacher->name} berhasil direset menjadi default: '{$newPassword}'");
     }
 
     public function downloadTemplate()

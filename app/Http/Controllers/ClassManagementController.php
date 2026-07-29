@@ -31,12 +31,7 @@ class ClassManagementController extends Controller
             return $jenjangOrder[$jenjangName] ?? 99;
         });
 
-        $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
-        $teachers = User::where('tenant_id', $tenantId)
-            ->whereIn('role', $teacherRoles)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $teachers = User::activeTeachers()->where('tenant_id', $tenantId)->get();
 
         return view('operator.classes.index', compact('groupedClasses', 'teachers'));
     }
@@ -52,6 +47,7 @@ class ClassManagementController extends Controller
             'wali_kelas_id' => [
                 'required', 
                 'exists:users,id',
+                Rule::unique('school_classes', 'wali_kelas_id')->where('tenant_id', $tenantId),
                 function ($attribute, $value, $fail) use ($tenantId) {
                     if ($value) {
                         $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
@@ -69,6 +65,7 @@ class ClassManagementController extends Controller
             'nama_kelas.required' => 'Nama kelas / rombel wajib diisi.',
             'wali_kelas_id.required' => 'Wali kelas wajib dipilih.',
             'wali_kelas_id.exists' => 'Wali kelas yang dipilih tidak valid.',
+            'wali_kelas_id.unique' => 'Guru ini sudah ditugaskan menjadi Wali Kelas di rombel lain.',
         ]);
 
         $class = SchoolClass::create([
@@ -135,6 +132,7 @@ class ClassManagementController extends Controller
             'wali_kelas_id' => [
                 'required', 
                 'exists:users,id',
+                Rule::unique('school_classes', 'wali_kelas_id')->where('tenant_id', $tenantId)->ignore($class->id),
                 function ($attribute, $value, $fail) use ($tenantId) {
                     if ($value) {
                         $teacherRoles = ['teacher', 'guru', 'guru_kelas', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'];
@@ -151,6 +149,7 @@ class ClassManagementController extends Controller
             'nama_kelas.required' => 'Nama kelas / rombel wajib diisi.',
             'wali_kelas_id.required' => 'Wali kelas wajib dipilih.',
             'wali_kelas_id.exists' => 'Wali kelas yang dipilih tidak valid.',
+            'wali_kelas_id.unique' => 'Guru ini sudah ditugaskan menjadi Wali Kelas di rombel lain.',
         ]);
 
         $class->update([

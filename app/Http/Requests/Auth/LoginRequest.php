@@ -29,13 +29,13 @@ class LoginRequest extends FormRequest
     {
         return [
             'school_code' => ['required', 'string'],
-            'login_id' => ['required', 'string'],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Attempt to authenticate the request's credentials (Email-Only Architecture).
      *
      * @throws ValidationException
      */
@@ -43,13 +43,14 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $schoolCode = $this->input('school_code');
-        $loginId = $this->input('login_id');
+        $schoolCode = trim($this->input('school_code', ''));
+        $email = strtolower(trim($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? ''));
 
         // Langkah 1: Cari Tenant/Sekolah berdasarkan school_code atau npsn
         $tenant = \App\Models\Tenant::where(function ($q) use ($schoolCode) {
             $q->where('code', $schoolCode)
-              ->orWhere('code', strtoupper($schoolCode));
+              ->orWhere('code', strtoupper($schoolCode))
+              ->orWhere('code', strtolower($schoolCode));
             
             if (\Illuminate\Support\Facades\Schema::hasColumn('tenants', 'npsn')) {
                 $q->orWhere('npsn', $schoolCode);
@@ -64,39 +65,20 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // Langkah 2: Lakukan pencarian User HANYA pada tenant_id sekolah tersebut
+        // Langkah 2: Email-Only User Lookup (Pure Email Architecture)
         $user = \App\Models\User::where('tenant_id', $tenant->id)
-            ->where(function ($query) use ($loginId) {
-                $query->where('email', $loginId)
-                      ->orWhere('nisn', $loginId);
-                
-                // Periksa username jika kolomnya ada di database
-                if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'username')) {
-                    $query->orWhere('username', $loginId);
-                }
+            ->where('email', $email)
+            ->first();
 
-                // Periksa relasi teacher jika ada
-                if (method_exists(\App\Models\User::class, 'teacher')) {
-                    $query->orWhereHas('teacher', function ($q) use ($loginId) {
-                        $q->where('nip', $loginId)->orWhere('nuptk', $loginId);
-                    });
-                }
-
-                // Periksa relasi profile
-                $query->orWhereHas('profile', function ($q) use ($loginId) {
-                    $q->where('employee_id', $loginId) // NIP
-                      ->orWhere('nuptk', $loginId);
-                });
-            })->first();
-
-        if (! $user || ! Auth::attempt(['id' => $user->id, 'password' => $this->input('password')], $this->boolean('remember'))) {
+        if (! $user || ! \Illuminate\Support\Facades\Hash::check($this->input('password'), $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'login_id' => trans('auth.failed'),
+                'email' => trans('auth.failed'),
             ]);
         }
 
+        Auth::login($user, $this->boolean('remember'));
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -116,7 +98,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'login_id' => trans('auth.throttle', [
+            'email' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -128,6 +110,7 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('login_id')).'|'.$this->ip());
+        $email = Str::lower($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? '');
+        return Str::transliterate($email.'|'.$this->ip());
     }
 }

@@ -13,8 +13,29 @@
         academicYear: '{{ addslashes($defaultSettings['academic_year']) }}',
         cardTitle: '{{ addslashes($defaultSettings['card_title']) }}',
         footerText: '{{ addslashes($defaultSettings['footer_text']) }}',
+        logoUrl: '{{ $defaultSettings['logo_url'] ?? '' }}',
         selectedStudents: [],
         selectAll: false,
+        previewLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file logo maksimal 2 MB.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.logoUrl = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        removeLogoPreview() {
+            this.logoUrl = '';
+            if (document.getElementById('school_logo_input')) {
+                document.getElementById('school_logo_input').value = '';
+            }
+        },
         toggleAll() {
             if (this.selectAll) {
                 this.selectedStudents = Array.from(document.querySelectorAll('.student-checkbox')).map(cb => cb.value);
@@ -23,6 +44,16 @@
             }
         }
     }">
+        <!-- Hidden Standalone Forms for Logo Upload & Removal -->
+        <form action="{{ route('student-cards.upload-logo') }}" method="POST" enctype="multipart/form-data" id="uploadLogoForm" class="hidden">
+            @csrf
+            <input type="file" name="school_logo" id="school_logo_input" accept="image/png,image/jpeg,image/jpg,image/svg+xml" @change="previewLogo($event); document.getElementById('uploadLogoForm').submit();">
+        </form>
+
+        <form action="{{ route('student-cards.remove-logo') }}" method="POST" id="removeLogoForm" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Bar Menu Tab Navigasi Pengaturan Presensi -->
@@ -149,6 +180,23 @@
                                     <input type="text" name="footer_text" x-model="footerText" class="w-full border-gray-300 rounded-xl shadow-xs text-xs focus:ring-brand-primary focus:border-brand-primary px-3 py-2">
                                 </div>
                             </div>
+
+                            <!-- Logo Sekolah Upload Controls -->
+                            <div class="border-t border-gray-100 pt-3">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                    <span>Logo Sekolah</span>
+                                    <span class="text-[10px] text-gray-400 font-normal">PNG, JPG, JPEG, SVG (Maks. 2 MB)</span>
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" @click="document.getElementById('school_logo_input').click()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 transition flex items-center gap-2 cursor-pointer shadow-xs">
+                                        <i class="fa-solid fa-cloud-arrow-up text-brand-primary"></i> Pilih / Unggah Logo
+                                    </button>
+                                    <button type="button" x-show="logoUrl" @click="removeLogoPreview(); document.getElementById('removeLogoForm').submit();" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition flex items-center gap-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-trash-can"></i> Hapus / Reset Logo
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-gray-500 mt-1.5">Latar belakang transparan (PNG/SVG) direkomendasikan untuk hasil cetak optimal.</p>
+                            </div>
                         </div>
 
                         <!-- Live Interactive Card Preview (Right - 5 cols) -->
@@ -179,10 +227,15 @@
                                 <div class="flex items-center justify-between border-b pb-2"
                                     :class="template === 'modern' ? 'border-white/10' : 'border-gray-200'">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center text-xs font-black"
-                                             :class="accentColor === 'red' ? 'text-red-500' : (accentColor === 'indigo' ? 'text-indigo-400' : 'text-emerald-400')">
-                                            H
-                                        </div>
+                                        <template x-if="logoUrl">
+                                            <img :src="logoUrl" alt="Logo Sekolah" class="w-6 h-6 object-contain rounded shrink-0">
+                                        </template>
+                                        <template x-if="!logoUrl">
+                                            <div class="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center text-xs font-black shrink-0"
+                                                 :class="accentColor === 'red' ? 'text-red-500' : (accentColor === 'indigo' ? 'text-indigo-400' : 'text-emerald-400')">
+                                                H
+                                            </div>
+                                        </template>
                                         <div>
                                             <h5 class="text-[10px] font-black uppercase tracking-wider leading-none" x-text="schoolName || 'NAMA SEKOLAH'"></h5>
                                             <span class="text-[8px] opacity-75 leading-none" x-text="cardTitle || 'KARTU PELAJAR'"></span>

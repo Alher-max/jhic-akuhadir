@@ -21,6 +21,11 @@ class Subject extends Model
         'is_preset' => 'boolean',
     ];
 
+    public function setCodeAttribute($value)
+    {
+        $this->attributes['code'] = $value ? strtoupper(trim($value)) : null;
+    }
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);

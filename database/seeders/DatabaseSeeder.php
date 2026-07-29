@@ -46,6 +46,25 @@ class DatabaseSeeder extends Seeder
                 StudentSeeder::class,
                 DummyDevSeeder::class,
             ]);
+
+            // ATURAN MUTLAK: Setiap Kelas Wajib Memiliki Wali Kelas
+            $unassignedClasses = \App\Models\SchoolClass::whereNull('wali_kelas_id')->get();
+            foreach ($unassignedClasses as $class) {
+                $teacherEmail = 'guru.' . \Illuminate\Support\Str::slug($class->nama_kelas ?: ('class-' . $class->id)) . '@hadirsekolah.id';
+                $teacher = User::firstOrCreate(
+                    ['email' => $teacherEmail],
+                    [
+                        'tenant_id' => $class->tenant_id,
+                        'name' => 'Wali Kelas ' . ($class->nama_kelas ?: 'Utama'),
+                        'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                        'role' => 'teacher',
+                        'is_active' => true,
+                        'email_verified_at' => now(),
+                    ]
+                );
+                $class->wali_kelas_id = $teacher->id;
+                $class->save();
+            }
         }
     }
 }

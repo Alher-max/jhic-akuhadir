@@ -95,4 +95,43 @@ class StudentCardTest extends TestCase
         $response->assertSee('Budi Santoso');
         $response->assertSee('0098765432'); // Token QR Code (NISN)
     }
+
+    /**
+     * Test: Operator dapat mengunggah logo sekolah untuk Kartu Pelajar.
+     */
+    public function test_operator_can_upload_school_logo_for_student_card(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('logo.png', 200, 200);
+
+        $response = $this->actingAs($this->operator)
+            ->post(route('student-cards.upload-logo'), [
+                'school_logo' => $file,
+            ]);
+
+        $response->assertRedirect();
+        $this->tenant->refresh();
+        $this->assertNotNull($this->tenant->logo_path);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($this->tenant->logo_path);
+    }
+
+    /**
+     * Test: Operator dapat menghapus logo sekolah.
+     */
+    public function test_operator_can_remove_school_logo(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('logo.png', 200, 200);
+        $path = $file->store('logos', 'public');
+        $this->tenant->update(['logo_path' => $path]);
+
+        $response = $this->actingAs($this->operator)
+            ->delete(route('student-cards.remove-logo'));
+
+        $response->assertRedirect();
+        $this->tenant->refresh();
+        $this->assertNull($this->tenant->logo_path);
+    }
 }

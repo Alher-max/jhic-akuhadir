@@ -112,10 +112,16 @@
                 <div class="flex items-center justify-between border-b pb-1.5 
                     {{ $template === 'modern' ? 'border-white/15' : 'border-gray-200' }}">
                     <div class="flex items-center gap-1.5 truncate">
-                        <div class="w-5 h-5 rounded bg-white/20 flex items-center justify-center text-[10px] font-black shrink-0
-                            {{ $accent === 'red' ? 'text-red-500' : ($accent === 'indigo' ? 'text-indigo-400' : 'text-emerald-400') }}">
-                            H
-                        </div>
+                        @if(isset($cardConfig['logo_url']) && $cardConfig['logo_url'])
+                            <img src="{{ $cardConfig['logo_url'] }}" alt="Logo" class="w-5 h-5 object-contain shrink-0 rounded">
+                        @elseif(isset($tenant->logo_path) && $tenant->logo_path)
+                            <img src="{{ asset('storage/' . $tenant->logo_path) }}" alt="Logo" class="w-5 h-5 object-contain shrink-0 rounded">
+                        @else
+                            <div class="w-5 h-5 rounded bg-white/20 flex items-center justify-center text-[10px] font-black shrink-0
+                                {{ $accent === 'red' ? 'text-red-500' : ($accent === 'indigo' ? 'text-indigo-400' : 'text-emerald-400') }}">
+                                H
+                            </div>
+                        @endif
                         <div class="truncate">
                             <h2 class="text-[9.5px] font-black uppercase tracking-wider leading-none truncate">
                                 {{ $cardConfig['school_name'] }}

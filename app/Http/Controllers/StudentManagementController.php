@@ -21,14 +21,23 @@ class StudentManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $tenantId = Auth::user()->tenant_id;
+        $user = Auth::user();
+        $tenantId = $user->tenant_id;
         
+        $myClassIds = SchoolClass::where('wali_kelas_id', $user->id)->pluck('id');
+        $isHomeroomTeacher = $myClassIds->isNotEmpty();
+        $isTeacherRole = in_array($user->role, ['guru', 'wali_kelas', 'guru_mapel', 'teacher']) || $isHomeroomTeacher;
+
+        // Jika user adalah wali kelas dan tidak memasok class_id di URL, default ke kelas binaan pertamanya
+        if ($isHomeroomTeacher && !$request->has('class_id')) {
+            $request->merge(['class_id' => $myClassIds->first()]);
+        }
+
         $query = Student::where('tenant_id', $tenantId)
             ->with(['parent', 'schoolClass']);
 
         // Jika user adalah guru/wali kelas, batasi hanya melihat siswa di kelas asuhannya.
-        if (in_array(Auth::user()->role, ['guru', 'wali_kelas', 'guru_mapel'])) {
-            $myClassIds = SchoolClass::where('wali_kelas_id', Auth::user()->id)->pluck('id');
+        if ($isTeacherRole && $isHomeroomTeacher) {
             $query->whereIn('class_id', $myClassIds);
         }
 
@@ -60,8 +69,8 @@ class StudentManagementController extends Controller
             ->ordered();
             
         // Jika user adalah guru/wali kelas, batasi pilihan kelas hanya ke kelas asuhannya.
-        if (in_array(Auth::user()->role, ['guru', 'wali_kelas', 'guru_mapel'])) {
-            $classesQuery->where('wali_kelas_id', Auth::user()->id);
+        if ($isTeacherRole && $isHomeroomTeacher) {
+            $classesQuery->where('wali_kelas_id', $user->id);
         }
         
         $classes = $classesQuery->get();
@@ -415,5 +424,26 @@ class StudentManagementController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Reset password data siswa.
+     */
+    public function resetPassword($id)
+    {
+        $student = Student::findOrFail($id);
+        if ($student->tenant_id !== Auth::user()->tenant_id) {
+            abort(403);
+        }
+
+        $newPassword = $student->getDefaultPassword();
+
+        $student->update([
+            'password' => Hash::make($newPassword),
+            'must_change_password' => true,
+            'is_password_changed' => false,
+        ]);
+
+        return redirect()->back()->with('success', "Password siswa {$student->name} berhasil direset menjadi default: '{$newPassword}'");
     }
 }

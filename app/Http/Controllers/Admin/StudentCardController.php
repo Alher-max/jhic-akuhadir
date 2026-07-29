@@ -7,6 +7,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StudentCardController extends Controller
 {
@@ -57,6 +58,7 @@ class StudentCardController extends Controller
             'footer_text' => 'Kartu identitas resmi ini wajib dibawa & digunakan untuk presensi harian.',
             'template' => $request->get('template', 'modern'),
             'accent_color' => $request->get('accent_color', 'red'),
+            'logo_url' => $tenant && $tenant->logo_path ? asset('storage/' . $tenant->logo_path) : null,
         ];
 
         return view('student-cards.index', compact('classes', 'students', 'tenant', 'defaultSettings'));
@@ -100,8 +102,49 @@ class StudentCardController extends Controller
             'footer_text' => $request->footer_text ?? 'Kartu identitas resmi ini wajib dibawa & digunakan untuk presensi harian.',
             'template' => $request->template,
             'accent_color' => $request->accent_color ?? 'red',
+            'logo_url' => $tenant && $tenant->logo_path ? asset('storage/' . $tenant->logo_path) : null,
         ];
 
         return view('student-cards.print', compact('students', 'cardConfig', 'tenant'));
+    }
+
+    /**
+     * Unggah logo sekolah untuk kartu pelajar dan profil tenant.
+     */
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'school_logo' => 'required|image|mimes:png,jpg,jpeg,svg|max:2048',
+        ]);
+
+        $tenant = Auth::user()->tenant;
+        if (! $tenant) {
+            return back()->with('error', 'Sekolah / Tenant tidak ditemukan.');
+        }
+
+        if ($tenant->logo_path && Storage::disk('public')->exists($tenant->logo_path)) {
+            Storage::disk('public')->delete($tenant->logo_path);
+        }
+
+        $path = $request->file('school_logo')->store('logos', 'public');
+        $tenant->update(['logo_path' => $path]);
+
+        return back()->with('status', 'Logo sekolah berhasil diunggah.');
+    }
+
+    /**
+     * Hapus logo sekolah yang tersimpan.
+     */
+    public function removeLogo(Request $request)
+    {
+        $tenant = Auth::user()->tenant;
+        if ($tenant && $tenant->logo_path) {
+            if (Storage::disk('public')->exists($tenant->logo_path)) {
+                Storage::disk('public')->delete($tenant->logo_path);
+            }
+            $tenant->update(['logo_path' => null]);
+        }
+
+        return back()->with('status', 'Logo sekolah berhasil dihapus.');
     }
 }

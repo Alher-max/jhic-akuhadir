@@ -7,7 +7,14 @@
     </x-slot>
 
     <div class="py-8" x-data="{
+        codeCopied: false,
         openBantuAbsen: false,
+        openKbmModal: false,
+        activeKbmSchedule: null,
+        openKbmAbsen(scheduleData) {
+            this.activeKbmSchedule = scheduleData;
+            this.openKbmModal = true;
+        },
         openPhotoModal: false,
         previewPhotoUrl: '',
         previewPhotoName: '',
@@ -64,20 +71,37 @@
                 $homerooms = auth()->user()->homeroomClasses;
             @endphp
             <div class="rounded-2xl border border-white/10 shadow-lg bg-gradient-to-br {{ $gradientClass }} p-6 text-white relative overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/15 pb-5 mb-4">
-                    <div>
-                        <h2 class="text-2xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2 mb-1.5">
-                            <span>Selamat datang, {{ auth()->user()->name }}!</span>
-                            @if($homerooms && $homerooms->count() > 0)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
-                                    <i class="fa-solid fa-star"></i> Wali Kelas: {{ $homerooms->map(fn($c) => $c->full_name)->implode(', ') }}
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-white/90 text-xs font-medium backdrop-blur-sm">
-                                    <i class="fa-solid fa-graduation-cap"></i> Guru Pengajar
-                                </span>
-                            @endif
-                        </h2>
+
+                <!-- BARIS 1: INFORMASI & KODE SEKOLAH -->
+                <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+
+                    <!-- SISI KIRI: TEKS & BADGE -->
+                    <div class="flex-1 space-y-2.5">
+                            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2">
+                                <span>Selamat datang, {{ auth()->user()->name }}! 👋</span>
+                                @php
+                                    $homerooms = auth()->user()->homeroomClasses;
+                                    if ((!$homerooms || $homerooms->isEmpty()) && auth()->user()->homeroomClass) {
+                                        $homerooms = collect([auth()->user()->homeroomClass]);
+                                    }
+                                    $hasHomeroom = ($homerooms && $homerooms->isNotEmpty()) || (isset($isHomeroom) && $isHomeroom && isset($homeroomClass) && $homeroomClass);
+                                    $activeHomeroomClass = ($homerooms && $homerooms->isNotEmpty()) ? $homerooms->first() : ($homeroomClass ?? null);
+                                @endphp
+                                @if($hasHomeroom && $activeHomeroomClass)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
+                                        <i class="fa-solid fa-star"></i> Wali Kelas {{ $activeHomeroomClass->nama_kelas ?: $activeHomeroomClass->full_name }}
+                                    </span>
+                                @elseif($hasHomeroom)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-semibold backdrop-blur-sm shadow-sm">
+                                        <i class="fa-solid fa-star"></i> Wali Kelas
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-white/90 text-xs font-medium backdrop-blur-sm">
+                                        <i class="fa-solid fa-graduation-cap"></i> Guru Pengajar
+                                    </span>
+                                @endif
+                            </h2>
+
                         <p class="text-white/80 text-sm font-medium">
                             @if($isHomeroom)
                                 {{ $tenant->name ?? 'Sekolah' }} — Pantau kedisiplinan siswa, proses pengajuan izin, dan kelola aktivitas pembelajaran kelas binaan Anda.
@@ -87,17 +111,28 @@
                         </p>
                     </div>
 
-                    <!-- Kode Sekolah Badge -->
-                    <div class="bg-black/30 border border-white/20 px-3.5 py-2 rounded-xl text-xs font-mono flex items-center gap-2 backdrop-blur-sm">
-                        <span class="text-white/70">Kode Sekolah:</span>
-                        <strong class="text-amber-300 tracking-widest text-sm">{{ $tenant->code ?? 'SCH-001' }}</strong>
+                    <!-- SISI KANAN: KODE SEKOLAH SAJA -->
+                    <div class="shrink-0">
+                        <div @click="navigator.clipboard.writeText('{{ $tenant->code ?? 'SCH-001' }}'); codeCopied = true; setTimeout(() => codeCopied = false, 2000)"
+                             class="bg-black/30 hover:bg-black/40 border border-white/20 px-3.5 py-2 rounded-xl text-xs font-mono flex items-center gap-2 backdrop-blur-sm cursor-pointer transition-all group relative"
+                             title="Klik untuk menyalin Kode Sekolah">
+                            <span class="text-white/70">Kode Sekolah:</span>
+                            <strong class="text-amber-300 tracking-widest text-sm font-bold">{{ $tenant->code ?? 'SCH-001' }}</strong>
+                            <span x-show="!codeCopied" class="text-white/60 group-hover:text-amber-300 transition-colors ml-0.5">
+                                <i class="fa-regular fa-copy text-xs"></i>
+                            </span>
+                            <span x-show="codeCopied" x-cloak class="text-emerald-400 font-extrabold flex items-center gap-1 text-2xs animate-pulse ml-0.5">
+                                <i class="fa-solid fa-check"></i> Disalin!
+                            </span>
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- Tombol Pintas Akses Cepat Guru -->
-                <div class="flex flex-wrap items-center gap-3">
+                <!-- BARIS 2: KELOMPOK TOMBOL AKSI -->
+                <div class="mt-6 pt-4 border-t border-white/15 flex flex-wrap items-center gap-3">
                     @if($isHomeroom)
-                        <a href="{{ route('admin.leaves.index') }}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm">
+                        <a href="{{ route('admin.leaves.index') }}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm shrink-0">
                             <i class="fa-solid fa-envelope-open-text text-slate-900"></i> Persetujuan Izin Siswa
                             @if(($pendingLeavesCount ?? 0) > 0)
                                 <span class="ml-1 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-extrabold animate-pulse">
@@ -106,19 +141,20 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('students.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                        <a href="{{ route('students.index', isset($homeroomClass) && $homeroomClass ? ['class_id' => $homeroomClass->id] : []) }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm shrink-0">
                             <i class="fa-solid fa-users"></i> Siswa Binaan
                         </a>
                     @endif
 
-                    <a href="{{ route('support-tickets.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                    <a href="{{ route('support-tickets.index') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm shrink-0">
                         <i class="fa-solid fa-headset text-amber-300"></i> Bantuan Operator
                     </a>
 
-                    <button type="button" @click="openBantuAbsen = true" class="bg-white hover:bg-slate-100 text-red-700 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm cursor-pointer">
+                    <button type="button" @click="openBantuAbsen = true" class="bg-white hover:bg-slate-100 text-red-700 font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 text-sm cursor-pointer shrink-0">
                         <i class="fa-solid fa-user-check text-red-600"></i> Bantu Absen
                     </button>
                 </div>
+
             </div>
             @endif
 
@@ -192,7 +228,40 @@
                                         {{ $sch->topic ?? 'Pengajaran reguler KBM di kelas.' }}
                                     </td>
                                     <td class="p-3.5 text-right whitespace-nowrap">
-                                        <button type="button" @click="openBantuAbsen = true" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition inline-flex items-center gap-1">
+                                        @php
+                                            $existingMap = ($sch->attendances ?? collect())->keyBy('user_id');
+                                            $scheduleJson = json_encode([
+                                                'id' => $sch->id,
+                                                'subject_name' => $sch->subject->name ?? 'Mata Pelajaran',
+                                                'subject_code' => $sch->subject->code ?? '-',
+                                                'class_name' => $sch->schoolClass->full_name ?? 'Kelas',
+                                                'time_range' => substr($sch->start_time, 0, 5) . ' - ' . substr($sch->end_time, 0, 5) . ' WIB',
+                                                'period_number' => $sch->period_number,
+                                                'date_formatted' => \Carbon\Carbon::now()->isoFormat('D MMMM YYYY'),
+                                                'students' => ($sch->schoolClass?->students ?? collect())->map(function($st) use ($existingMap) {
+                                                    $existing = $existingMap->get($st->id);
+                                                    $userNote = '';
+                                                    if ($existing && $existing->notes) {
+                                                        $parts = explode(' | Presensi KBM', $existing->notes);
+                                                        $userNote = trim($parts[0]);
+                                                        if (str_contains($userNote, 'Presensi KBM')) {
+                                                            $userNote = '';
+                                                        }
+                                                    }
+                                                    return [
+                                                        'id' => $st->id,
+                                                        'name' => $st->name,
+                                                        'nisn' => $st->nisn ?: ($st->nis ?: '-'),
+                                                        'avatar_url' => ($st->avatar || $st->master_photo)
+                                                            ? Storage::url($st->avatar ?: $st->master_photo)
+                                                            : 'https://ui-avatars.com/api/?name=' . urlencode($st->name) . '&background=f87171&color=fff',
+                                                        'status' => $existing ? $existing->status : 'present',
+                                                        'notes' => $userNote,
+                                                    ];
+                                                })->values(),
+                                            ]);
+                                        @endphp
+                                        <button type="button" @click="openKbmAbsen({{ $scheduleJson }})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition inline-flex items-center gap-1 cursor-pointer">
                                             <i class="fa-solid fa-clipboard-user"></i> Absen Kelas
                                         </button>
                                     </td>
@@ -399,6 +468,7 @@
 
         <!-- ===== MODAL BANTU ABSEN (PRESENSI MANUAL GURU) ===== -->
         <div x-show="openBantuAbsen" 
+             x-cloak 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -446,7 +516,7 @@
                     </div>
 
                     <!-- 2. Fitur Pencarian & Searchable Dropdown Siswa -->
-                    <div class="relative">
+                    <div class="relative font-sans" @click.outside="isStudentDropdownOpen = false">
                         <label for="student_search_input" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             2. Cari & Pilih Nama Siswa <span class="text-red-500">*</span>
                         </label>
@@ -465,6 +535,7 @@
                                    id="student_search_input"
                                    x-model="searchStudentQuery"
                                    @focus="isStudentDropdownOpen = true"
+                                   @click="isStudentDropdownOpen = true"
                                    @input="isStudentDropdownOpen = true; selectedStudentId = ''"
                                    placeholder="Ketik nama atau NISN siswa..."
                                    autocomplete="off"
@@ -472,18 +543,22 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-magnifying-glass text-sm"></i>
                             </div>
-                            <button type="button" x-show="searchStudentQuery" @click="searchStudentQuery = ''; selectedStudentId = ''; isStudentDropdownOpen = true" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
+                            <button type="button" 
+                                    x-show="searchStudentQuery || selectedStudentId" 
+                                    @click="searchStudentQuery = ''; selectedStudentId = ''; isStudentDropdownOpen = true" 
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                                    title="Bersihkan Pencarian">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </button>
                         </div>
 
-                        <!-- Dropdown Results List -->
+                        <!-- Dropdown Results List Container -->
                         <div x-show="isStudentDropdownOpen" 
-                             @click.outside="isStudentDropdownOpen = false" 
-                             class="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100">
+                             x-cloak 
+                             class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto divide-y divide-slate-100">
                             <template x-for="st in getFilteredStudents()" :key="st.id">
                                 <div @click="selectStudent(st)" 
-                                     class="p-3 hover:bg-red-50/70 cursor-pointer flex items-center justify-between transition-colors">
+                                     class="p-3 hover:bg-red-50/80 cursor-pointer flex items-center justify-between transition-colors select-none">
                                     <div class="flex items-center gap-3 min-w-0">
                                         <img :src="st.avatar_url" alt="" class="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0">
                                         <div class="min-w-0">
@@ -502,29 +577,19 @@
                     </div>
 
                     <!-- BOX VERIFIKASI FOTO SISWA (Anti-Kecurangan & Pratinjau Identitas) -->
-                    <div x-show="getSelectedStudent()" class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-4 min-w-0">
-                            <img :src="getSelectedStudent()?.avatar_url" alt="Foto Siswa" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-red-100 text-red-700 uppercase tracking-wider mb-1">
-                                    <i class="fa-solid fa-id-badge text-2xs"></i> Identitas & Foto Siswa
-                                </span>
-                                <h4 class="font-bold text-slate-800 text-sm truncate" x-text="getSelectedStudent()?.name"></h4>
-                                <div class="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
-                                    <span>NISN/NIS: <strong class="text-slate-700" x-text="getSelectedStudent()?.nisn"></strong></span>
-                                    <span>&bull;</span>
-                                    <span>Kelas: <strong class="text-slate-700" x-text="getSelectedStudent()?.class_name"></strong></span>
-                                </div>
+                    <div x-show="getSelectedStudent()" x-cloak class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-4">
+                        <img :src="getSelectedStudent()?.avatar_url" alt="Foto Siswa" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-bold bg-red-100 text-red-700 uppercase tracking-wider mb-1">
+                                <i class="fa-solid fa-id-badge text-2xs"></i> Identitas & Foto Siswa
+                            </span>
+                            <h4 class="font-bold text-slate-800 text-sm truncate" x-text="getSelectedStudent()?.name"></h4>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 mt-0.5">
+                                <span>NISN/NIS: <strong class="text-slate-700" x-text="getSelectedStudent()?.nisn"></strong></span>
+                                <span>&bull;</span>
+                                <span>Kelas: <strong class="text-slate-700" x-text="getSelectedStudent()?.class_name"></strong></span>
                             </div>
                         </div>
-                        <template x-if="getSelectedStudent()?.id">
-                            <form :action="'/teacher/students/' + getSelectedStudent()?.id + '/reset-photo'" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin me-reset foto profil siswa ini agar siswa dapat mengunggah foto baru?');">
-                                @csrf
-                                <button type="submit" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1 flex-shrink-0 cursor-pointer" title="Reset Foto Profil Siswa">
-                                    <i class="fa-solid fa-rotate-left"></i> Reset Foto
-                                </button>
-                            </form>
-                        </template>
                     </div>
 
                     <!-- Informasi Timestamp Otomatis -->
@@ -561,6 +626,7 @@
 
         <!-- ===== MODAL LIGHTBOX PRATINJAU FOTO BUKTI / WAJAH ===== -->
         <div x-show="openPhotoModal" 
+             x-cloak 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -597,6 +663,146 @@
                     <button type="button" @click="openPhotoModal = false" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer">
                         Tutup Pratinjau
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MODAL PRESENSI KBM KELAS ==================== -->
+        <div x-show="openKbmModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-kbm-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Backdrop Overlay -->
+                <div x-show="openKbmModal" x-cloak x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-sm" @click="openKbmModal = false"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <!-- Modal Container Panel -->
+                <div x-show="openKbmModal" x-cloak x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block w-full max-w-4xl px-4 pt-5 pb-6 text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:p-6 border border-slate-100">
+                    
+                    <form action="{{ route('teacher.kbm-attendance') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="schedule_id" :value="activeKbmSchedule ? activeKbmSchedule.id : ''">
+
+                        <!-- Header Modal Presensi KBM -->
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-slate-100 gap-3">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        Presensi KBM Kelas
+                                    </span>
+                                    <span class="text-xs text-slate-500 font-semibold" x-text="activeKbmSchedule ? activeKbmSchedule.date_formatted : ''"></span>
+                                </div>
+                                <h3 class="text-xl font-extrabold text-slate-900 flex items-center gap-2" id="modal-kbm-title">
+                                    <i class="fa-solid fa-book-open text-emerald-600"></i>
+                                    <span x-text="activeKbmSchedule ? activeKbmSchedule.subject_name : ''"></span>
+                                </h3>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5">
+                                    <span class="font-bold text-slate-700" x-text="activeKbmSchedule ? activeKbmSchedule.class_name : ''"></span> &bull;
+                                    <span x-text="activeKbmSchedule ? ('Jam Ke-' + activeKbmSchedule.period_number + ' (' + activeKbmSchedule.time_range + ')') : ''"></span>
+                                </p>
+                            </div>
+                            <button type="button" @click="openKbmModal = false" class="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-xl hover:bg-slate-100">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Body: Tabel Presensi Siswa -->
+                        <div class="max-h-[60vh] overflow-y-auto pr-1">
+                            <template x-if="activeKbmSchedule && activeKbmSchedule.students && activeKbmSchedule.students.length > 0">
+                                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                                                <th class="px-4 py-3 w-12 text-center">No</th>
+                                                <th class="px-4 py-3">Siswa</th>
+                                                <th class="px-4 py-3 text-center">Status Kehadiran KBM</th>
+                                                <th class="px-4 py-3">Catatan / Keterangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100 text-sm">
+                                            <template x-for="(st, index) in activeKbmSchedule.students" :key="st.id">
+                                                <tr class="hover:bg-slate-50/70 transition">
+                                                    <!-- No -->
+                                                    <td class="px-4 py-3 text-center font-bold text-slate-400 text-xs" x-text="index + 1"></td>
+                                                    
+                                                    <!-- Info Siswa -->
+                                                    <td class="px-4 py-3">
+                                                        <div class="flex items-center gap-3">
+                                                            <input type="hidden" :name="'attendances[' + index + '][student_id]'" :value="st.id">
+                                                            <img :src="st.avatar_url" :alt="st.name" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0">
+                                                            <div>
+                                                                <div class="font-bold text-slate-900 text-sm" x-text="st.name"></div>
+                                                                <div class="text-[11px] text-slate-500 font-mono">NISN: <span x-text="st.nisn"></span></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <!-- Status Radios -->
+                                                    <td class="px-4 py-3">
+                                                        <div class="flex items-center justify-center gap-1.5 sm:gap-2">
+                                                            <!-- Hadir -->
+                                                            <label class="cursor-pointer">
+                                                                <input type="radio" :name="'attendances[' + index + '][status]'" value="present" x-model="st.status" autocomplete="off" class="peer sr-only">
+                                                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-colors shadow-sm inline-block">
+                                                                    Hadir
+                                                                </span>
+                                                            </label>
+
+                                                            <!-- Sakit -->
+                                                            <label class="cursor-pointer">
+                                                                <input type="radio" :name="'attendances[' + index + '][status]'" value="sick" x-model="st.status" autocomplete="off" class="peer sr-only">
+                                                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 bg-white peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 transition-colors shadow-sm inline-block">
+                                                                    Sakit
+                                                                </span>
+                                                            </label>
+
+                                                            <!-- Izin -->
+                                                            <label class="cursor-pointer">
+                                                                <input type="radio" :name="'attendances[' + index + '][status]'" value="permission" x-model="st.status" autocomplete="off" class="peer sr-only">
+                                                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 bg-white peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-colors shadow-sm inline-block">
+                                                                    Izin
+                                                                </span>
+                                                            </label>
+
+                                                            <!-- Alpa -->
+                                                            <label class="cursor-pointer">
+                                                                <input type="radio" :name="'attendances[' + index + '][status]'" value="alpha" x-model="st.status" autocomplete="off" class="peer sr-only">
+                                                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 bg-white peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 transition-colors shadow-sm inline-block">
+                                                                    Alpa
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+
+                                                    <!-- Catatan Opsional -->
+                                                    <td class="px-4 py-3">
+                                                        <input type="text" :name="'attendances[' + index + '][notes]'" x-model="st.notes" placeholder="Catatan (opsional)..." class="w-full text-xs border-slate-200 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 py-1.5 px-2.5">
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+
+                            <template x-if="!activeKbmSchedule || !activeKbmSchedule.students || activeKbmSchedule.students.length === 0">
+                                <div class="py-12 text-center text-slate-400">
+                                    <i class="fa-solid fa-users-slash text-4xl mb-2 text-slate-300"></i>
+                                    <p class="font-bold text-slate-600 text-sm">Belum ada siswa terdaftar di kelas ini.</p>
+                                    <p class="text-xs text-slate-400 mt-1">Pastikan data siswa telah ditambahkan ke kelas terkait oleh Operator.</p>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Footer Action Buttons -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end gap-2.5">
+                            <button type="button" @click="openKbmModal = false" class="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold rounded-xl text-xs hover:bg-slate-50 transition">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs shadow-md transition inline-flex items-center justify-center gap-2 cursor-pointer" :disabled="!activeKbmSchedule || !activeKbmSchedule.students || activeKbmSchedule.students.length === 0">
+                                <i class="fa-solid fa-floppy-disk"></i> Simpan Presensi KBM
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

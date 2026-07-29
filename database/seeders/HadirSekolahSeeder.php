@@ -98,6 +98,14 @@ class HadirSekolahSeeder extends Seeder
             ]
         );
 
+        \App\Models\UserProfile::updateOrCreate(
+            ['user_id' => $guruMath->id],
+            [
+                'nuptk' => '198809202014021001',
+                'employee_id' => '198809202014021001',
+            ]
+        );
+
         $guruIpa = \App\Models\User::updateOrCreate(
             ['email' => 'guru.ipa@hadirsekolah.id'],
             [
@@ -176,11 +184,11 @@ class HadirSekolahSeeder extends Seeder
             ]
         );
 
-        // JADWAL PELAJARAN KBM MINGGUAN (Kelas IX-A)
+        // JADWAL PELAJARAN KBM MINGGUAN (Kelas X IPA 1)
         $schedulesData = [
             // Senin
             [
-                'name' => 'Matematika - Kelas IX-A',
+                'name' => 'Matematika - Kelas X IPA 1',
                 'day_of_week' => 1,
                 'start_time' => '07:00:00',
                 'end_time' => '08:30:00',
@@ -188,7 +196,7 @@ class HadirSekolahSeeder extends Seeder
                 'manager_id' => $guruMath->id,
             ],
             [
-                'name' => 'IPA - Kelas IX-A',
+                'name' => 'IPA - Kelas X IPA 1',
                 'day_of_week' => 1,
                 'start_time' => '08:30:00',
                 'end_time' => '10:00:00',
@@ -197,7 +205,7 @@ class HadirSekolahSeeder extends Seeder
             ],
             // Selasa
             [
-                'name' => 'B. Inggris - Kelas IX-A',
+                'name' => 'B. Inggris - Kelas X IPA 1',
                 'day_of_week' => 2,
                 'start_time' => '07:00:00',
                 'end_time' => '08:30:00',
@@ -205,7 +213,7 @@ class HadirSekolahSeeder extends Seeder
                 'manager_id' => $guruEnglish->id,
             ],
             [
-                'name' => 'Matematika - Kelas IX-A',
+                'name' => 'Matematika - Kelas X IPA 1',
                 'day_of_week' => 2,
                 'start_time' => '08:30:00',
                 'end_time' => '10:00:00',
@@ -214,7 +222,7 @@ class HadirSekolahSeeder extends Seeder
             ],
             // Rabu
             [
-                'name' => 'IPA - Kelas IX-A',
+                'name' => 'IPA - Kelas X IPA 1',
                 'day_of_week' => 3,
                 'start_time' => '07:00:00',
                 'end_time' => '08:30:00',
@@ -222,7 +230,7 @@ class HadirSekolahSeeder extends Seeder
                 'manager_id' => $guruIpa->id,
             ],
             [
-                'name' => 'B. Indonesia - Kelas IX-A',
+                'name' => 'B. Indonesia - Kelas X IPA 1',
                 'day_of_week' => 3,
                 'start_time' => '08:30:00',
                 'end_time' => '10:00:00',
@@ -231,7 +239,7 @@ class HadirSekolahSeeder extends Seeder
             ],
             // Kamis
             [
-                'name' => 'Matematika - Kelas IX-A',
+                'name' => 'Matematika - Kelas X IPA 1',
                 'day_of_week' => 4,
                 'start_time' => '07:00:00',
                 'end_time' => '08:30:00',
@@ -239,7 +247,7 @@ class HadirSekolahSeeder extends Seeder
                 'manager_id' => $guruMath->id,
             ],
             [
-                'name' => 'B. Inggris - Kelas IX-A',
+                'name' => 'B. Inggris - Kelas X IPA 1',
                 'day_of_week' => 4,
                 'start_time' => '08:30:00',
                 'end_time' => '10:00:00',
@@ -248,7 +256,7 @@ class HadirSekolahSeeder extends Seeder
             ],
             // Jumat
             [
-                'name' => 'Agama / Budi Pekerti - Kelas IX-A',
+                'name' => 'Agama / Budi Pekerti - Kelas X IPA 1',
                 'day_of_week' => 5,
                 'start_time' => '07:00:00',
                 'end_time' => '08:30:00',
@@ -256,7 +264,7 @@ class HadirSekolahSeeder extends Seeder
                 'manager_id' => $guruMath->id, // Default assign
             ],
             [
-                'name' => 'Olahraga / KBM Ringkas - Kelas IX-A',
+                'name' => 'Olahraga / KBM Ringkas - Kelas X IPA 1',
                 'day_of_week' => 5,
                 'start_time' => '08:30:00',
                 'end_time' => '09:30:00',

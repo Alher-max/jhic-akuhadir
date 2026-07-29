@@ -28,14 +28,50 @@ class StudentSeeder extends Seeder
         $tenantId = $tenant->id;
         $faker = Faker::create('id_ID');
 
-        // Pastikan ada beberapa kelas untuk tempat siswa
-        $classNames = ['Kelas 10 C Proton', 'IX-A', 'IX-B', 'X-C'];
+        // Pastikan ada beberapa kelas SMA untuk tempat siswa dan masing-masing memiliki Wali Kelas
+        $classesData = [
+            ['nama_kelas' => 'X IPA 1', 'jenjang' => 'SMA', 'tingkat' => 10],
+            ['nama_kelas' => 'X IPA 2', 'jenjang' => 'SMA', 'tingkat' => 10],
+            ['nama_kelas' => 'XI IPA 1', 'jenjang' => 'SMA', 'tingkat' => 11],
+            ['nama_kelas' => 'XII IPA 1', 'jenjang' => 'SMA', 'tingkat' => 12],
+        ];
+
+        $teachersData = [
+            'X IPA 1' => ['email' => '198809202014021001@guru.hadirsekolah.id', 'name' => 'Bambang Hermanto, S.Pd.'],
+            'X IPA 2' => ['email' => 'guru.xipa2@hadirsekolah.id', 'name' => 'Dra. Fitriani, M.Pd.'],
+            'XI IPA 1' => ['email' => 'guru.ipa@hadirsekolah.id', 'name' => 'Dr. Ani Wijaya'],
+            'XII IPA 1' => ['email' => 'guru.english@hadirsekolah.id', 'name' => 'Budi Santoso, M.Hum.'],
+        ];
+
         $classIds = [];
-        foreach ($classNames as $name) {
-            $class = SchoolClass::firstOrCreate(
-                ['nama_kelas' => $name, 'tenant_id' => $tenantId],
-                ['jenjang' => 'SMP/SMA', 'tingkat' => 10]
+        foreach ($classesData as $cData) {
+            $tInfo = $teachersData[$cData['nama_kelas']] ?? [
+                'email' => 'guru.' . \Illuminate\Support\Str::slug($cData['nama_kelas']) . '@hadirsekolah.id',
+                'name' => 'Guru Wali ' . $cData['nama_kelas'],
+            ];
+
+            $teacher = User::firstOrCreate(
+                ['email' => $tInfo['email']],
+                [
+                    'tenant_id' => $tenantId,
+                    'name' => $tInfo['name'],
+                    'password' => Hash::make('password123'),
+                    'role' => 'teacher',
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
             );
+
+            $class = SchoolClass::firstOrCreate(
+                ['nama_kelas' => $cData['nama_kelas'], 'tenant_id' => $tenantId],
+                ['jenjang' => $cData['jenjang'], 'tingkat' => $cData['tingkat'], 'wali_kelas_id' => $teacher->id]
+            );
+
+            if (! $class->wali_kelas_id) {
+                $class->wali_kelas_id = $teacher->id;
+                $class->save();
+            }
+
             $classIds[] = $class->id;
         }
 

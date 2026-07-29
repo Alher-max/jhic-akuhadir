@@ -77,18 +77,18 @@
 
                     <!-- KANAN: Badge Kode Sekolah + Ubah Banner (selalu tampil, tanpa x-data nested) -->
                     <div class="flex items-center gap-2 flex-wrap flex-shrink-0">
-                        <!-- Badge Kode Sekolah dengan clipboard via parent scope -->
-                        <div class="bg-black/30 border border-white/20 px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-2 backdrop-blur-sm">
-                            <span class="text-white/70">Kode Sekolah :</span>
-                            <strong class="text-amber-300 tracking-widest">{{ $tenant->code ?? auth()->user()->tenant->code ?? 'SCH-001' }}</strong>
-                            <button
-                                @click="navigator.clipboard.writeText('{{ $tenant->code ?? auth()->user()->tenant->code ?? 'SCH-001' }}'); codeCopied = true; setTimeout(() => codeCopied = false, 2500)"
-                                class="text-white/60 hover:text-amber-300 transition-colors focus:outline-none"
-                                title="Salin Kode"
-                            >
-                                <span x-show="!codeCopied">📋</span>
-                                <span x-show="codeCopied" class="text-emerald-400" style="display:none;">✅</span>
-                            </button>
+                        <!-- Badge Kode Sekolah dengan Click-to-Copy -->
+                        <div @click="navigator.clipboard.writeText('{{ $tenant->code ?? auth()->user()->tenant->code ?? 'SCH-001' }}'); codeCopied = true; setTimeout(() => codeCopied = false, 2000)"
+                             class="bg-black/30 hover:bg-black/40 border border-white/20 px-3.5 py-2 rounded-xl text-xs font-mono flex items-center gap-2 backdrop-blur-sm cursor-pointer transition-all group relative"
+                             title="Klik untuk menyalin Kode Sekolah">
+                            <span class="text-white/70">Kode Sekolah:</span>
+                            <strong class="text-amber-300 tracking-widest text-sm font-bold">{{ $tenant->code ?? auth()->user()->tenant->code ?? 'SCH-001' }}</strong>
+                            <span x-show="!codeCopied" class="text-white/60 group-hover:text-amber-300 transition-colors ml-0.5">
+                                <i class="fa-regular fa-copy text-xs"></i>
+                            </span>
+                            <span x-show="codeCopied" x-cloak class="text-emerald-400 font-extrabold flex items-center gap-1 text-2xs animate-pulse ml-0.5">
+                                <i class="fa-solid fa-check"></i> Disalin!
+                            </span>
                         </div>
 
                         @if(in_array(auth()->user()->role, ['kepala_sekolah', 'admin_dapodik', 'operator']))
@@ -144,7 +144,7 @@
             </div>
 
             <!-- Modal Banner -->
-            <div x-show="showBannerModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div x-show="showBannerModal" x-cloak style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
                 <div @click.away="showBannerModal = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
                     <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                         <h3 class="font-bold text-gray-800">📸 Ubah Foto Banner Sekolah</h3>

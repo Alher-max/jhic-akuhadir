@@ -80,7 +80,7 @@
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" x-data="{ showPassword: false }">
                     @csrf
 
                     <!-- Kode Sekolah / NPSN -->
@@ -90,12 +90,12 @@
                         <x-input-error :messages="$errors->get('school_code')" class="mt-2" />
                     </div>
 
-                    <!-- Login ID (Email / NISN / NIP) -->
-                    <div>
-                        <x-input-label for="login_id" :value="__('Email / ID Pengguna')" />
-                        <x-text-input id="login_id" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="login_id" :value="old('login_id')" required autocomplete="username" placeholder="Contoh: email@sekolah.sch.id, NISN, NIP, atau NUPTK" />
-                        <p class="mt-1 text-xs text-brand-text-muted">Gunakan Email (Kepala Sekolah/Guru), NISN (Siswa), NIP/NUPTK, atau Username.</p>
-                        <x-input-error :messages="$errors->get('login_id')" class="mt-2" />
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <x-input-label for="email" :value="__('Email')" />
+                        <x-text-input id="email" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="nama@sekolah.sch.id atau operator@hadiryuk.test" />
+                        <p class="mt-1.5 text-xs text-brand-text-muted">Masukkan alamat email terdaftar akun Anda.</p>
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <!-- Password -->

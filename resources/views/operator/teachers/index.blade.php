@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showModal: false, showImport: false, showEditModal: false, editForm: { id: null, name: '', nip: '', email: '', role: 'guru', is_active: 1, class_id: '' }, openEdit(data) { this.editForm = data; this.showEditModal = true; } }">
+    <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showModal: false, showImport: false, showEditModal: false, showDeleteModal: false, deleteTeacher: { id: null, name: '', deleteUrl: '' }, editForm: { id: null, name: '', nip: '', email: '', role: 'guru', is_active: 1, class_id: '' }, openEdit(data) { this.editForm = data; this.showEditModal = true; }, confirmDelete(data) { this.deleteTeacher = data; this.showDeleteModal = true; } }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Halaman -->
             <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
@@ -195,8 +195,8 @@
                 @endif
             </form>
 
-            <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border">
-                <div class="overflow-x-auto">
+            <div class="bg-brand-surface shadow-sm sm:rounded-xl border border-brand-border min-h-[340px]">
+                <div class="overflow-x-auto min-h-[320px] pb-24">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
@@ -349,13 +349,9 @@
                                                  <!-- Group 2: Aksi Destruktif -->
                                                  <div class="py-1">
                                                      <!-- Hapus Pendidik -->
-                                                     <form action="{{ route('operator.teachers.destroy', $teacher->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data staf ini?');">
-                                                         @csrf
-                                                         @method('DELETE')
-                                                         <button type="submit" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors">
-                                                             <i class="fa-solid fa-trash-can text-red-500 w-4 text-center"></i> Hapus Pendidik
-                                                         </button>
-                                                     </form>
+                                                     <button type="button" @click="open = false; confirmDelete({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', deleteUrl: '{{ route('operator.teachers.destroy', $teacher->id) }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                                                         <i class="fa-solid fa-trash-can text-red-500 w-4 text-center"></i> Hapus Pendidik
+                                                     </button>
                                                  </div>
                                              </div>
                                          </div>
@@ -592,6 +588,45 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL KONFIRMASI HAPUS PENDIDIK -->
+        <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-delete-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showDeleteModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showDeleteModal = false"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div x-show="showDeleteModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-brand-surface rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6 border border-brand-border">
+                    <div class="sm:flex sm:items-start">
+                        <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-triangle-exclamation text-red-600 text-lg"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg font-bold leading-6 text-gray-900" id="modal-delete-title">
+                                Konfirmasi Hapus Pendidik
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-600">
+                                    Apakah Anda yakin ingin menghapus data pendidik <strong class="text-gray-900 font-extrabold" x-text="deleteTeacher.name"></strong>? Tindakan ini tidak dapat dibatalkan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 sm:mt-5 sm:flex sm:flex-row-reverse gap-2">
+                        <form :action="deleteTeacher.deleteUrl" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
+                                Ya, Hapus
+                            </button>
+                        </form>
+                        <button type="button" @click="showDeleteModal = false" class="mt-3 sm:mt-0 inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer">
+                            Batal
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

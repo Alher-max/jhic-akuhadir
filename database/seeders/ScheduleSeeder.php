@@ -34,13 +34,14 @@ class ScheduleSeeder extends Seeder
 
         $tenantId = $tenant->id;
 
-        // Pastikan kelas-kelas (IX-A, IX-B, X-C) ada
-        $classNames = ['IX-A', 'IX-B', 'X-C'];
+        // Pastikan kelas-kelas SMA ada
+        $classNames = ['X IPA 1', 'XI IPA 1', 'XII IPA 1'];
         $classes = [];
-        foreach ($classNames as $name) {
+        foreach ($classNames as $index => $name) {
+            $tingkat = 10 + $index;
             $classes[$name] = SchoolClass::firstOrCreate(
                 ['nama_kelas' => $name, 'tenant_id' => $tenantId],
-                ['jenjang' => 'SMP/SMA', 'tingkat' => 9]
+                ['jenjang' => 'SMA', 'tingkat' => $tingkat]
             );
         }
 

@@ -163,19 +163,60 @@ class MemberDashboardController extends Controller
                 ->get();
         }
 
+        // Ambil kegiatan & ekskul (ActivitySchedule) yang relevan untuk siswa
+        $relevantActivities = \App\Models\ActivitySchedule::with(['members'])
+            ->where('tenant_id', $user->tenant_id)
+            ->get()
+            ->filter(function ($act) use ($user) {
+                $scope = $act->target_scope ?? 'all';
+                if ($scope === 'all') {
+                    return true;
+                }
+                if ($scope === 'class' && $user->class_id) {
+                    $classIds = is_array($act->target_class_ids) ? $act->target_class_ids : [];
+                    return in_array((string)$user->class_id, array_map('strval', $classIds));
+                }
+                if ($scope === 'members') {
+                    return $act->members->contains('id', $user->id);
+                }
+                return false;
+            });
+
         $weeklyTimetable = [];
         foreach ($dayNameMap as $num => $dName) {
             $schedulesForDay = $realClassSchedules->where('day_name', $dName)->values();
-            $weeklyTimetable[$num] = $schedulesForDay->map(function ($cs) {
+            $kbmItems = $schedulesForDay->map(function ($cs) {
                 return [
-                    'jam' => $cs->period_number ? 'Jam ke-' . $cs->period_number : 'Sesi',
+                    'jam' => $cs->period_number ? 'Jam ke-' . $cs->period_number : 'Sesi KBM',
+                    'start_time' => $cs->start_time,
                     'waktu' => Carbon::parse($cs->start_time)->format('H:i') . ' - ' . Carbon::parse($cs->end_time)->format('H:i'),
                     'mapel' => $cs->subject->name ?? 'Mata Pelajaran',
                     'guru' => $cs->teacher->name ?? '-',
                     'ruang' => $cs->schoolClass->nama_kelas ?? '-',
                     'tipe' => 'pelajaran',
+                    'badge' => 'KBM',
+                    'badge_color' => 'indigo',
                 ];
-            })->toArray();
+            });
+
+            $actForDay = $relevantActivities->where('day_name', $dName)->values();
+            $actItems = $actForDay->map(function ($act) {
+                return [
+                    'jam' => 'Kegiatan',
+                    'start_time' => $act->start_time,
+                    'waktu' => Carbon::parse($act->start_time)->format('H:i') . ' - ' . Carbon::parse($act->end_time)->format('H:i'),
+                    'mapel' => $act->name,
+                    'guru' => 'Toleransi ' . $act->late_tolerance_minutes . 'm',
+                    'ruang' => $act->target_scope === 'members' ? 'Ekskul' : 'Kegiatan Sekolah',
+                    'tipe' => 'kegiatan',
+                    'badge' => $act->target_scope === 'members' ? 'Ekskul' : 'Kegiatan',
+                    'badge_color' => 'emerald',
+                ];
+            });
+
+            $weeklyTimetable[$num] = $kbmItems->concat($actItems)->sortBy(function ($item) {
+                return $item['start_time'];
+            })->values()->toArray();
         }
 
         $todayTimetable = $weeklyTimetable[$todayDayOfWeek] ?? [];

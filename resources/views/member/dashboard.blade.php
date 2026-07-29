@@ -19,6 +19,10 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
     <!-- Alpine digitalClock data — HARUS di atas @@vite agar alpine:init terlebih dahulu -->
     <script>
         document.addEventListener('alpine:init', function () {
@@ -399,37 +403,35 @@
                 <p class="text-xs text-brand-text-muted mt-4 text-center">Pastikan Anda berada di lokasi yang sesuai.</p>
             </div>
 
-            <!-- Mata Pelajaran Hari Ini -->
+            <!-- Agenda & Jadwal Hari Ini -->
             @if($userType === 'student' && count($todayTimetable) > 0)
             <div>
-                <h3 class="text-lg font-bold text-brand-text-main mb-4"><span class="material-symbols-outlined text-red-600 align-bottom mr-1.5">auto_stories</span> Mata Pelajaran Hari Ini</h3>
+                <h3 class="text-lg font-bold text-brand-text-main mb-4"><span class="material-symbols-outlined text-red-600 align-bottom mr-1.5">auto_stories</span> Agenda & Jadwal Hari Ini</h3>
                 <div class="relative border-l-2 border-brand-primary/30 ml-3 pl-4 pb-2">
                     @foreach($todayTimetable as $pelajaran)
                         <div class="relative mb-5">
                             <div class="absolute -left-[23px] top-1 w-3 h-3 bg-brand-primary rounded-full ring-4 ring-brand-bg"></div>
-                            <div class="bg-brand-surface border {{ $pelajaran['tipe'] === 'istirahat' ? 'border-amber-200 bg-amber-50' : ($pelajaran['tipe'] === 'upacara' ? 'border-rose-200 bg-rose-50' : 'border-brand-border') }} rounded-2xl p-3 shadow-sm">
+                            <div class="bg-brand-surface border {{ ($pelajaran['tipe'] ?? '') === 'kegiatan' ? 'border-emerald-200 bg-emerald-50/40' : 'border-brand-border' }} rounded-2xl p-3 shadow-sm">
                                 <div class="flex justify-between items-start mb-1">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">{{ $pelajaran['jam'] }}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ ($pelajaran['tipe'] ?? '') === 'kegiatan' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200' }}">
+                                            {{ $pelajaran['badge'] ?? (($pelajaran['tipe'] ?? '') === 'kegiatan' ? 'Kegiatan' : 'KBM') }}
+                                        </span>
+                                        <span class="text-xs font-semibold text-gray-700">{{ $pelajaran['jam'] }}</span>
+                                    </div>
                                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-800">{{ $pelajaran['waktu'] }}</span>
                                 </div>
                                 <h4 class="text-sm font-bold text-brand-text-main mt-1">{{ $pelajaran['mapel'] }}</h4>
-                                @if($pelajaran['tipe'] === 'pelajaran')
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-brand-text-muted font-medium">
-                                        <div class="flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">person</span>
-                                            {{ $pelajaran['guru'] }}
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">meeting_room</span>
-                                            {{ $pelajaran['ruang'] }}
-                                        </div>
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-brand-text-muted font-medium">
+                                    <div class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">person</span>
+                                        {{ $pelajaran['guru'] }}
                                     </div>
-                                @elseif($pelajaran['tipe'] === 'upacara')
-                                    <div class="flex items-center gap-1 mt-2 text-xs text-brand-text-muted font-medium">
+                                    <div class="flex items-center gap-1">
                                         <span class="material-symbols-outlined text-gray-500 text-lg align-middle mr-1">meeting_room</span>
                                         {{ $pelajaran['ruang'] }}
                                     </div>
-                                @endif
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -452,7 +454,7 @@
             <div>
                 <div class="mb-4">
                     <h3 class="text-lg font-bold text-brand-text-main">
-                        {{ $userType === 'student' ? 'Jadwal Pelajaran Mingguan' : 'Jadwal Tugas & Tanggung Jawab Mingguan' }}
+                        {{ $userType === 'student' ? 'Jadwal Pelajaran & Kegiatan Mingguan' : 'Jadwal Tugas & Tanggung Jawab Mingguan' }}
                     </h3>
                 </div>
 
@@ -489,7 +491,7 @@
                                                 <h4 class="text-sm font-bold" :class="activeDay === {{ $num }} ? 'text-brand-primary' : 'text-brand-text-main'">{{ $dayName }}</h4>
                                                 <p class="text-xs text-brand-text-muted mt-0.5">
                                                     @if(count($dayBreakdown) > 0)
-                                                        {{ count($dayBreakdown) }} Sesi Kegiatan
+                                                        {{ count($dayBreakdown) }} Sesi Agenda / KBM
                                                     @else
                                                         Libur / Bebas KBM
                                                     @endif
@@ -510,10 +512,12 @@
                                                 <div class="space-y-2">
                                                     @foreach($dayBreakdown as $b)
                                                         <div class="flex items-start gap-2 bg-white border border-gray-100 rounded-lg p-2 shadow-sm">
-                                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 whitespace-nowrap">{{ $b['jam'] }}</span>
+                                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold {{ ($b['tipe'] ?? '') === 'kegiatan' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200' }} whitespace-nowrap">
+                                                                {{ $b['badge'] ?? $b['jam'] }}
+                                                            </span>
                                                             <div>
                                                                 <p class="text-xs font-bold text-gray-800">{{ $b['mapel'] }}</p>
-                                                                <p class="text-[10px] text-gray-500 font-medium">{{ $b['waktu'] }} &bull; {{ $b['guru'] }}</p>
+                                                                <p class="text-[10px] text-gray-500 font-medium">{{ $b['waktu'] }} &bull; {{ $b['guru'] }} ({{ $b['ruang'] }})</p>
                                                             </div>
                                                         </div>
                                                     @endforeach

@@ -9,8 +9,17 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Services\TeacherService;
+
 class ClassScheduleController extends Controller
 {
+    protected TeacherService $teacherService;
+
+    public function __construct(TeacherService $teacherService)
+    {
+        $this->teacherService = $teacherService;
+    }
+
     /**
      * Menampilkan daftar jadwal KBM mingguan per kelas.
      */
@@ -64,12 +73,18 @@ class ClassScheduleController extends Controller
         }
 
         $subjects = Subject::where('tenant_id', $tenantId)->orderBy('name')->get();
-        $teachers = User::where('tenant_id', $tenantId)
-            ->whereIn('role', ['guru', 'wali_kelas', 'guru_mapel', 'operator', 'staff'])
+        $teachers = $this->teacherService->getActiveTeachers($tenantId);
+
+        $activities = \App\Models\ActivitySchedule::with(['members'])
+            ->withCount('members')
+            ->where('tenant_id', $tenantId)
             ->orderBy('name')
             ->get();
 
-        $activities = \App\Models\ActivitySchedule::where('tenant_id', $tenantId)->orderBy('name')->get();
+        $allStudents = User::where('tenant_id', $tenantId)
+            ->where('role', 'student')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'nisn', 'class_id']);
 
         return view('schedules.class_subject', compact(
             'classes',
@@ -79,7 +94,8 @@ class ClassScheduleController extends Controller
             'days',
             'subjects',
             'teachers',
-            'activities'
+            'activities',
+            'allStudents'
         ));
     }
 
@@ -192,20 +208,95 @@ class ClassScheduleController extends Controller
             return redirect()->back()->with('error', 'Hanya Operator / Admin Sekolah yang berhak membuat Mata Pelajaran baru.');
         }
 
+        if ($request->has('code') && is_string($request->code)) {
+            $request->merge([
+                'code' => strtoupper(trim($request->code)),
+            ]);
+        }
+
+        $subjectId = $request->input('subject_id');
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50',
+            'code' => [
+                'required',
+                'string',
+                'max:10',
+                'alpha_dash',
+                \Illuminate\Validation\Rule::unique('subjects', 'code')->where('tenant_id', $tenantId)->ignore($subjectId),
+            ],
         ], [
             'name.required' => 'Nama mata pelajaran wajib diisi.',
+            'code.required' => 'Kode mata pelajaran wajib diisi.',
+            'code.max' => 'Kode mapel maksimal 10 karakter.',
+            'code.alpha_dash' => 'Kode mapel hanya boleh berisi huruf, angka, dan tanda hubung tanpa spasi.',
+            'code.unique' => 'Kode mapel ini sudah digunakan.',
         ]);
 
-        Subject::create([
-            'tenant_id' => $tenantId,
+        if ($subjectId) {
+            $subject = Subject::where('tenant_id', $tenantId)->findOrFail($subjectId);
+            $subject->update([
+                'code' => $request->code,
+                'name' => $request->name,
+            ]);
+            $msg = 'Mata pelajaran berhasil diperbarui.';
+        } else {
+            Subject::create([
+                'tenant_id' => $tenantId,
+                'code' => $request->code,
+                'name' => $request->name,
+            ]);
+            $msg = 'Mata pelajaran baru berhasil ditambahkan.';
+        }
+
+        return redirect()->route('class-schedules.index', ['tab' => 'subjects'])->with('success', $msg);
+    }
+
+    /**
+     * Memperbarui mata pelajaran (Master Subject - Operator / Admin Only).
+     */
+    public function updateSubject(Request $request, Subject $subject)
+    {
+        $user = Auth::user();
+        $tenantId = $user->tenant_id;
+
+        if ($subject->tenant_id !== $tenantId) {
+            abort(403);
+        }
+
+        if (!in_array($user->role, ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin'])) {
+            return redirect()->back()->with('error', 'Hanya Operator / Admin Sekolah yang berhak mengubah Mata Pelajaran.');
+        }
+
+        if ($request->has('code') && is_string($request->code)) {
+            $request->merge([
+                'code' => strtoupper(trim($request->code)),
+            ]);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                'max:10',
+                'alpha_dash',
+                \Illuminate\Validation\Rule::unique('subjects', 'code')->where('tenant_id', $tenantId)->ignore($subject->id),
+            ],
+        ], [
+            'name.required' => 'Nama mata pelajaran wajib diisi.',
+            'code.required' => 'Kode mata pelajaran wajib diisi.',
+            'code.max' => 'Kode mapel maksimal 10 karakter.',
+            'code.alpha_dash' => 'Kode mapel hanya boleh berisi huruf, angka, dan tanda hubung tanpa spasi.',
+            'code.unique' => 'Kode mapel ini sudah digunakan.',
+        ]);
+
+        $subject->update([
             'code' => $request->code,
             'name' => $request->name,
         ]);
 
-        return redirect()->route('class-schedules.index', ['tab' => 'subjects'])->with('success', 'Mata pelajaran baru berhasil ditambahkan.');
+        return redirect()->route('class-schedules.index', ['tab' => 'subjects'])->with('success', 'Mata pelajaran berhasil diperbarui.');
     }
 
     /**
@@ -273,36 +364,58 @@ class ClassScheduleController extends Controller
     }
 
     /**
-     * Menyimpan kegiatan / ekskul baru.
+     * Menyimpan atau memperbarui kegiatan / ekskul (Activity Hub).
      */
     public function storeActivity(Request $request)
     {
         $user = Auth::user();
         $tenantId = $user->tenant_id;
 
+        $activityId = $request->input('activity_id');
+
         $request->validate([
             'name' => 'required|string|max:255',
+            'day_name' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
             'late_tolerance_minutes' => 'nullable|integer|min:0|max:180',
+            'target_scope' => 'required|string|in:all,class,members',
+            'target_class_ids' => 'nullable|array',
+            'target_class_ids.*' => 'integer|exists:school_classes,id',
         ], [
-            'name.required' => 'Nama kegiatan wajib diisi.',
+            'name.required' => 'Nama kegiatan / ekskul wajib diisi.',
+            'day_name.required' => 'Hari pelaksanaan wajib dipilih.',
+            'day_name.in' => 'Pilihan hari pelaksanaan tidak valid.',
             'start_time.required' => 'Jam mulai kegiatan wajib diisi.',
             'end_time.required' => 'Jam selesai kegiatan wajib diisi.',
             'end_time.after' => 'Jam Selesai harus lebih akhir daripada Jam Mulai.',
+            'target_scope.required' => 'Target peserta wajib dipilih.',
+            'target_scope.in' => 'Pilihan target peserta tidak valid.',
         ]);
 
-        \App\Models\ActivitySchedule::create([
+        $data = [
             'tenant_id' => $tenantId,
             'created_by' => $user->id,
             'name' => $request->name,
+            'day_name' => $request->day_name,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'late_tolerance_minutes' => $request->input('late_tolerance_minutes', 15),
+            'target_scope' => $request->target_scope,
+            'target_class_ids' => $request->target_scope === 'class' ? $request->input('target_class_ids', []) : null,
             'is_preset' => false,
-        ]);
+        ];
 
-        return redirect()->route('class-schedules.index', ['tab' => 'activities'])->with('success', 'Kegiatan / Ekskul baru berhasil ditambahkan.');
+        if ($activityId) {
+            $activity = \App\Models\ActivitySchedule::where('tenant_id', $tenantId)->findOrFail($activityId);
+            $activity->update($data);
+            $msg = 'Kegiatan / Ekskul berhasil diperbarui.';
+        } else {
+            \App\Models\ActivitySchedule::create($data);
+            $msg = 'Kegiatan / Ekskul baru berhasil ditambahkan.';
+        }
+
+        return redirect()->route('class-schedules.index', ['tab' => 'activities'])->with('success', $msg);
     }
 
     /**
@@ -314,11 +427,11 @@ class ClassScheduleController extends Controller
         $tenantId = $user->tenant_id;
 
         $presets = [
-            ['name' => 'Upacara Bendera Senin', 'start_time' => '07:00:00', 'end_time' => '08:00:00', 'late_tolerance_minutes' => 10],
-            ['name' => 'Pramuka Wajib', 'start_time' => '15:00:00', 'end_time' => '17:00:00', 'late_tolerance_minutes' => 15],
-            ['name' => 'Senam & Olahraga Jumat', 'start_time' => '07:00:00', 'end_time' => '08:00:00', 'late_tolerance_minutes' => 10],
-            ['name' => 'Palang Merah Remaja (PMR)', 'start_time' => '15:00:00', 'end_time' => '16:30:00', 'late_tolerance_minutes' => 15],
-            ['name' => 'Sholat Dhuhur Berjamaah', 'start_time' => '12:00:00', 'end_time' => '13:00:00', 'late_tolerance_minutes' => 10],
+            ['name' => 'Upacara Bendera Senin', 'day_name' => 'Senin', 'start_time' => '07:00:00', 'end_time' => '08:00:00', 'late_tolerance_minutes' => 10, 'target_scope' => 'all'],
+            ['name' => 'Pramuka Wajib', 'day_name' => 'Jumat', 'start_time' => '15:00:00', 'end_time' => '17:00:00', 'late_tolerance_minutes' => 15, 'target_scope' => 'all'],
+            ['name' => 'Senam & Olahraga Jumat', 'day_name' => 'Jumat', 'start_time' => '07:00:00', 'end_time' => '08:00:00', 'late_tolerance_minutes' => 10, 'target_scope' => 'all'],
+            ['name' => 'Palang Merah Remaja (PMR)', 'day_name' => 'Sabtu', 'start_time' => '15:00:00', 'end_time' => '16:30:00', 'late_tolerance_minutes' => 15, 'target_scope' => 'members'],
+            ['name' => 'Sholat Dhuhur Berjamaah', 'day_name' => 'Senin', 'start_time' => '12:00:00', 'end_time' => '13:00:00', 'late_tolerance_minutes' => 10, 'target_scope' => 'all'],
         ];
 
         $addedCount = 0;
@@ -330,16 +443,22 @@ class ClassScheduleController extends Controller
                 ],
                 [
                     'created_by' => $user->id,
+                    'day_name' => $preset['day_name'],
                     'start_time' => $preset['start_time'],
                     'end_time' => $preset['end_time'],
                     'late_tolerance_minutes' => $preset['late_tolerance_minutes'],
+                    'target_scope' => $preset['target_scope'],
                     'is_preset' => true,
                 ]
             );
             if ($activity->wasRecentlyCreated) {
                 $addedCount++;
             } else {
-                $activity->update(['is_preset' => true]);
+                $activity->update([
+                    'day_name' => $preset['day_name'],
+                    'target_scope' => $preset['target_scope'],
+                    'is_preset' => true,
+                ]);
             }
         }
 
@@ -369,5 +488,73 @@ class ClassScheduleController extends Controller
         $activity->delete();
 
         return redirect()->route('class-schedules.index', ['tab' => 'activities'])->with('success', 'Kegiatan / Ekskul berhasil dihapus.');
+    }
+
+    /**
+     * Mengupdate daftar anggota siswa kegiatan / ekskul (Batch Sync).
+     */
+    public function updateActivityMembers(Request $request, \App\Models\ActivitySchedule $activity)
+    {
+        $tenantId = Auth::user()->tenant_id;
+
+        if ($activity->tenant_id !== $tenantId) {
+            abort(403);
+        }
+
+        $request->validate([
+            'student_ids' => 'nullable|array',
+            'student_ids.*' => 'integer|exists:users,id',
+        ]);
+
+        $studentIds = $request->input('student_ids', []);
+        
+        $validStudentIds = User::where('tenant_id', $tenantId)
+            ->whereIn('id', $studentIds)
+            ->where('role', 'student')
+            ->pluck('id')
+            ->toArray();
+
+        $activity->members()->sync($validStudentIds);
+
+        return redirect()->route('class-schedules.index', ['tab' => 'activities'])
+            ->with('success', "Daftar anggota kegiatan \"{$activity->name}\" berhasil diperbarui.");
+    }
+
+    /**
+     * Menambahkan siswa tunggal sebagai anggota kegiatan.
+     */
+    public function addActivityMember(Request $request, \App\Models\ActivitySchedule $activity)
+    {
+        $tenantId = Auth::user()->tenant_id;
+
+        if ($activity->tenant_id !== $tenantId) {
+            abort(403);
+        }
+
+        $request->validate([
+            'student_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $student = User::where('tenant_id', $tenantId)->where('role', 'student')->findOrFail($request->student_id);
+
+        $activity->members()->syncWithoutDetaching([$student->id]);
+
+        return redirect()->back()->with('success', "Siswa {$student->name} berhasil ditambahkan ke kegiatan {$activity->name}.");
+    }
+
+    /**
+     * Menghapus siswa dari anggota kegiatan.
+     */
+    public function removeActivityMember(\App\Models\ActivitySchedule $activity, User $student)
+    {
+        $tenantId = Auth::user()->tenant_id;
+
+        if ($activity->tenant_id !== $tenantId || $student->tenant_id !== $tenantId) {
+            abort(403);
+        }
+
+        $activity->members()->detach($student->id);
+
+        return redirect()->back()->with('success', "Siswa {$student->name} berhasil dihapus dari anggota kegiatan.");
     }
 }

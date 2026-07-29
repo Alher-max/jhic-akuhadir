@@ -23,7 +23,7 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post('/login', [
             'school_code' => '20102026',
-            'login_id' => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
@@ -37,7 +37,7 @@ class AuthenticationTest extends TestCase
 
         $this->post('/login', [
             'school_code' => '20102026',
-            'login_id' => $user->email,
+            'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
@@ -50,12 +50,57 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post('/login', [
             'school_code' => 'WRONGSCHOOL',
-            'login_id' => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
         $this->assertGuest();
         $response->assertSessionHasErrors('school_code');
+    }
+
+    public function test_teacher_can_authenticate_using_email(): void
+    {
+        $tenant = \App\Models\Tenant::firstOrCreate(
+            ['code' => '20261001'],
+            ['name' => 'SMA Negeri 2 Yogyakarta', 'subdomain' => 'sman2jogja', 'slug' => 'sma-negeri-2-yogyakarta', 'onboarding_completed' => true]
+        );
+
+        $teacher = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'email' => '198809202014021001@guru.hadirsekolah.id',
+            'role' => 'teacher',
+        ]);
+
+        $response = $this->post('/login', [
+            'school_code' => '20261001',
+            'email' => '198809202014021001@guru.hadirsekolah.id',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($teacher);
+        $response->assertRedirect(route('teacher.dashboard', absolute: false));
+    }
+
+    public function test_student_can_authenticate_using_email(): void
+    {
+        $tenant = \App\Models\Tenant::firstOrCreate(
+            ['code' => '20261001'],
+            ['name' => 'SMA Negeri 2 Yogyakarta', 'subdomain' => 'sman2jogja', 'slug' => 'sma-negeri-2-yogyakarta', 'onboarding_completed' => true]
+        );
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'email' => '0012345678@siswa.hadirsekolah.id',
+            'role' => 'student',
+        ]);
+
+        $response = $this->post('/login', [
+            'school_code' => '20261001',
+            'email' => '0012345678@siswa.hadirsekolah.id',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($student);
     }
 
     public function test_users_can_logout(): void

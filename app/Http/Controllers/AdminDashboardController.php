@@ -170,7 +170,9 @@ class AdminDashboardController extends Controller
         $todayTeacherSchedules = \App\Models\ClassSchedule::where('tenant_id', $tenantId)
             ->where('teacher_id', Auth::id())
             ->where('day_name', $todayDayName)
-            ->with(['schoolClass', 'subject'])
+            ->with(['schoolClass.students', 'subject', 'attendances' => function($q) use ($today) {
+                $q->whereDate('date', $today);
+            }])
             ->orderBy('period_number', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();
@@ -225,10 +227,7 @@ class AdminDashboardController extends Controller
 
         $tenant = \App\Models\Tenant::find($tenantId);
 
-        $teachers = \App\Models\User::where('tenant_id', $tenantId)
-            ->whereIn('role', ['wali_kelas', 'manager_teacher', 'guru', 'admin_dapodik'])
-            ->where('is_active', true)
-            ->get();
+        $teachers = \App\Models\User::activeTeachers()->where('tenant_id', $tenantId)->get();
 
         $studentsForBantuAbsen = \App\Models\User::where('tenant_id', $tenantId)
             ->where('role', 'student')
@@ -369,5 +368,57 @@ class AdminDashboardController extends Controller
         $tenant->save();
 
         return redirect()->back()->with('success', 'Pengaturan Banner berhasil diperbarui.');
+    }
+
+    /**
+     * Simpan Presensi KBM Kelas secara kolektif per jadwal pelajaran.
+     */
+    public function storeKbmAttendance(Request $request)
+    {
+        $request->validate([
+            'schedule_id' => 'required|exists:class_schedules,id',
+            'attendances' => 'required|array',
+            'attendances.*.student_id' => 'required|exists:users,id',
+            'attendances.*.status' => 'required|string|in:present,sick,permission,alpha,late',
+            'attendances.*.notes' => 'nullable|string|max:255',
+        ]);
+
+        $tenantId = Auth::user()->tenant_id;
+        $today = \Carbon\Carbon::today()->format('Y-m-d');
+        $now = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
+        $teacherName = Auth::user()->name;
+
+        $schedule = \App\Models\ClassSchedule::where('tenant_id', $tenantId)->findOrFail($request->schedule_id);
+
+        $savedCount = 0;
+        foreach ($request->attendances as $item) {
+            $studentId = $item['student_id'];
+            $status = $item['status'];
+            $userNote = trim($item['notes'] ?? '');
+
+            $auditNote = "Presensi KBM ({$schedule->subject?->name}) oleh Guru: {$teacherName}";
+            $fullNote = $userNote ? ($userNote . " | " . $auditNote) : $auditNote;
+
+            \App\Models\Attendance::updateOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'user_id' => $studentId,
+                    'date' => $today,
+                    'class_schedule_id' => $schedule->id,
+                ],
+                [
+                    'attendance_type' => 'class',
+                    'clock_in' => $now,
+                    'status' => $status,
+                    'notes' => $fullNote,
+                ]
+            );
+            $savedCount++;
+        }
+
+        $subjectName = $schedule->subject?->name ?? 'KBM';
+        $className = $schedule->schoolClass?->full_name ?? 'Kelas';
+
+        return redirect()->back()->with('success', "Presensi KBM {$subjectName} ({$className}) berhasil disimpan untuk {$savedCount} siswa!");
     }
 }

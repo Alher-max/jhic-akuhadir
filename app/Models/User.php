@@ -72,9 +72,74 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         return $this->hasOne(UserProfile::class);
     }
 
+    public function teacherProfile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function studentProfile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function homeroomClass()
+    {
+        return $this->hasOne(SchoolClass::class, 'wali_kelas_id');
+    }
+
     public function homeroomClasses()
     {
         return $this->hasMany(SchoolClass::class, 'wali_kelas_id');
+    }
+
+    public static function getTeacherRoles(): array
+    {
+        return [
+            'teacher', 'guru', 'guru_mapel', 'guru_kelas', 'guru_bk', 'guru_inklusi',
+            'guru_kejuruan', 'wali_kelas', 'headmaster', 'kepala_sekolah',
+            'manager_teacher', 'operator', 'staff', 'admin_dapodik'
+        ];
+    }
+
+    public function scopeActiveTeachers($query)
+    {
+        return $query->whereIn('role', static::getTeacherRoles())
+                     ->where('is_active', true)
+                     ->orderBy('name', 'asc');
+    }
+
+    /**
+     * Dapatkan password default dinamis berdasarkan peran (role) dan identitas pengguna.
+     */
+    public function getDefaultPassword(): string
+    {
+        $role = $this->role ?? 'user';
+
+        if (in_array($role, static::getTeacherRoles()) || in_array($role, ['pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+            return $this->profile?->nuptk 
+                ?: ($this->profile?->employee_id 
+                ?: ($this->nisn 
+                ?: '12345678'));
+        }
+
+        if ($role === 'student') {
+            return $this->nisn 
+                ?: ($this->nis 
+                ?: '12345678');
+        }
+
+        if ($role === 'parent') {
+            return $this->parent_phone 
+                ?: ($this->nik 
+                ?: '12345678');
+        }
+
+        return '12345678';
+    }
+
+    public static function getDefaultPasswordForUser(User $user): string
+    {
+        return $user->getDefaultPassword();
     }
 
     protected function casts(): array

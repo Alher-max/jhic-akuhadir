@@ -95,6 +95,36 @@
                                 </p>
                             </div>
                         </div>
+
+                        <!-- Agenda & Kegiatan Hari Ini -->
+                        <div class="border-t border-brand-border/50 pt-4 mt-4 space-y-2">
+                            <p class="text-xs text-brand-text-muted uppercase tracking-wider font-semibold flex items-center justify-between">
+                                <span>Agenda Hari Ini ({{ $item->todayDayName }}):</span>
+                                <span class="text-indigo-600 font-bold">{{ count($item->todayAgenda) }} Agenda</span>
+                            </p>
+                            @if(count($item->todayAgenda) > 0)
+                                <div class="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                                    @foreach($item->todayAgenda as $ag)
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl border border-gray-200/80 text-xs">
+                                            <div class="flex items-center gap-2">
+                                                <span class="px-2 py-0.5 rounded-md font-extrabold text-[10px] {{ $ag->badge_class }}">
+                                                    {{ $ag->badge }}
+                                                </span>
+                                                <div>
+                                                    <span class="font-bold text-gray-900">{{ $ag->title }}</span>
+                                                    <span class="text-[11px] text-gray-500 block">{{ $ag->subtitle }}</span>
+                                                </div>
+                                            </div>
+                                            <span class="font-mono text-[11px] font-semibold text-gray-600 shrink-0 bg-white px-2 py-1 rounded-md border border-gray-200">
+                                                {{ $ag->time_str }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-xs text-gray-400 font-medium italic">Tidak ada jadwal KBM atau kegiatan sekolah hari ini.</p>
+                            @endif
+                        </div>
                     </div>
                 @empty
                     <div class="col-span-full bg-brand-surface rounded-2xl border border-brand-border p-8 text-center text-brand-text-muted">

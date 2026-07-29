@@ -29,9 +29,9 @@ class DummyDevSeeder extends Seeder
         $tenantId = $tenant->id;
         $today = Carbon::today();
 
-        // 1. Create Wali Kelas
-        $waliKelas = User::firstOrCreate(
-            ['email' => 'bambang@example.com'],
+        // 1. Create Teachers
+        $waliKelasBambang = User::firstOrCreate(
+            ['email' => '198809202014021001@guru.hadirsekolah.id'],
             [
                 'tenant_id' => $tenantId,
                 'name' => 'Bambang Hermanto, S.Pd.',
@@ -41,31 +41,55 @@ class DummyDevSeeder extends Seeder
             ]
         );
 
-        // 2. Create 3 Classes
+        \App\Models\UserProfile::updateOrCreate(
+            ['user_id' => $waliKelasBambang->id],
+            [
+                'nuptk' => '198809202014021001',
+                'employee_id' => '198809202014021001',
+            ]
+        );
+
+        $waliKelasAni = User::firstOrCreate(
+            ['email' => 'guru.ipa@hadirsekolah.id'],
+            [
+                'tenant_id' => $tenantId,
+                'name' => 'Dr. Ani Wijaya',
+                'password' => Hash::make('password123'),
+                'role' => 'teacher',
+                'is_active' => true,
+            ]
+        );
+
+        $waliKelasBudi = User::firstOrCreate(
+            ['email' => 'guru.english@hadirsekolah.id'],
+            [
+                'tenant_id' => $tenantId,
+                'name' => 'Budi Santoso, M.Hum.',
+                'password' => Hash::make('password123'),
+                'role' => 'teacher',
+                'is_active' => true,
+            ]
+        );
+
+        // 2. Create 3 Classes (1 Teacher = 1 Homeroom Class)
         $classesData = [
-            ['jenjang' => 'SMA', 'tingkat' => 10, 'nama_kelas' => 'X IPA 1'],
-            ['jenjang' => 'SMA', 'tingkat' => 11, 'nama_kelas' => 'XI IPA 1'],
-            ['jenjang' => 'SMA', 'tingkat' => 12, 'nama_kelas' => 'XII IPA 1'],
+            ['jenjang' => 'SMA', 'tingkat' => 10, 'nama_kelas' => 'X IPA 1', 'wali_id' => $waliKelasBambang->id],
+            ['jenjang' => 'SMA', 'tingkat' => 11, 'nama_kelas' => 'XI IPA 1', 'wali_id' => $waliKelasAni->id],
+            ['jenjang' => 'SMA', 'tingkat' => 12, 'nama_kelas' => 'XII IPA 1', 'wali_id' => $waliKelasBudi->id],
         ];
 
         $classes = [];
         foreach ($classesData as $data) {
             $class = SchoolClass::firstOrCreate(
                 ['tenant_id' => $tenantId, 'nama_kelas' => $data['nama_kelas']],
-                ['jenjang' => $data['jenjang'], 'tingkat' => $data['tingkat'], 'wali_kelas_id' => $waliKelas->id]
+                ['jenjang' => $data['jenjang'], 'tingkat' => $data['tingkat'], 'wali_kelas_id' => $data['wali_id']]
             );
-            // Ensure wali_kelas_id is set
-            $class->wali_kelas_id = $waliKelas->id;
+            $class->wali_kelas_id = $data['wali_id'];
             $class->save();
             $classes[] = $class;
         }
 
         // 3. Create Students and Attendances
-        // X IPA 1 (32 students)
-        // XI IPA 1 (34 students)
-        // XII IPA 1 (30 students)
-        // Total 96 students.
-
         $studentsConfig = [
             'X IPA 1' => 32,
             'XI IPA 1' => 34,
@@ -73,7 +97,7 @@ class DummyDevSeeder extends Seeder
         ];
 
         // Delete existing mock students for this script run
-        $existingStudents = User::where('tenant_id', $tenantId)->where('role', 'student')->where('email', 'like', 'mock_student_%@example.com')->get();
+        $existingStudents = User::where('tenant_id', $tenantId)->where('role', 'student')->where('email', 'like', '%@siswa.hadirsekolah.id')->get();
         foreach ($existingStudents as $s) {
             Attendance::where('user_id', $s->id)->delete();
             $s->delete();
@@ -84,10 +108,12 @@ class DummyDevSeeder extends Seeder
         foreach ($classes as $class) {
             $numStudents = $studentsConfig[$class->nama_kelas];
             for ($i = 1; $i <= $numStudents; $i++) {
+                $nisn = "2026" . str_pad($class->id, 2, '0', STR_PAD_LEFT) . str_pad($i, 3, '0', STR_PAD_LEFT);
                 $student = User::create([
                     'tenant_id' => $tenantId,
                     'name' => "Siswa {$class->nama_kelas} #{$i}",
-                    'email' => "mock_student_" . Str::slug($class->nama_kelas) . "_{$i}@example.com",
+                    'email' => "{$nisn}@siswa.hadirsekolah.id",
+                    'nisn' => $nisn,
                     'password' => Hash::make('password123'),
                     'role' => 'student',
                     'is_active' => true,

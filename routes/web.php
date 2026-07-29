@@ -72,6 +72,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
         Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
         Route::post('/teacher/manual-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeManualAttendance'])->name('teacher.manual-attendance');
+        Route::post('/teacher/kbm-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeKbmAttendance'])->name('teacher.kbm-attendance');
         Route::post('/teacher/students/{id}/reset-photo', [\App\Http\Controllers\AdminDashboardController::class, 'resetStudentPhoto'])->name('teacher.students.reset-photo');
     });
 
@@ -91,11 +92,15 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::post('/dashboard/class-schedules', [\App\Http\Controllers\ClassScheduleController::class, 'storeSchedule'])->name('class-schedules.store');
         Route::delete('/dashboard/class-schedules/{id}', [\App\Http\Controllers\ClassScheduleController::class, 'destroySchedule'])->name('class-schedules.destroy');
         Route::post('/dashboard/subjects', [\App\Http\Controllers\ClassScheduleController::class, 'storeSubject'])->name('subjects.store');
+        Route::put('/dashboard/subjects/{subject}', [\App\Http\Controllers\ClassScheduleController::class, 'updateSubject'])->name('subjects.update');
         Route::post('/dashboard/subjects/presets', [\App\Http\Controllers\ClassScheduleController::class, 'loadSubjectPresets'])->name('subjects.presets');
         Route::delete('/dashboard/subjects/presets', [\App\Http\Controllers\ClassScheduleController::class, 'clearSubjectPresets'])->name('subjects.presets.clear');
         Route::post('/dashboard/activities', [\App\Http\Controllers\ClassScheduleController::class, 'storeActivity'])->name('activities.store');
         Route::post('/dashboard/activities/presets', [\App\Http\Controllers\ClassScheduleController::class, 'loadActivityPresets'])->name('activities.presets');
         Route::delete('/dashboard/activities/presets', [\App\Http\Controllers\ClassScheduleController::class, 'clearActivityPresets'])->name('activities.presets.clear');
+        Route::post('/dashboard/activities/{activity}/members', [\App\Http\Controllers\ClassScheduleController::class, 'updateActivityMembers'])->name('activities.members.update');
+        Route::post('/dashboard/activities/{activity}/members/add', [\App\Http\Controllers\ClassScheduleController::class, 'addActivityMember'])->name('activities.members.add');
+        Route::delete('/dashboard/activities/{activity}/members/{student}', [\App\Http\Controllers\ClassScheduleController::class, 'removeActivityMember'])->name('activities.members.remove');
         Route::delete('/dashboard/activities/{id}', [\App\Http\Controllers\ClassScheduleController::class, 'destroyActivity'])->name('activities.destroy');
 
         // Attendance Schedules (Jam Operasional Presensi Harian)
@@ -108,6 +113,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::post('/dashboard/students', [\App\Http\Controllers\StudentManagementController::class, 'store'])->name('students.store');
         Route::put('/dashboard/students/{id}', [\App\Http\Controllers\StudentManagementController::class, 'update'])->name('students.update');
         Route::delete('/dashboard/students/{id}', [\App\Http\Controllers\StudentManagementController::class, 'destroy'])->name('students.destroy');
+        Route::post('/dashboard/students/{id}/reset-password', [\App\Http\Controllers\StudentManagementController::class, 'resetPassword'])->name('students.reset-password');
         Route::post('/dashboard/students/import', [\App\Http\Controllers\StudentManagementController::class, 'import'])->name('students.import');
         Route::get('/dashboard/students/download-template', [\App\Http\Controllers\StudentManagementController::class, 'downloadTemplate'])->name('students.download-template');
 
@@ -139,6 +145,8 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         // Student Cards Management (Kartu Pelajar)
         Route::get('/dashboard/student-cards', [\App\Http\Controllers\Admin\StudentCardController::class, 'index'])->name('student-cards.index');
         Route::post('/dashboard/student-cards/print', [\App\Http\Controllers\Admin\StudentCardController::class, 'printCards'])->name('student-cards.print');
+        Route::post('/dashboard/student-cards/upload-logo', [\App\Http\Controllers\Admin\StudentCardController::class, 'uploadLogo'])->name('student-cards.upload-logo');
+        Route::delete('/dashboard/student-cards/remove-logo', [\App\Http\Controllers\Admin\StudentCardController::class, 'removeLogo'])->name('student-cards.remove-logo');
 
         // Support Tickets Management (Operator)
         Route::get('/operator/support-tickets', [\App\Http\Controllers\SupportTicketController::class, 'operatorIndex'])->name('operator.support-tickets.index');

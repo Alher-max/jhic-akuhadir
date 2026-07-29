@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\Tenant;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -191,6 +192,9 @@ class NonFormalAttendanceTest extends TestCase
             'end_time' => '11:30:00',
         ]);
 
+        // Travel to 07:15 today for deterministic session 1 clock-in
+        Carbon::setTestNow(now()->setTime(7, 15, 0));
+
         // Presensi Sesi 1
         $response1 = $this->actingAs($student)->post(route('member.clock-in'));
         $response1->assertRedirect();
@@ -218,5 +222,7 @@ class NonFormalAttendanceTest extends TestCase
         ]);
 
         $this->assertTrue($attendanceService->hasAttendedClassSession($student, now()->format('Y-m-d'), $session2->id));
+
+        Carbon::setTestNow();
     }
 }

@@ -215,10 +215,10 @@
                             </button>
                         @endif
 
-                        <!-- Tombol + Tambah Jam KBM -->
+                        <!-- Tombol + Tambah Jadwal -->
                         @if($selectedClass)
                             <button type="button" @click="openAddSchedule('Senin')" class="px-4 py-2.5 bg-brand-primary hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-sm inline-flex items-center gap-1.5">
-                                <i class="fa-solid fa-plus"></i> + Tambah Jam KBM
+                                <i class="fa-solid fa-plus"></i> + Tambah Jadwal
                             </button>
                         @endif
                     </div>
@@ -356,7 +356,7 @@
                         </div>
 
                         <!-- Tombol + Kegiatan Baru -->
-                        <button type="button" @click="showActivityModal = true" class="px-4 py-2 bg-brand-primary hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-sm inline-flex items-center gap-1.5">
+                        <button type="button" @click="openAddActivity()" class="px-4 py-2 bg-brand-primary hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-sm inline-flex items-center gap-1.5">
                             <i class="fa-solid fa-plus"></i> + Kegiatan Baru
                         </button>
                     </div>
@@ -372,24 +372,39 @@
                                     </div>
                                     <div>
                                         <h4 class="font-bold text-base text-gray-900">{{ $act->name }}</h4>
-                                        @if($act->is_preset)
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200 inline-block mt-0.5">
-                                                Preset Standar
+                                        <div class="flex items-center gap-1.5 flex-wrap mt-1">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                <i class="fa-regular fa-calendar text-[9px] me-1"></i>{{ $act->day_name ?: 'Senin' }}
                                             </span>
-                                        @else
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100 inline-block mt-0.5">
-                                                Custom
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                                @if(($act->target_scope ?? 'all') === 'all')
+                                                    <i class="fa-solid fa-users text-[9px] me-1"></i>Semua Siswa
+                                                @elseif(($act->target_scope ?? 'all') === 'class')
+                                                    <i class="fa-solid fa-graduation-cap text-[9px] me-1"></i>Kelas Target
+                                                @else
+                                                    <i class="fa-solid fa-user-check text-[9px] me-1"></i>Anggota Ekskul
+                                                @endif
                                             </span>
-                                        @endif
+                                            @if($act->is_preset)
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                                                    Preset
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                                <form id="delete-activity-{{ $act->id }}" action="{{ route('activities.destroy', $act->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" @click="confirmDeleteActivity('delete-activity-{{ $act->id }}')" class="text-gray-400 hover:text-red-600 p-1 transition" title="Hapus">
-                                        <i class="fa-solid fa-trash-can text-sm"></i>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" @click="openEditActivity({{ json_encode($act) }})" class="text-gray-400 hover:text-indigo-600 p-1 transition" title="Edit Kegiatan">
+                                        <i class="fa-solid fa-pen-to-square text-sm"></i>
                                     </button>
-                                </form>
+                                    <form id="delete-activity-{{ $act->id }}" action="{{ route('activities.destroy', $act->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" @click="confirmDeleteActivity('delete-activity-{{ $act->id }}')" class="text-gray-400 hover:text-red-600 p-1 transition" title="Hapus">
+                                            <i class="fa-solid fa-trash-can text-sm"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
 
                             <div class="space-y-1 text-xs text-gray-600 pt-2 border-t border-gray-100">
@@ -420,7 +435,7 @@
         </div>
 
         <!-- MODAL 1: TAMBAH / EDIT JADWAL PELAJARAN -->
-        <div x-show="showScheduleModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
+        <div x-cloak x-show="showScheduleModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
             <div x-show="showScheduleModal" x-transition.opacity class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showScheduleModal = false"></div>
             
             <div x-show="showScheduleModal" x-transition.scale.95 class="relative z-10 w-full max-w-lg bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border text-left">
@@ -514,7 +529,7 @@
 
         @if(in_array(auth()->user()->role, ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin']))
         <!-- MODAL 2: TAMBAH MATA PELAJARAN BARU -->
-        <div x-show="showSubjectModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
+        <div x-cloak x-show="showSubjectModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
             <div x-show="showSubjectModal" x-transition.opacity class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showSubjectModal = false"></div>
             
             <div x-show="showSubjectModal" x-transition.scale.95 class="relative z-10 w-full max-w-md bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border text-left">
@@ -550,13 +565,15 @@
         </div>
         @endif
 
-        <!-- MODAL 3: TAMBAH KEGIATAN / EKSKUL BARU -->
-        <div x-show="showActivityModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
+        <!-- MODAL 3: TAMBAH / EDIT KEGIATAN BARU -->
+        <div x-cloak x-show="showActivityModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
             <div x-show="showActivityModal" x-transition.opacity class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showActivityModal = false"></div>
             
-            <div x-show="showActivityModal" x-transition.scale.95 class="relative z-10 w-full max-w-md bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border text-left">
+            <div x-show="showActivityModal" x-transition.scale.95 class="relative z-10 w-full max-w-lg bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border text-left">
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                    <h3 class="text-lg font-bold text-brand-text-main">Tambah Kegiatan / Ekskul Baru</h3>
+                    <h3 class="text-lg font-bold text-brand-text-main">
+                        <span x-text="activityForm.id ? 'Edit Kegiatan / Ekskul' : 'Tambah Kegiatan / Ekskul Baru'"></span>
+                    </h3>
                     <button type="button" @click="showActivityModal = false" class="text-gray-400 hover:text-gray-600">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
@@ -564,31 +581,70 @@
 
                 <form action="{{ route('activities.store') }}" method="POST" @submit="validateActivityForm($event)" class="mt-4 space-y-4">
                     @csrf
+                    <input type="hidden" name="activity_id" x-model="activityForm.id">
+
                     <template x-if="activityTimeError">
                         <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600 flex items-center gap-2">
                             <i class="fa-solid fa-circle-exclamation text-sm"></i>
                             <span x-text="activityTimeError"></span>
                         </div>
                     </template>
+
                     <div>
                         <label class="block text-xs font-semibold text-gray-700">Nama Kegiatan / Ekskul <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" required placeholder="Contoh: Upacara Bendera / Pramuka" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                        <input type="text" name="name" x-model="activityForm.name" required placeholder="Contoh: Upacara Bendera / Pramuka" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700">Hari Pelaksanaan <span class="text-red-500">*</span></label>
+                            <select name="day_name" x-model="activityForm.day_name" required class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                                @foreach($days as $day)
+                                    <option value="{{ $day }}">{{ $day }}</option>
+                                @endforeach
+                                <option value="Minggu">Minggu</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700">Toleransi Telat (Menit)</label>
+                            <input type="number" name="late_tolerance_minutes" x-model="activityForm.late_tolerance_minutes" min="0" max="180" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700">Jam Mulai <span class="text-red-500">*</span></label>
-                            <input type="text" id="fp-activity-start" name="start_time" required placeholder="07:00" class="time-picker-5min mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:ring-brand-primary focus:border-brand-primary">
+                            <input type="text" id="fp-activity-start" name="start_time" x-model="activityForm.start_time" required placeholder="07:00" class="time-picker-5min mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:ring-brand-primary focus:border-brand-primary">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700">Jam Selesai <span class="text-red-500">*</span></label>
-                            <input type="text" id="fp-activity-end" name="end_time" required placeholder="08:00" class="time-picker-5min mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:ring-brand-primary focus:border-brand-primary">
+                            <input type="text" id="fp-activity-end" name="end_time" x-model="activityForm.end_time" required placeholder="08:00" class="time-picker-5min mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:ring-brand-primary focus:border-brand-primary">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700">Toleransi Keterlambatan (Menit)</label>
-                        <input type="number" name="late_tolerance_minutes" value="15" min="0" max="180" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                        <label class="block text-xs font-semibold text-gray-700">Target Peserta <span class="text-red-500">*</span></label>
+                        <select name="target_scope" x-model="activityForm.target_scope" required class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="all">Semua Siswa Sekolah (Seluruh Rombel)</option>
+                            <option value="class">Spesifik Kelas / Rombel Tertentu</option>
+                            <option value="members">Siswa Terdaftar / Anggota Ekskul</option>
+                        </select>
+                        <p x-cloak x-show="activityForm.target_scope === 'members'" class="mt-1.5 text-xs text-indigo-700 font-medium flex items-center gap-1.5 bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
+                            <i class="fa-solid fa-circle-info text-indigo-600"></i>
+                            <span>Setelah disimpan, atur daftar siswa melalui tombol <strong>'Kelola Anggota'</strong> di kartu kegiatan.</span>
+                        </p>
+                    </div>
+
+                    <div x-cloak x-show="activityForm.target_scope === 'class'" class="space-y-1.5 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <label class="block text-xs font-semibold text-gray-700">Pilih Rombel / Kelas Target:</label>
+                        <div class="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
+                            @foreach($classes as $c)
+                                <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer bg-white p-2 rounded-lg border border-gray-200 hover:border-indigo-300">
+                                    <input type="checkbox" name="target_class_ids[]" value="{{ $c->id }}" x-model="activityForm.target_class_ids" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span>{{ $c->nama_kelas }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
@@ -597,6 +653,73 @@
                         </button>
                         <button type="submit" class="px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-semibold hover:bg-red-700 shadow-sm">
                             Simpan Kegiatan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL 4: KELOLA ANGGOTA EKSKUL & KEGIATAN -->
+        <div x-cloak x-show="showMembersModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
+            <div x-show="showMembersModal" x-transition.opacity class="fixed inset-0 bg-gray-900/60 transition-opacity" @click="showMembersModal = false"></div>
+            
+            <div x-show="showMembersModal" x-transition.scale.95 class="relative z-10 w-full max-w-lg bg-brand-surface rounded-2xl p-6 sm:p-8 shadow-xl my-8 border border-brand-border text-left">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-brand-text-main flex items-center gap-2">
+                            <i class="fa-solid fa-users-gear text-indigo-600"></i>
+                            <span>Kelola Anggota Kegiatan</span>
+                        </h3>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Kegiatan: <strong class="text-gray-900" x-text="selectedActivity ? selectedActivity.name : ''"></strong>
+                        </p>
+                    </div>
+                    <button type="button" @click="showMembersModal = false" class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <form :action="selectedActivity ? '/dashboard/activities/' + selectedActivity.id + '/members' : '#'" method="POST" class="mt-4 space-y-4">
+                    @csrf
+                    
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-xs"></i>
+                        <input type="text" x-model="memberSearchQuery" placeholder="Cari nama siswa atau NISN..." class="w-full text-xs ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 focus:ring-brand-primary focus:border-brand-primary">
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-gray-600 font-semibold px-1">
+                        <span>Pilih Siswa Terdaftar:</span>
+                        <span class="text-indigo-600" x-text="selectedMemberIds.length + ' Siswa Terpilih'"></span>
+                    </div>
+
+                    <div class="max-h-64 overflow-y-auto space-y-1.5 p-2 bg-gray-50 rounded-xl border border-gray-200">
+                        @forelse($allStudents as $student)
+                            <label x-cloak x-show="!memberSearchQuery || '{{ strtolower($student->name) }}'.includes(memberSearchQuery.toLowerCase()) || '{{ strtolower($student->nisn ?? '') }}'.includes(memberSearchQuery.toLowerCase())" class="flex items-center justify-between p-2.5 bg-white hover:bg-indigo-50/50 rounded-lg border border-gray-200 cursor-pointer transition">
+                                <div class="flex items-center gap-2.5">
+                                    <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" x-model="selectedMemberIds" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                                    <div>
+                                        <div class="text-xs font-bold text-gray-900">{{ $student->name }}</div>
+                                        <div class="text-[11px] text-gray-400 font-mono">
+                                            {{ $student->nisn ?: 'Tanpa NISN' }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
+                                    {{ $student->schoolClass ? $student->schoolClass->nama_kelas : 'Tanpa Kelas' }}
+                                </span>
+                            </label>
+                        @empty
+                            <div class="p-4 text-center text-xs text-gray-400">Tidak ada siswa terdaftar.</div>
+                        @endforelse
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button type="button" @click="showMembersModal = false" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-semibold hover:bg-red-700 shadow-sm inline-flex items-center gap-1.5">
+                            <i class="fa-solid fa-floppy-disk text-xs"></i>
+                            <span>Simpan Anggota</span>
                         </button>
                     </div>
                 </form>
@@ -614,10 +737,83 @@
                 showScheduleModal: {{ $errors->has('start_time') || $errors->has('end_time') || $errors->has('subject_id') ? 'true' : 'false' }},
                 showSubjectModal: false,
                 showActivityModal: false,
+                showMembersModal: false,
+                selectedActivity: null,
+                selectedMemberIds: [],
+                memberSearchQuery: '',
                 isEdit: false,
                 isSubmitting: false,
                 scheduleTimeError: '{{ $errors->first('end_time') ?: '' }}',
                 activityTimeError: '',
+                openManageMembers(act) {
+                    this.selectedActivity = act;
+                    this.showMembersModal = true;
+                    this.memberSearchQuery = '';
+                    const members = act.members || [];
+                    this.selectedMemberIds = members.map(m => String(m.id));
+                },
+                activityForm: {
+                    id: null,
+                    name: '',
+                    day_name: 'Senin',
+                    start_time: '15:00',
+                    end_time: '17:00',
+                    late_tolerance_minutes: 15,
+                    target_scope: 'all',
+                    target_class_ids: []
+                },
+                openAddActivity() {
+                    this.showActivityModal = true;
+                    this.activityTimeError = '';
+                    this.activityForm = {
+                        id: null,
+                        name: '',
+                        day_name: 'Senin',
+                        start_time: '15:00',
+                        end_time: '17:00',
+                        late_tolerance_minutes: 15,
+                        target_scope: 'all',
+                        target_class_ids: []
+                    };
+                    this.$nextTick(() => {
+                        const startInput = document.querySelector('#fp-activity-start');
+                        if (startInput && startInput._flatpickr) {
+                            startInput._flatpickr.setDate(this.activityForm.start_time);
+                        }
+                        const endInput = document.querySelector('#fp-activity-end');
+                        if (endInput && endInput._flatpickr) {
+                            endInput._flatpickr.setDate(this.activityForm.end_time);
+                        }
+                    });
+                },
+                openEditActivity(act) {
+                    this.showActivityModal = true;
+                    this.activityTimeError = '';
+                    let classIds = [];
+                    if (act.target_class_ids) {
+                        classIds = typeof act.target_class_ids === 'string' ? JSON.parse(act.target_class_ids) : act.target_class_ids;
+                    }
+                    this.activityForm = {
+                        id: act.id,
+                        name: act.name,
+                        day_name: act.day_name || 'Senin',
+                        start_time: act.start_time ? act.start_time.substring(0, 5) : '15:00',
+                        end_time: act.end_time ? act.end_time.substring(0, 5) : '17:00',
+                        late_tolerance_minutes: act.late_tolerance_minutes !== undefined ? act.late_tolerance_minutes : 15,
+                        target_scope: act.target_scope || 'all',
+                        target_class_ids: Array.isArray(classIds) ? classIds.map(String) : []
+                    };
+                    this.$nextTick(() => {
+                        const startInput = document.querySelector('#fp-activity-start');
+                        if (startInput && startInput._flatpickr) {
+                            startInput._flatpickr.setDate(this.activityForm.start_time);
+                        }
+                        const endInput = document.querySelector('#fp-activity-end');
+                        if (endInput && endInput._flatpickr) {
+                            endInput._flatpickr.setDate(this.activityForm.end_time);
+                        }
+                    });
+                },
                 scheduleForm: {
                     id: null,
                     class_id: '{{ $selectedClassId }}',

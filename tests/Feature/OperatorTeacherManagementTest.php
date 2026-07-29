@@ -129,4 +129,40 @@ class OperatorTeacherManagementTest extends TestCase
         $schoolClass->refresh();
         $this->assertEquals($teacher->id, $schoolClass->wali_kelas_id);
     }
+
+    public function test_operator_can_reset_teacher_password_to_nuptk_or_nip(): void
+    {
+        $tenant = Tenant::create(['name' => 'SMK Garuda', 'code' => 'SMKGAR', 'slug' => 'smk-garuda']);
+        $operator = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Operator Admin',
+            'email' => 'operator@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'operator',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $teacher = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'password' => bcrypt('oldpassword'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($operator)
+            ->post(route('operator.teachers.reset-password', $teacher->id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $teacher->refresh();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('198501012010011001', $teacher->password));
+    }
 }
