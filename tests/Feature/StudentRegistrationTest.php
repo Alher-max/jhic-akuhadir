@@ -134,12 +134,11 @@ class StudentRegistrationTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->post(route('students.store'), [
-                'name' => 'Budi Tanpa Ortu',
-                'nisn' => '0081234567',
-                'nis' => '202410012',
-                'class_id' => $this->schoolClass->id,
+                'name'       => 'Budi Tanpa Ortu',
+                'nisn'       => '0081234567',
+                'nis'        => '202410012',
+                'class_id'   => $this->schoolClass->id,
                 'birth_date' => '2008-05-15',
-                'parent_option' => 'none',
             ]);
 
         $response->assertRedirect();

@@ -119,7 +119,7 @@
                 <div x-show="activeTab === 'ortu'" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="father_name" class="block text-sm font-medium text-gray-700">Nama Ayah Kandung / Wali</label>
+                            <label for="father_name" class="block text-sm font-medium text-gray-700">Nama Ayah Kandung</label>
                             <input type="text" name="father_name" id="father_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nama Ayah">
                         </div>
                         <div>
@@ -129,49 +129,15 @@
                     </div>
 
                     <div>
-                        <label for="parent_phone" class="block text-sm font-medium text-gray-700">No. Telepon / WhatsApp Orang Tua (Untuk Notifikasi)</label>
+                        <label for="parent_phone" class="block text-sm font-medium text-gray-700">No. HP / WhatsApp Orang Tua</label>
                         <input type="text" name="parent_phone" id="parent_phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 081234567890">
                     </div>
 
-                    <div class="pt-2 border-t border-gray-200">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Relasi Akun Orang Tua / Wali (Opsional)</label>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-3">
-                            <label class="inline-flex items-center">
-                                <input type="radio" x-model="parentOption" name="parent_option" value="none" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Tidak buat akun ortu sekarang</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" x-model="parentOption" name="parent_option" value="new" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Buat Akun Orang Tua Baru</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" x-model="parentOption" name="parent_option" value="existing" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Pilih dari Terdaftar</span>
-                            </label>
-                        </div>
-
-                        <!-- Form Buat Orang Tua Baru -->
-                        <div x-show="parentOption === 'new'" x-transition class="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <div>
-                                <label for="parent_name" class="block text-sm font-medium text-gray-700">Nama Akun Ortu / Wali <span class="text-red-500">*</span></label>
-                                <input type="text" name="parent_name" id="parent_name" :required="parentOption === 'new'" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nama untuk akun login ortu">
-                            </div>
-                            <div>
-                                <label for="parent_email" class="block text-sm font-medium text-gray-700">Surel Ortu (Opsional)</label>
-                                <input type="text" name="parent_email" id="parent_email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong">
-                            </div>
-                        </div>
-
-                        <!-- Dropdown Orang Tua Terdaftar -->
-                        <div x-show="parentOption === 'existing'" x-transition x-cloak>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Orang Tua / Wali <span class="text-red-500">*</span></label>
-                            <select name="parent_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                <option value="">-- Pilih Orang Tua Terdaftar --</option>
-                                @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->email ? '('.$parent->email.')' : '' }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="pt-3 border-t border-gray-100">
+                        <p class="text-xs text-gray-400 flex items-start gap-1.5">
+                            <i class="fa-solid fa-circle-info mt-0.5 shrink-0 text-gray-400"></i>
+                            Data orang tua di atas disimpan sebagai catatan arsip. Untuk menghubungkan akun orang tua secara digital, gunakan menu <strong class="text-gray-600">Orang Tua</strong> di dasbor operator setelah siswa berhasil ditambahkan.
+                        </p>
                     </div>
                 </div>
 

@@ -99,27 +99,6 @@ class StudentManagementController extends Controller
         }
 
         $tenant = Tenant::findOrFail($user->tenant_id);
-        
-        $parentId = null;
-
-        if ($request->parent_option === 'new' && $request->filled('parent_name')) {
-            $parentEmail = $request->parent_email ?: 'ortu.' . $request->nisn . '@hadirsekolah.id';
-            
-            $parentUser = User::create([
-                'tenant_id' => $tenant->id,
-                'name' => $request->parent_name,
-                'email' => $parentEmail,
-                'password' => Hash::make('password'),
-                'role' => 'parent',
-                'is_active' => true,
-                'onboarding_completed' => true,
-                'email_verified_at' => Carbon::now(),
-            ]);
-
-            $parentId = $parentUser->id;
-        } elseif ($request->parent_option === 'existing') {
-            $parentId = $request->parent_id;
-        }
 
         // Auto-generate default password format: {NISN}{TANGGAL_LAHIR(DDMMYYYY)}
         $birthDateFormatted = $request->birth_date ? Carbon::parse($request->birth_date)->format('dmY') : '';
@@ -137,39 +116,33 @@ class StudentManagementController extends Controller
         $email = $request->email ?: (strtolower(str_replace([' ', ',', '.'], '', $request->name)) . rand(100, 999) . '@' . ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id');
 
         Student::create([
-            'tenant_id' => $tenant->id,
-            'name' => $request->name,
-            'email' => $email,
-            'nisn' => $request->nisn,
-            'nis' => $request->nis,
-            'nik' => $request->nik,
-            'gender' => $request->gender,
-            'birth_place' => $request->birth_place,
-            'birth_date' => $request->birth_date,
-            'religion' => $request->religion,
-            'father_name' => $request->father_name,
-            'mother_name' => $request->mother_name,
-            'parent_phone' => $request->parent_phone,
-            'address' => $request->address,
-            'blood_type' => $request->blood_type,
-            'medical_notes' => $request->medical_notes,
-            'password' => $password,
-            'is_password_changed' => false,
-            'parent_id' => $parentId,
-            'class_id' => $request->class_id,
-            'master_photo' => $masterPhotoPath,
-            'is_active' => true,
+            'tenant_id'            => $tenant->id,
+            'name'                 => $request->name,
+            'email'                => $email,
+            'nisn'                 => $request->nisn,
+            'nis'                  => $request->nis,
+            'nik'                  => $request->nik,
+            'gender'               => $request->gender,
+            'birth_place'          => $request->birth_place,
+            'birth_date'           => $request->birth_date,
+            'religion'             => $request->religion,
+            'father_name'          => $request->father_name,
+            'mother_name'          => $request->mother_name,
+            'parent_phone'         => $request->parent_phone,
+            'address'              => $request->address,
+            'blood_type'           => $request->blood_type,
+            'medical_notes'        => $request->medical_notes,
+            'password'             => $password,
+            'is_password_changed'  => false,
+            'parent_id'            => null,
+            'class_id'             => $request->class_id,
+            'master_photo'         => $masterPhotoPath,
+            'is_active'            => true,
             'onboarding_completed' => true,
-            'email_verified_at' => Carbon::now(),
+            'email_verified_at'    => Carbon::now(),
         ]);
 
-        $hasParentData = !empty($parentId) || $request->filled('father_name') || $request->filled('mother_name') || $request->filled('parent_phone');
-
-        $message = $hasParentData 
-            ? 'Siswa dan data Orang Tua berhasil ditambahkan.' 
-            : 'Data siswa berhasil ditambahkan.';
-
-        return redirect()->back()->with('success', $message);
+        return redirect()->back()->with('success', 'Data siswa berhasil ditambahkan.');
     }
 
     /**
