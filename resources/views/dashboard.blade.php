@@ -90,16 +90,6 @@
                                 <i class="fa-solid fa-check"></i> Disalin!
                             </span>
                         </div>
-
-                        @if(in_array(auth()->user()->role, ['kepala_sekolah', 'admin_dapodik', 'operator']))
-                        <!-- Tombol Ubah Banner — akses showBannerModal dari parent scope, tidak ada x-data baru -->
-                        <button
-                            @click="showBannerModal = true"
-                            class="bg-black/30 hover:bg-black/50 border border-white/20 text-white text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors backdrop-blur-sm font-medium"
-                        >
-                            ⚙️ Ubah Banner
-                        </button>
-                        @endif
                     </div>
                 </div>
 
@@ -122,10 +112,7 @@
                             <i class="fa-solid fa-calendar-days"></i> <span class="leading-none">Jadwal</span>
                         </a>
                     @else
-                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah (Urutan Alfabetis) -->
-                        <a href="{{ route('attendance-settings.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
-                            <i class="fa-solid fa-sliders"></i> <span class="leading-none">Alat</span>
-                        </a>
+                        <!-- Tombol Pintas Khusus Operator / Admin Sekolah (Urutan Alfabetis: Guru, Jadwal, Kelas, Pengaturan, Siswa) -->
                         <a href="{{ route('operator.teachers.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-chalkboard-user"></i> <span class="leading-none">Guru</span>
                         </a>
@@ -134,6 +121,9 @@
                         </a>
                         <a href="{{ route('operator.classes.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-chalkboard"></i> <span class="leading-none">Kelas</span>
+                        </a>
+                        <a href="{{ route('attendance-settings.index') }}" class="h-9 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md font-medium px-4 rounded-xl transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
+                            <i class="fa-solid fa-sliders"></i> <span class="leading-none">Pengaturan</span>
                         </a>
                         <a href="{{ route('students.index') }}" class="h-9 bg-white/90 hover:bg-white text-red-700 backdrop-blur-md font-semibold px-4 rounded-xl shadow-sm transition-all inline-flex items-center justify-center gap-2 text-sm leading-none">
                             <i class="fa-solid fa-user-graduate"></i> <span class="leading-none">Siswa</span>

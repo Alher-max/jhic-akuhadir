@@ -83,6 +83,63 @@
                         </div>
                     </form>
                 </div>
+
+                <!-- CARD 2: PENGATURAN BANNER DASBOR / BANNER SEKOLAH -->
+                <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border p-6 mb-8">
+                    <form action="{{ route('operator.dashboard.banner') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-brand-text-main flex items-center gap-2">
+                                    <i class="fa-solid fa-image text-brand-primary"></i>
+                                    Pengaturan Banner Dasbor / Banner Sekolah
+                                </h3>
+                                <p class="text-sm text-brand-text-muted mt-1">Kustomisasi foto latar belakang, judul, dan deskripsi banner header dasbor sekolah.</p>
+                            </div>
+                            <button type="submit" class="bg-brand-primary text-white hover:bg-brand-primary/90 font-semibold py-2 px-6 rounded-lg text-sm transition shadow-sm">
+                                Simpan Banner
+                            </button>
+                        </div>
+
+                        <div class="space-y-5">
+                            <!-- Preview Banner Saat Ini -->
+                            @if(Auth::user()->tenant && Auth::user()->tenant->banner_path)
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Preview Banner Saat Ini</label>
+                                    <div class="h-32 w-full rounded-xl overflow-hidden shadow-sm border border-gray-200" style="background: url('{{ asset('storage/' . Auth::user()->tenant->banner_path) }}') center/cover no-repeat;"></div>
+                                </div>
+                            @endif
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Judul Banner</label>
+                                    <input type="text" name="banner_title" value="{{ Auth::user()->tenant->banner_title ?? '' }}" placeholder="Contoh: Selamat datang, Budi!" class="w-full bg-white border border-gray-300 rounded-lg text-xs font-semibold p-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Skema Warna Latar</label>
+                                    <select name="banner_color" class="w-full bg-white border border-gray-300 rounded-lg text-xs font-semibold p-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                        <option value="red" {{ (Auth::user()->tenant->banner_color ?? 'red') === 'red' ? 'selected' : '' }}>Merah Maroon (Default)</option>
+                                        <option value="blue" {{ (Auth::user()->tenant->banner_color ?? '') === 'blue' ? 'selected' : '' }}>Biru Navy</option>
+                                        <option value="green" {{ (Auth::user()->tenant->banner_color ?? '') === 'green' ? 'selected' : '' }}>Hijau Emerald</option>
+                                        <option value="slate" {{ (Auth::user()->tenant->banner_color ?? '') === 'slate' ? 'selected' : '' }}>Dark Slate</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Sub-judul / Deskripsi Banner</label>
+                                <textarea name="banner_description" rows="2" class="w-full bg-white border border-gray-300 rounded-lg text-xs font-medium p-2.5 focus:ring-brand-primary focus:border-brand-primary" placeholder="Tuliskan deskripsi ringkas yang tampil di banner dasbor...">{{ Auth::user()->tenant->banner_description ?? '' }}</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unggah Gambar Background Banner (Maks. 3MB)</label>
+                                <input type="file" name="banner_image" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-primary/10 file:text-brand-primary hover:file:bg-brand-primary/20">
+                            </div>
+                        </div>
+                    </form>
+                </div>
             @endif
 
             @if($tab === 'alat')
