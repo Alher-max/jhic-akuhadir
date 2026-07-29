@@ -1,16 +1,34 @@
 <section>
-    <header>
-        <h2 class="text-lg font-bold text-gray-900 border-b border-slate-200 pb-2">
-            {{ __('Informasi Profil Kepala Sekolah / Pengguna') }}
-        </h2>
-        <p class="mt-1 text-sm text-gray-600 mb-6">
-            {{ __("Lengkapi data identitas, kepegawaian, dan riwayat penugasan Anda.") }}
-        </p>
-    </header>
-
-    <form method="post" action="{{ route('profile.update') }}" class="space-y-8" enctype="multipart/form-data">
+    <form method="post" action="{{ route('profile.update') }}" id="profile-form" class="space-y-8" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <header class="border-b border-slate-200 pb-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">
+                        {{ __('Informasi Profil Kepala Sekolah / Pengguna') }}
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-600">
+                        {{ __("Lengkapi data identitas, kepegawaian, dan riwayat penugasan Anda.") }}
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    @if (session('status') === 'profile-updated')
+                        <p
+                            x-data="{ show: true }"
+                            x-show="show"
+                            x-transition
+                            x-init="setTimeout(() => show = false, 2000)"
+                            class="text-sm text-emerald-600 font-medium"
+                        >{{ __('Tersimpan.') }}</p>
+                    @endif
+                    <button type="submit" form="profile-form" class="bg-red-700 hover:bg-red-800 text-white font-medium px-5 py-2 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm whitespace-nowrap">
+                        {{ __('Simpan Profil') }}
+                    </button>
+                </div>
+            </div>
+        </header>
 
         @php
             $profile = $user->profile ?? new \App\Models\UserProfile();
@@ -329,7 +347,7 @@
         </div>
 
         <div class="flex items-center gap-4 pt-6 border-t border-slate-200">
-            <button type="submit" class="bg-red-700 hover:bg-red-800 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            <button type="submit" form="profile-form" class="bg-red-700 hover:bg-red-800 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                 {{ __('SIMPAN PROFIL') }}
             </button>
 
