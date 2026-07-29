@@ -42,6 +42,7 @@ class AttendanceSettingController extends Controller
         $settings = AttendanceSetting::firstOrCreate(['tenant_id' => $tenantId]);
 
         $request->validate([
+            'timezone' => 'nullable|string|in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura',
             'method_rfid' => 'boolean',
             'method_qrcode' => 'boolean',
             'method_biometric' => 'boolean',
@@ -57,6 +58,11 @@ class AttendanceSettingController extends Controller
             'biometric_ip_address' => 'nullable|string',
             'is_liveness_active' => 'boolean',
         ]);
+
+        $tenant = Auth::user()->tenant;
+        if ($tenant && $request->filled('timezone')) {
+            $tenant->update(['timezone' => $request->timezone]);
+        }
 
         // Parsing comma-separated string ke array untuk SSID & MAC
         $ssids = [];

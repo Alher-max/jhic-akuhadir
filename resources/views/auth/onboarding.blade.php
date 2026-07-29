@@ -27,6 +27,26 @@
 
             <form method="POST" action="{{ route('onboarding') }}" x-data="{ option: 'self' }">
                 @csrf
+
+                <!-- Dropdown Timezone Sekolah -->
+                <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <label for="timezone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        🌍 Zona Waktu Sekolah (Timezone)
+                    </label>
+                    <select id="timezone" name="timezone" class="w-full bg-white border-slate-300 focus:border-red-500 focus:ring-red-500 rounded-lg shadow-sm text-xs font-semibold p-2.5">
+                        <option value="Asia/Jakarta" {{ (old('timezone', auth()->user()->tenant->timezone ?? 'Asia/Jakarta') === 'Asia/Jakarta') ? 'selected' : '' }}>
+                            WIB - Waktu Indonesia Barat (UTC+7)
+                        </option>
+                        <option value="Asia/Makassar" {{ (old('timezone', auth()->user()->tenant->timezone ?? '') === 'Asia/Makassar') ? 'selected' : '' }}>
+                            WITA - Waktu Indonesia Tengah (UTC+8)
+                        </option>
+                        <option value="Asia/Jayapura" {{ (old('timezone', auth()->user()->tenant->timezone ?? '') === 'Asia/Jayapura') ? 'selected' : '' }}>
+                            WIT - Waktu Indonesia Timur (UTC+9)
+                        </option>
+                    </select>
+                    @error('timezone')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
                 <div class="space-y-4">
                     <!-- Opsi 1 -->
                     <label class="relative block cursor-pointer rounded-xl p-5 transition-all"

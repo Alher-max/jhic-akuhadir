@@ -53,6 +53,28 @@
                         </button>
                     </div>
 
+                    <!-- Zona Waktu Sekolah (Multi-Tenant SaaS) -->
+                    <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-globe text-brand-primary text-lg"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-900">Zona Waktu Sekolah (Timezone)</h4>
+                                <p class="text-xs text-gray-500">Pilih zona waktu lokal sekolah untuk perhitungan jam presensi dan jadwal KBM.</p>
+                            </div>
+                        </div>
+                        <select name="timezone" class="w-full md:w-1/2 bg-white border border-gray-300 rounded-lg text-xs font-semibold p-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="Asia/Jakarta" {{ (Auth::user()->tenant->timezone ?? 'Asia/Jakarta') === 'Asia/Jakarta' ? 'selected' : '' }}>
+                                WIB - Waktu Indonesia Barat (UTC+7)
+                            </option>
+                            <option value="Asia/Makassar" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Makassar' ? 'selected' : '' }}>
+                                WITA - Waktu Indonesia Tengah (UTC+8)
+                            </option>
+                            <option value="Asia/Jayapura" {{ (Auth::user()->tenant->timezone ?? '') === 'Asia/Jayapura' ? 'selected' : '' }}>
+                                WIT - Waktu Indonesia Timur (UTC+9)
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
                         <!-- 1. Aplikasi (Mobile / PWA Clock-In) -->

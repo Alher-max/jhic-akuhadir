@@ -35,7 +35,12 @@ class OnboardingController extends Controller
         $request->validate([
             'onboarding_option' => 'required|in:self,delegate',
             'delegate_email' => 'required_if:onboarding_option,delegate|nullable|email|max:255',
+            'timezone' => 'nullable|string|in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura',
         ]);
+
+        if ($user->tenant && $request->filled('timezone')) {
+            $user->tenant->update(['timezone' => $request->timezone]);
+        }
 
         if ($request->onboarding_option === 'delegate') {
             $this->invitationService->inviteOperator($request->delegate_email, $user->tenant_id);
