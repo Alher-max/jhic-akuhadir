@@ -138,6 +138,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         
         // Parent Management
         Route::get('/operator/parents', [\App\Http\Controllers\OperatorParentController::class, 'index'])->name('operator.parents.index');
+        Route::post('/operator/parents', [\App\Http\Controllers\OperatorParentController::class, 'store'])->name('operator.parents.store');
         Route::post('/operator/parents/{parent}/link-student', [\App\Http\Controllers\OperatorParentController::class, 'linkStudent'])->name('operator.parents.link-student');
         Route::delete('/operator/parents/{parent}/unlink-student/{student}', [\App\Http\Controllers\OperatorParentController::class, 'unlinkStudent'])->name('operator.parents.unlink-student');
         Route::post('/operator/parents/{parent}/reset-password', [\App\Http\Controllers\OperatorParentController::class, 'resetPassword'])->name('operator.parents.reset-password');

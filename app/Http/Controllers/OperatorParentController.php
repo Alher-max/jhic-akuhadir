@@ -41,6 +41,51 @@ class OperatorParentController extends Controller
     }
 
     /**
+     * Simpan akun orang tua baru yang dibuat langsung oleh Operator.
+     */
+    public function store(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id;
+
+        $request->validate([
+            'name'         => ['required', 'string', 'max:255'],
+            'email'        => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'parent_phone' => ['nullable', 'string', 'max:50'],
+        ], [
+            'name.required'  => 'Nama lengkap orang tua wajib diisi.',
+            'email.email'    => 'Format alamat surel tidak valid.',
+            'email.unique'   => 'Alamat surel sudah terdaftar di sistem.',
+        ]);
+
+        // Auto-generate dummy email jika dikosongkan
+        $email = $request->filled('email')
+            ? $request->email
+            : 'ortu.' . time() . rand(100, 999) . '@hadirsekolah.id';
+
+        // Buat user orang tua sementara untuk resolve default password
+        $parentData = [
+            'tenant_id'            => $tenantId,
+            'name'                 => $request->name,
+            'email'                => $email,
+            'parent_phone'         => $request->parent_phone,
+            'role'                 => 'parent',
+            'is_active'            => true,
+            'onboarding_completed' => true,
+            'email_verified_at'    => now(),
+            'password'             => Hash::make('placeholder'),
+        ];
+
+        $parent = User::create($parentData);
+
+        // Terapkan default password sesuai policy (No. HP → '12345678')
+        $defaultPassword = $parent->getDefaultPassword();
+        $parent->update(['password' => Hash::make($defaultPassword)]);
+
+        return redirect()->route('operator.parents.index')
+            ->with('success', "Akun orang tua {$parent->name} berhasil dibuat. Password default: {$defaultPassword}");
+    }
+
+    /**
      * Tautkan siswa ke akun orang tua via pivot parent_student.
      */
     public function linkStudent(Request $request, User $parent)

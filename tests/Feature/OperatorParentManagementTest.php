@@ -141,4 +141,61 @@ class OperatorParentManagementTest extends TestCase
         $this->assertFalse($parent->fresh()->is_password_changed);
         $this->assertTrue(Hash::check('081234567890', $parent->fresh()->password));
     }
+    public function test_operator_can_create_new_parent_account(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id'            => $tenant->id,
+            'role'                 => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.store'), [
+            'name'         => 'Bapak Rudi Hartono',
+            'email'        => 'rudi.hartono@example.com',
+            'parent_phone' => '085612345678',
+        ]);
+
+        $response->assertRedirect(route('operator.parents.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('users', [
+            'name'      => 'Bapak Rudi Hartono',
+            'email'     => 'rudi.hartono@example.com',
+            'role'      => 'parent',
+            'tenant_id' => $tenant->id,
+        ]);
+
+        // Default password harus menggunakan nomor HP
+        $parent = User::where('email', 'rudi.hartono@example.com')->first();
+        $this->assertNotNull($parent);
+        $this->assertTrue(Hash::check('085612345678', $parent->password));
+        $this->assertNotNull($parent->email_verified_at);
+    }
+
+    public function test_operator_can_create_parent_without_email_auto_generates_dummy_email(): void
+    {
+        $tenant = $this->createTenant();
+
+        $operator = User::factory()->create([
+            'tenant_id'            => $tenant->id,
+            'role'                 => 'operator',
+            'onboarding_completed' => true,
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.parents.store'), [
+            'name' => 'Ibu Wulandari',
+            // email dikosongkan → harus auto-generated
+        ]);
+
+        $response->assertRedirect(route('operator.parents.index'));
+        $response->assertSessionHas('success');
+
+        $parent = User::where('name', 'Ibu Wulandari')->where('role', 'parent')->first();
+        $this->assertNotNull($parent);
+        // Email harus auto-generated (mengandung '@hadirsekolah.id')
+        $this->assertStringContainsString('@hadirsekolah.id', $parent->email);
+        $this->assertEquals($tenant->id, $parent->tenant_id);
+    }
 }

@@ -7,6 +7,7 @@
 
     <div class="py-12" x-data="{ 
         showLinkModal: false, 
+        showCreateModal: false,
         activeParentId: null, 
         activeParentName: '',
         searchQuery: '',
@@ -62,12 +63,19 @@
                         <p class="text-xs text-gray-500 mt-1">Kelola data akun orang tua, hubungkan dengan siswa terdaftar, atau atur ulang kata sandi.</p>
                     </div>
 
-                    <form method="GET" action="{{ route('operator.parents.index') }}" class="flex items-center gap-2">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau HP..." class="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary min-w-[220px]">
-                        <button type="submit" class="bg-brand-primary text-white text-xs px-4 py-2.5 rounded-xl font-semibold hover:bg-brand-primary/90 transition shadow-xs flex items-center gap-1.5">
-                            <i class="fa-solid fa-magnifying-glass"></i> Cari
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <form method="GET" action="{{ route('operator.parents.index') }}" class="flex items-center gap-2">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau HP..." class="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary min-w-[200px]">
+                            <button type="submit" class="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 text-xs px-4 py-2.5 rounded-xl font-semibold transition shadow-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-magnifying-glass"></i> Cari
+                            </button>
+                        </form>
+                        <button type="button" @click="showCreateModal = true"
+                            class="bg-brand-primary text-white text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-brand-primary/90 transition shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>+ Tambah Orang Tua</span>
                         </button>
-                    </form>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -273,6 +281,81 @@
                         </button>
                         <button type="submit" class="px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold rounded-xl transition shadow-sm">
                             Simpan Tautan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Tambah Orang Tua Baru -->
+        <div x-show="showCreateModal" x-cloak style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div @click.away="showCreateModal = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all border border-slate-200">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-brand-primary"></i>
+                        <span>Tambah Akun Orang Tua Baru</span>
+                    </h3>
+                    <button type="button" @click="showCreateModal = false" class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-times text-base"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Form -->
+                <form action="{{ route('operator.parents.store') }}" method="POST" class="p-6 space-y-4">
+                    @csrf
+
+                    <!-- Info note -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-800">
+                        <i class="fa-solid fa-circle-info mr-1 text-blue-500"></i>
+                        Setelah akun dibuat, gunakan tombol <strong>Tautkan Anak</strong> untuk menghubungkan siswa ke akun ini.
+                    </div>
+
+                    <!-- Nama Lengkap -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                            Nama Lengkap <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" name="name" required
+                            placeholder="Contoh: Bapak Ahmad / Ibu Sari"
+                            class="w-full bg-white border border-gray-300 rounded-xl text-xs font-medium px-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                    </div>
+
+                    <!-- Email (Opsional) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                            Email <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+                        <input type="email" name="email"
+                            placeholder="Kosongkan untuk email otomatis"
+                            class="w-full bg-white border border-gray-300 rounded-xl text-xs font-medium px-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                        <p class="mt-1 text-[11px] text-gray-400">Jika dikosongkan, email dummy akan digenerate otomatis.</p>
+                    </div>
+
+                    <!-- No. WhatsApp -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                            No. WhatsApp / HP <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+                        <div class="relative flex items-center">
+                            <i class="fa-brands fa-whatsapp absolute left-3.5 text-emerald-600 text-sm"></i>
+                            <input type="text" name="parent_phone"
+                                placeholder="Contoh: 081234567890"
+                                class="w-full bg-white border border-gray-300 rounded-xl text-xs font-medium pl-9 pr-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                        </div>
+                        <p class="mt-1 text-[11px] text-gray-400">Nomor HP akan digunakan sebagai password default akun ini.</p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                        <button type="button" @click="showCreateModal = false"
+                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i>
+                            Buat Akun Orang Tua
                         </button>
                     </div>
                 </form>
