@@ -109,21 +109,21 @@ class OperatorParentController extends Controller
             ->where('role', 'student')
             ->findOrFail($request->student_id);
 
-        // Validasi: cegah hubungan duplikat (misal: dua 'Ayah' untuk siswa yang sama)
-        // Cari parent LAIN yang sudah terhubung ke siswa ini dengan relationship yang sama,
-        // kecuali parent yang sedang aktif (boleh update relationship-nya sendiri).
-        $conflictingParent = User::where('role', 'parent')
-            ->where('id', '!=', $parent->id)
-            ->whereHas('students', function ($q) use ($student, $request) {
-                $q->where('users.id', $student->id)
-                  ->where('parent_student.relationship', $request->relationship);
-            })
-            ->first();
+        // Validasi: cegah hubungan duplikat (misal: dua 'Ayah' untuk siswa yang sama).
+        // Menggunakan whereIn() + subquery langsung ke tabel pivot untuk menghindari
+        // SQLSTATE[42601] pada PostgreSQL yang disebabkan oleh alias otomatis Eloquent
+        // (contoh: "users" as "laravel_reserved_0") saat menggunakan whereHas() dengan global scope.
+        $conflictingParentId = \DB::table('parent_student')
+            ->where('student_id', $student->id)
+            ->where('relationship', $request->relationship)
+            ->where('parent_id', '!=', $parent->id)
+            ->value('parent_id');
 
-        if ($conflictingParent) {
+        if ($conflictingParentId) {
+            $conflictingParent = User::find($conflictingParentId);
             return redirect()->back()->with(
                 'error',
-                "Siswa {$student->name} sudah terhubung dengan {$request->relationship} lain ({$conflictingParent->name}). Harap lepas tautan lama terlebih dahulu."
+                "Siswa {$student->name} sudah terhubung dengan {$request->relationship} lain (" . ($conflictingParent ? $conflictingParent->name : 'akun lain') . "). Harap lepas tautan lama terlebih dahulu."
             );
         }
 
@@ -168,5 +168,26 @@ class OperatorParentController extends Controller
         ]);
 
         return redirect()->back()->with('success', "Password akun orang tua {$parent->name} berhasil di-reset ke: {$defaultPassword}");
+    }
+
+    /**
+     * Hapus akun orang tua beserta relasi pivotnya.
+     */
+    public function destroy(User $parent)
+    {
+        $tenantId = Auth::user()->tenant_id;
+        if ($parent->tenant_id !== $tenantId || $parent->role !== 'parent') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Hapus relasi pada tabel pivot parent_student terlebih dahulu
+        $parent->students()->detach();
+
+        // Hapus data user
+        $parentName = $parent->name;
+        $parent->delete();
+
+        return redirect()->route('operator.parents.index')
+            ->with('success', "Akun orang tua {$parentName} berhasil dihapus.");
     }
 }

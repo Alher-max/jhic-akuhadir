@@ -35,7 +35,7 @@ class HeadmasterDashboardService
 
         // 3. Discipline Rates
         $studentAttendances = Attendance::where('tenant_id', $tenantId)
-            ->whereHas('user', function($q) { $q->where('role', 'student'); })
+            ->whereHas('user', function($q) { $q->where('users.role', 'student'); })
             ->whereBetween('date', [$startDate, Carbon::now()])
             ->get();
         $studentDisciplineRate = $studentAttendances->count() > 0 
@@ -43,7 +43,7 @@ class HeadmasterDashboardService
             : 0;
 
         $staffAttendances = Attendance::where('tenant_id', $tenantId)
-            ->whereHas('user', function($q) { $q->whereIn('role', ['teacher', 'wali_kelas', 'operator', 'admin_dapodik']); })
+            ->whereHas('user', function($q) { $q->whereIn('users.role', ['teacher', 'wali_kelas', 'operator', 'admin_dapodik']); })
             ->whereBetween('date', [$startDate, Carbon::now()])
             ->get();
         $staffDisciplineRate = $staffAttendances->count() > 0 
@@ -52,7 +52,7 @@ class HeadmasterDashboardService
 
         // 4. Live Snapshots
         $todayStudentAttendances = Attendance::where('tenant_id', $tenantId)
-            ->whereHas('user', function($q) { $q->where('role', 'student'); })
+            ->whereHas('user', function($q) { $q->where('users.role', 'student'); })
             ->whereDate('date', $today)
             ->get();
 
@@ -64,7 +64,7 @@ class HeadmasterDashboardService
         ];
 
         $todayTeacherAttendances = Attendance::where('tenant_id', $tenantId)
-            ->whereHas('user', function($q) { $q->whereIn('role', ['teacher', 'wali_kelas']); })
+            ->whereHas('user', function($q) { $q->whereIn('users.role', ['teacher', 'wali_kelas']); })
             ->whereDate('date', $today)
             ->get();
 

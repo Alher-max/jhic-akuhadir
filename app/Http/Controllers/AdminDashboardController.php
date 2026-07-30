@@ -24,20 +24,20 @@ class AdminDashboardController extends Controller
         $opSiswaHadirTepat = \App\Models\Attendance::where('tenant_id', $tenantId)
             ->whereDate('date', clone \Carbon\Carbon::today())
             ->where('status', 'present')
-            ->whereHas('user', function ($q) { $q->where('role', 'student'); })
+            ->whereHas('user', function ($q) { $q->where('users.role', 'student'); })
             ->count();
             
         $opSiswaTerlambat = \App\Models\Attendance::where('tenant_id', $tenantId)
             ->whereDate('date', clone \Carbon\Carbon::today())
             ->where('status', 'late')
-            ->whereHas('user', function ($q) { $q->where('role', 'student'); })
+            ->whereHas('user', function ($q) { $q->where('users.role', 'student'); })
             ->count();
 
         $opSiswaIzinSakit = \App\Models\LeaveRequest::where('tenant_id', $tenantId)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
             ->where('status', 'approved')
-            ->whereHas('user', function ($q) { $q->where('role', 'student'); })
+            ->whereHas('user', function ($q) { $q->where('users.role', 'student'); })
             ->count();
 
         $opSiswaAlpa = $totalSiswa - ($opSiswaHadirTepat + $opSiswaTerlambat + $opSiswaIzinSakit);
@@ -50,7 +50,7 @@ class AdminDashboardController extends Controller
         $opGuruHadir = \App\Models\Attendance::where('tenant_id', $tenantId)
             ->whereDate('date', clone \Carbon\Carbon::today())
             ->whereHas('user', function ($q) {
-                $q->whereNotIn('role', ['student', 'parent', 'kepala_sekolah']);
+                $q->whereNotIn('users.role', ['student', 'parent', 'kepala_sekolah']);
             })
             ->count();
 
@@ -58,7 +58,7 @@ class AdminDashboardController extends Controller
             ->whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
             ->whereHas('user', function ($q) {
-                $q->whereNotIn('role', ['student', 'parent', 'kepala_sekolah']);
+                $q->whereNotIn('users.role', ['student', 'parent', 'kepala_sekolah']);
             })
             ->count();
             
@@ -139,7 +139,7 @@ class AdminDashboardController extends Controller
             $waliHadirHariIni = \App\Models\Attendance::where('tenant_id', $tenantId)
                 ->whereDate('date', $today)
                 ->whereHas('user', function ($q) use ($classIds) {
-                    $q->whereIn('class_id', $classIds);
+                    $q->whereIn('users.class_id', $classIds);
                 })
                 ->whereIn('status', ['present', 'late'])
                 ->count();
@@ -148,7 +148,7 @@ class AdminDashboardController extends Controller
                 ->whereDate('start_date', '<=', $today)
                 ->whereDate('end_date', '>=', $today)
                 ->whereHas('user', function ($q) use ($classIds) {
-                    $q->whereIn('class_id', $classIds);
+                    $q->whereIn('users.class_id', $classIds);
                 })
                 ->count();
 
@@ -201,25 +201,25 @@ class AdminDashboardController extends Controller
 
         if ($isTeacherRole) {
             $query->whereHas('user', function ($q) use ($teacherTaughtClassIds) {
-                $q->whereIn('class_id', $teacherTaughtClassIds);
+                $q->whereIn('users.class_id', $teacherTaughtClassIds);
             });
         } elseif ($isWaliKelas && $availableClasses->isNotEmpty()) {
             $classIds = $availableClasses->pluck('id');
             $query->whereHas('user', function ($q) use ($classIds) {
-                $q->whereIn('class_id', $classIds);
+                $q->whereIn('users.class_id', $classIds);
             });
         }
 
         if (request()->filled('class_id')) {
             $query->whereHas('user', function ($q) {
-                $q->where('class_id', request('class_id'));
+                $q->where('users.class_id', request('class_id'));
             });
         }
 
         if (request()->filled('search')) {
             $search = request('search');
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                $q->where('users.name', 'like', "%{$search}%");
             });
         }
 

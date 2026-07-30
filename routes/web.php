@@ -142,6 +142,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::post('/operator/parents/{parent}/link-student', [\App\Http\Controllers\OperatorParentController::class, 'linkStudent'])->name('operator.parents.link-student');
         Route::delete('/operator/parents/{parent}/unlink-student/{student}', [\App\Http\Controllers\OperatorParentController::class, 'unlinkStudent'])->name('operator.parents.unlink-student');
         Route::post('/operator/parents/{parent}/reset-password', [\App\Http\Controllers\OperatorParentController::class, 'resetPassword'])->name('operator.parents.reset-password');
+        Route::delete('/operator/parents/{parent}', [\App\Http\Controllers\OperatorParentController::class, 'destroy'])->name('operator.parents.destroy');
         
         // Attendance Settings
         Route::get('/dashboard/attendance-settings', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'index'])->name('attendance-settings.index');

@@ -185,4 +185,24 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
             'onboarding_completed' => 'boolean',
         ];
     }
+
+    /**
+     * Get the sanitized name for greeting, removing duplicate titles.
+     */
+    public function getGreetingNameAttribute(): string
+    {
+        $name = $this->name;
+        $titles = ['Bapak', 'Ibu', 'Bpk', 'Bpk.', 'Ibu.', 'Sdr', 'Sdr.', 'Sdri', 'Sdri.'];
+        
+        $hasTitle = false;
+        foreach ($titles as $title) {
+            // Check if name starts with title followed by space or is exactly the title
+            if (stripos($name, $title . ' ') === 0 || strcasecmp($name, $title) === 0) {
+                $hasTitle = true;
+                break;
+            }
+        }
+
+        return $hasTitle ? $name : "Bapak/Ibu " . $name;
+    }
 }

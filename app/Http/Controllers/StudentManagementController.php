@@ -44,7 +44,7 @@ class StudentManagementController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->whereRaw("LOWER(name) LIKE ?", ["%" . strtolower($search) . "%"])
                   ->orWhere('nisn', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });

@@ -10,16 +10,13 @@
         <div class="p-6 pb-0 sm:p-8 sm:pb-0">
             <div>
                 <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-create">Tambah Siswa Baru</h3>
-                <p class="mt-1 text-sm text-brand-text-muted">Masukkan rincian informasi siswa sesuai dengan tab kategori di bawah ini.</p>
+                <p class="mt-1 text-sm text-brand-text-muted">Akun orang tua dikelola secara terpisah melalui menu Manajemen Orang Tua, lalu dihubungkan dengan siswa di sini setelah kedua data eksis.</p>
             </div>
 
             <!-- TAB NAVIGATION -->
             <div class="flex border-b border-gray-200 mt-4 gap-1 overflow-x-auto">
                 <button type="button" @click="activeTab = 'utama'" :class="activeTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-id-card"></i> 📌 Data Utama
-                </button>
-                <button type="button" @click="activeTab = 'ortu'" :class="activeTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
                 </button>
                 <button type="button" @click="activeTab = 'detail'" :class="activeTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
@@ -111,33 +108,7 @@
                                 <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
                             </div>
                         </template>
-                        <p class="mt-1.5 text-xs text-gray-500">Gunakan foto pas dengan wajah terlihat jelas. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
-                    </div>
-                </div>
-
-                <!-- TAB 2: ORANG TUA / WALI -->
-                <div x-show="activeTab === 'ortu'" class="space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="father_name" class="block text-sm font-medium text-gray-700">Nama Ayah Kandung</label>
-                            <input type="text" name="father_name" id="father_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nama Ayah">
-                        </div>
-                        <div>
-                            <label for="mother_name" class="block text-sm font-medium text-gray-700">Nama Ibu Kandung</label>
-                            <input type="text" name="mother_name" id="mother_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Nama Ibu">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="parent_phone" class="block text-sm font-medium text-gray-700">No. HP / WhatsApp Orang Tua</label>
-                        <input type="text" name="parent_phone" id="parent_phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Contoh: 081234567890">
-                    </div>
-
-                    <div class="pt-3 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 flex items-start gap-1.5">
-                            <i class="fa-solid fa-circle-info mt-0.5 shrink-0 text-gray-400"></i>
-                            Data orang tua di atas disimpan sebagai catatan arsip. Untuk menghubungkan akun orang tua secara digital, gunakan menu <strong class="text-gray-600">Orang Tua</strong> di dasbor operator setelah siswa berhasil ditambahkan.
-                        </p>
+                        <p class="mt-1.5 text-xs text-gray-500">Gunakan foto pas dengan wajah terlihat jelas. (Otomatis dikompresi di sisi klien < 200KB).</p>
                     </div>
                 </div>
 
@@ -205,16 +176,13 @@
         <div class="p-6 pb-0 sm:p-8 sm:pb-0">
             <div>
                 <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title-edit">Lihat / Edit Data Siswa</h3>
-                <p class="mt-1 text-sm text-brand-text-muted">Perbarui atau lihat rincian informasi siswa sesuai dengan tab di bawah ini.</p>
+                <p class="mt-1 text-sm text-brand-text-muted">Perbarui atau lihat rincian informasi siswa. Akun orang tua dikelola secara terpisah melalui menu Manajemen Orang Tua.</p>
             </div>
 
             <!-- TAB NAVIGATION EDIT -->
             <div class="flex border-b border-gray-200 mt-4 gap-1 overflow-x-auto">
                 <button type="button" @click="activeEditTab = 'utama'" :class="activeEditTab === 'utama' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-id-card"></i> 📌 Data Utama
-                </button>
-                <button type="button" @click="activeEditTab = 'ortu'" :class="activeEditTab === 'ortu' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-user-group"></i> 👨‍👩‍👧 Orang Tua / Wali
                 </button>
                 <button type="button" @click="activeEditTab = 'detail'" :class="activeEditTab === 'detail' ? 'border-brand-primary text-brand-primary font-bold bg-brand-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 rounded-t-lg transition-colors flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-house-medical"></i> 🏠 Alamat & Kesehatan
@@ -318,99 +286,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: ORANG TUA / WALI -->
-                <div x-show="activeEditTab === 'ortu'" class="space-y-4">
-                    <!-- Box Informasi Kontak Ortu Terhubung -->
-                    <div x-show="selectedStudent?.parent" class="p-3.5 bg-blue-50/80 border border-blue-200/80 rounded-xl text-xs space-y-2">
-                        <div class="font-semibold text-blue-900 flex items-center gap-1.5 border-b border-blue-200/60 pb-1.5">
-                            <i class="fa-solid fa-user-group text-blue-600"></i> Ringkasan Akun Ortu Terhubung:
-                        </div>
-                        <div class="grid grid-cols-1 gap-1.5 text-gray-700">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-500 w-32 flex-shrink-0">Nama Ortu:</span>
-                                <span class="font-semibold text-gray-900" x-text="selectedStudent?.parent?.name"></span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-500 w-32 flex-shrink-0">Email Ortu:</span>
-                                <span class="text-gray-800 font-mono" x-text="selectedStudent?.parent?.email || '-'"></span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-500 w-32 flex-shrink-0">No. HP / WA Ortu:</span>
-                                <span class="text-gray-800 font-mono" x-text="selectedStudent?.parent?.phone || selectedStudent?.parent?.phone_number || selectedStudent?.parent?.no_hp || '-'"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nama Ayah Kandung / Wali</label>
-                            <input type="text" name="father_name" x-model="editForm.father_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nama Ibu Kandung</label>
-                            <input type="text" name="mother_name" x-model="editForm.mother_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">No. Telepon / WhatsApp Orang Tua (Untuk Notifikasi)</label>
-                        <input type="text" name="parent_phone" x-model="editForm.parent_phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                    </div>
-
-                    <div class="pt-2 border-t border-gray-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="block text-sm font-medium text-gray-700">Opsi Relasi Orang Tua / Wali <span class="text-red-500">*</span></label>
-                            <span class="text-xs font-medium px-2 py-0.5 rounded-full" 
-                                  :class="editForm.current_parent_name ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'"
-                                  x-text="'Saat ini: ' + (editForm.current_parent_name ? editForm.current_parent_name : 'Belum terhubung')">
-                            </span>
-                        </div>
-                        
-                        <div class="space-y-2 mb-3">
-                            <label class="inline-flex items-center w-full">
-                                <input type="radio" x-model="editForm.parent_option" name="parent_option" value="unchanged" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Tidak ada perubahan</span>
-                            </label>
-                            <label class="inline-flex items-center w-full">
-                                <input type="radio" x-model="editForm.parent_option" name="parent_option" value="none" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Lepas / Tanpa Akun Orang Tua</span>
-                            </label>
-                            <label class="inline-flex items-center w-full">
-                                <input type="radio" x-model="editForm.parent_option" name="parent_option" value="new" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Buat Akun Orang Tua Baru</span>
-                            </label>
-                            <label class="inline-flex items-center w-full">
-                                <input type="radio" x-model="editForm.parent_option" name="parent_option" value="existing" class="text-brand-primary focus:ring-brand-primary h-4 w-4 border-gray-300">
-                                <span class="ml-2 text-sm text-gray-700">Pilih dari Terdaftar</span>
-                            </label>
-                        </div>
-
-                        <div x-show="editForm.parent_option === 'new'" x-transition class="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Nama Akun Ortu / Wali <span class="text-red-500">*</span></label>
-                                <input type="text" name="parent_name" x-model="editForm.parent_name" :required="editForm.parent_option === 'new'" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Surel Ortu (Opsional)</label>
-                                <input type="text" name="parent_email" x-model="editForm.parent_email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                            </div>
-                        </div>
-                        
-                        <div x-show="editForm.parent_option === 'existing'" x-transition class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Orang Tua / Wali <span class="text-red-500">*</span></label>
-                            <select name="parent_id" x-model="editForm.parent_id" :required="editForm.parent_option === 'existing'" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                <option value="">-- Pilih Orang Tua Terdaftar --</option>
-                                @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->email ? '('.$parent->email.')' : '' }}</option>
-                                @endforeach
-                            </select>
-                            @if($parents->isEmpty())
-                                <span class="text-xs text-amber-600 mt-1 block">Belum ada akun orang tua terdaftar. Silakan buat akun baru.</span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
                 <!-- TAB 3: ALAMAT & KESEHATAN -->
                 <div x-show="activeEditTab === 'detail'" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -495,7 +370,7 @@
                     <input type="file" name="students_file" id="students_file" accept=".csv,.txt" required class="mt-1 block w-full text-sm text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
                     <p class="mt-1.5 text-xs text-gray-500">
                         <span class="font-medium text-gray-700">Kolom Wajib:</span> <strong>nama_lengkap, nisn / email</strong>.<br>
-                        <span class="font-medium text-gray-700">Kolom Opsional:</span> nis, nik, gender (L/P), birth_place, birth_date (YYYY-MM-DD), religion, father_name, mother_name, parent_phone, address, blood_type, medical_notes. Maks 2MB.
+                        <span class="font-medium text-gray-700">Kolom Opsional:</span> nis, nik, gender (L/P), birth_place, birth_date (YYYY-MM-DD), religion, address, blood_type, medical_notes. Maks 2MB.
                     </p>
                 </div>
 
@@ -505,7 +380,7 @@
                     </div>
                     <ul class="list-disc list-inside text-gray-600 space-y-1">
                         <li><strong>Kolom Wajib:</strong> <code>nama_lengkap</code>, <code>nisn</code> / <code>email</code>.</li>
-                        <li><strong>Kolom Opsional:</strong> <code>nis</code>, <code>nik</code>, <code>gender</code> (L/P), <code>parent_phone</code>, <code>birth_place</code>, <code>birth_date</code> (YYYY-MM-DD), <code>religion</code>, <code>father_name</code>, <code>mother_name</code>, <code>address</code>, <code>blood_type</code>, <code>medical_notes</code>.</li>
+                        <li><strong>Kolom Opsional:</strong> <code>nis</code>, <code>nik</code>, <code>gender</code> (L/P), <code>birth_place</code>, <code>birth_date</code> (YYYY-MM-DD), <code>religion</code>, <code>address</code>, <code>blood_type</code>, <code>medical_notes</code>.</li>
                         <li>Jika NISN, NIS, atau Email siswa sudah ada di sistem, data profil & kelasnya akan otomatis diperbarui.</li>
                     </ul>
                     <div class="pt-2 border-t border-blue-200/60">
