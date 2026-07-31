@@ -66,7 +66,7 @@ class StudentManagementController extends Controller
             ->get();
             
         $classesQuery = SchoolClass::where('tenant_id', $tenantId)
-            ->ordered();
+            ->orderBy('class_name');
             
         // Jika user adalah guru/wali kelas, batasi pilihan kelas hanya ke kelas asuhannya.
         if ($isTeacherRole && $isHomeroomTeacher) {

@@ -21,6 +21,35 @@ class MemberDashboardController extends Controller
         $user = Auth::user();
         $user->load(['schoolClass.waliKelas', 'tenant']);
 
+        $announcements = \App\Models\Announcement::where('school_class_id', $user->class_id)
+            ->whereIn('target_audience', ['students', 'both'])
+            ->where(function ($query) {
+                $query->where('created_at', '>=', now()->subDays(7))
+                      ->orWhere(function ($q) {
+                          $q->whereNull('expired_at')
+                            ->orWhere('expired_at', '>=', now());
+                      });
+            })
+            ->whereNotIn('id', function($query) use ($user) {
+                $query->select('announcement_id')
+                    ->from('announcement_dismissals')
+                    ->where('user_id', $user->id);
+            })
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $archivedAnnouncements = \App\Models\Announcement::where('school_class_id', $user->class_id)
+            ->whereIn('target_audience', ['students', 'both'])
+            ->whereIn('id', function($query) use ($user) {
+                $query->select('announcement_id')
+                    ->from('announcement_dismissals')
+                    ->where('user_id', $user->id);
+            })
+            ->latest()
+            ->limit(5)
+            ->get();
+
         // Cari jadwal aktif untuk pengguna ini hari ini (Timezone dinamis per tenant)
         $tz = $user->tenant->timezone ?? config('app.timezone', 'Asia/Jakarta');
         $now = Carbon::now($tz);
@@ -121,18 +150,28 @@ class MemberDashboardController extends Controller
             ];
         }
 
-        // Calculation of Button States (hasClockedIn & canClockIn)
+        // Calculation of Button States (hasClockedIn, canClockIn, clockInStatus)
         $hasClockedIn = $todayAttendance && !empty($todayAttendance->clock_in_time);
-
+        
         $canClockIn = false;
-        if (!$hasClockedIn && $currentSchedule && !$todayLeave) {
-            $startTimeStr = Carbon::parse($currentSchedule->start_time, $tz)->format('H:i:s');
-            $endTimeStr = Carbon::parse($currentSchedule->end_time, $tz)->format('H:i:s');
-            $earliestAllowed = Carbon::parse($currentSchedule->start_time, $tz)->subMinutes(60)->format('H:i:s');
+        $clockInStatus = 'closed'; // 'open', 'closed', 'too_early', 'expired'
 
-            if ($currentTimeStr >= $earliestAllowed && $currentTimeStr <= $endTimeStr) {
+        if (!$hasClockedIn && $currentSchedule && !$todayLeave) {
+            $startTime = Carbon::parse($currentSchedule->start_time, $tz);
+            $endTime = Carbon::parse($currentSchedule->end_time, $tz);
+            $gracePeriod = $currentSchedule->grace_period_minutes ?? 15;
+            $finalDeadline = $endTime->copy()->addMinutes($gracePeriod);
+
+            if ($now < $startTime) {
+                $clockInStatus = 'too_early';
+            } elseif ($now <= $finalDeadline) {
                 $canClockIn = true;
+                $clockInStatus = 'open';
+            } else {
+                $clockInStatus = 'expired';
             }
+        } elseif ($hasClockedIn) {
+            $clockInStatus = 'already_clocked_in';
         }
 
         // Fetch weekly attendances
@@ -243,14 +282,32 @@ class MemberDashboardController extends Controller
             'currentSchedule',
             'hasClockedIn',
             'canClockIn',
+            'clockInStatus',
             'weeklyAttendances',
             'userType',
             'weeklySchedules',
             'weeklyTimetable',
             'dummyTimetable',
             'todayTimetable',
-            'todayDayOfWeek'
+            'todayDayOfWeek',
+            'announcements',
+            'archivedAnnouncements'
         ));
+    }
+    public function dismissAnnouncement(\App\Models\Announcement $announcement)
+    {
+        $announcement->dismissals()->updateOrCreate([
+            'user_id' => auth()->id(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function restoreAnnouncement(\App\Models\Announcement $announcement)
+    {
+        $announcement->dismissals()->where('user_id', auth()->id())->delete();
+
+        return response()->json(['success' => true]);
     }
 }
 

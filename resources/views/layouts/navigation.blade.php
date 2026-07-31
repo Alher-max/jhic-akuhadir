@@ -14,7 +14,7 @@
                 @php
                     $roleLower = strtolower(auth()->user()->role ?? '');
                     $isOperatorAdmin = in_array($roleLower, ['operator', 'admin', 'admin_dapodik', 'kepala_sekolah', 'manager_teacher', 'manager', 'owner', 'super_admin']);
-                    $roleLabel = match($roleLower) {
+                    $roleLabel = match ($roleLower) {
                         'manager_teacher', 'operator', 'admin_dapodik' => 'Operator Sekolah',
                         'admin', 'super_admin' => 'Administrator',
                         'kepala_sekolah' => 'Kepala Sekolah',
@@ -29,27 +29,47 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard') || request()->routeIs('teacher.dashboard') || request()->routeIs('homeroom.dashboard')">
                         {{ __('Dasbor') }}
                     </x-nav-link>
+                    @if($roleLower === 'wali_kelas')
+                        <x-nav-link :href="route('teacher.announcements.index')"
+                            :active="request()->routeIs('teacher.announcements.index')">
+                            {{ __('Pengumuman Kelas') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
+                <x-dropdown align="right" width="48" class="z-50">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
+                        <button
+                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
                             @if(Auth::user()->avatar)
-                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-8 w-8 rounded-full object-cover border border-slate-200">
+                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                    class="h-8 w-8 rounded-full object-cover border border-slate-200">
                             @else
-                                <div class="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-300">
+                                <div
+                                    class="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-300">
                                     {{ substr(preg_replace('/[^a-zA-Z]/', '', Auth::user()->name), 0, 1) }}
                                 </div>
                             @endif
                             <div class="flex flex-col text-left">
                                 <span class="font-semibold text-gray-800 text-xs">{{ Auth::user()->name }}</span>
-                                <span class="text-[10px] text-gray-500 font-semibold">{{ $roleLabel }}</span>
+                                <span class="text-[10px] text-gray-500 font-semibold">
+                                    @if(Auth::user()->homeroomClass()->exists())
+                                        Wali Kelas {{ Auth::user()->homeroomClass->name }}
+                                    @elseif(in_array($roleLower, ['guru', 'guru_mapel', 'wali_kelas']))
+                                        Guru Pengajar
+                                    @else
+                                        {{ $roleLabel }}
+                                    @endif
+                                </span>
                             </div>
-                            <svg class="fill-current h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1.061 1.061 0 011.414 0L10 10.586l3.293-3.293a1.061 1.061 0 111.414 1.414l-4 4a1.061 1.061 0 01-1.414 0l-4-4a1.061 1.061 0 010-1.414z" clip-rule="evenodd" />
+                            <svg class="fill-current h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1.061 1.061 0 011.414 0L10 10.586l3.293-3.293a1.061 1.061 0 111.414 1.414l-4 4a1.061 1.061 0 01-1.414 0l-4-4a1.061 1.061 0 010-1.414z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </button>
                     </x-slot>
@@ -70,8 +90,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Keluar / Logout') }}
                             </x-dropdown-link>
@@ -82,10 +101,14 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = ! open"
+                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -100,35 +123,48 @@
             </x-responsive-nav-link>
 
             @if($isOperatorAdmin)
-                <div class="px-4 py-2 mt-2 text-xs font-bold text-brand-primary uppercase tracking-wider bg-gray-50 border-y border-gray-100">
+                <div
+                    class="px-4 py-2 mt-2 text-xs font-bold text-brand-primary uppercase tracking-wider bg-gray-50 border-y border-gray-100">
                     Menu Manajemen Operator
                 </div>
-                
+
                 <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Kelola Siswa</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Kelola
+                        Siswa</div>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('operator.classes.index')" :active="request()->routeIs('operator.classes.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-school text-gray-400 w-4"></i> Kelola Kelas</div>
+                <x-responsive-nav-link :href="route('operator.classes.index')"
+                    :active="request()->routeIs('operator.classes.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-school text-gray-400 w-4"></i> Kelola Kelas
+                    </div>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('operator.teachers.index')" :active="request()->routeIs('operator.teachers.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-gray-400 w-4"></i> Kelola Guru</div>
+                <x-responsive-nav-link :href="route('operator.teachers.index')"
+                    :active="request()->routeIs('operator.teachers.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-gray-400 w-4"></i>
+                        Kelola Guru</div>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('attendance-settings.index')" :active="request()->routeIs('attendance-settings.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-fingerprint text-gray-400 w-4"></i> Perangkat / GPS</div>
+                <x-responsive-nav-link :href="route('attendance-settings.index')"
+                    :active="request()->routeIs('attendance-settings.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-fingerprint text-gray-400 w-4"></i> Perangkat
+                        / GPS</div>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('class-schedules.index')" :active="request()->routeIs('class-schedules.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Master Mapel & KBM</div>
+                <x-responsive-nav-link :href="route('class-schedules.index')"
+                    :active="request()->routeIs('class-schedules.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Master
+                        Mapel & KBM</div>
                 </x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Siswa Kelas Saya</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Siswa
+                        Kelas Saya</div>
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('class-schedules.index')" :active="request()->routeIs('class-schedules.*')">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Jadwal KBM</div>
+                <x-responsive-nav-link :href="route('class-schedules.index')"
+                    :active="request()->routeIs('class-schedules.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Jadwal
+                        KBM</div>
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -137,9 +173,11 @@
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4 flex items-center gap-3">
                 @if(Auth::user()->avatar)
-                    <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-10 w-10 rounded-full object-cover border border-slate-200">
+                    <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                        class="h-10 w-10 rounded-full object-cover border border-slate-200">
                 @else
-                    <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-sm border border-slate-300">
+                    <div
+                        class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-sm border border-slate-300">
                         {{ substr(preg_replace('/[^a-zA-Z]/', '', Auth::user()->name), 0, 1) }}
                     </div>
                 @endif
@@ -165,8 +203,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>

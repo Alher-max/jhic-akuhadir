@@ -96,6 +96,18 @@ class ParentDashboardController extends Controller
                 'attendance' => $attendance,
                 'todayAgenda' => $sortedAgenda,
                 'todayDayName' => $todayDayName,
+                'announcements' => \App\Models\Announcement::where('school_class_id', $child->class_id)
+                    ->whereIn('target_audience', ['parents', 'both'])
+                    ->where(function ($query) {
+                        $query->where('created_at', '>=', now()->subDays(7))
+                              ->orWhere(function ($q) {
+                                  $q->whereNull('expired_at')
+                                    ->orWhere('expired_at', '>=', now());
+                              });
+                    })
+                    ->latest()
+                    ->limit(5)
+                    ->get(),
             ];
         }
 

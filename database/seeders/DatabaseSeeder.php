@@ -3,27 +3,21 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\SchoolClass;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Tenant;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
         if (app()->environment('local', 'testing')) {
-            // Tenant default untuk pengujian & dev (SMA Negeri 2 Yogyakarta)
             $tenantData = [
                 'name' => 'SMA Negeri 2 Yogyakarta',
                 'subdomain' => 'sman2jogja',
@@ -32,11 +26,11 @@ class DatabaseSeeder extends Seeder
                 'institution_type' => 'education',
                 'business_category' => 'education'
             ];
-            if (\Illuminate\Support\Facades\Schema::hasColumn('tenants', 'npsn')) {
+            if (Schema::hasColumn('tenants', 'npsn')) {
                 $tenantData['npsn'] = '20261001';
             }
 
-            \App\Models\Tenant::firstOrCreate(
+            $tenant = Tenant::firstOrCreate(
                 ['code' => '20261001'],
                 $tenantData
             );
@@ -47,16 +41,26 @@ class DatabaseSeeder extends Seeder
                 DummyDevSeeder::class,
             ]);
 
+            // Setup Pak Bambang as Homeroom Teacher
+            $bambang = User::where('email', 'bambang@example.com')->first();
+            if ($bambang) {
+                $class = SchoolClass::where('tenant_id', $tenant->id)->first();
+                if ($class) {
+                    $class->wali_kelas_id = $bambang->id;
+                    $class->save();
+                }
+            }
+
             // ATURAN MUTLAK: Setiap Kelas Wajib Memiliki Wali Kelas
-            $unassignedClasses = \App\Models\SchoolClass::whereNull('wali_kelas_id')->get();
+            $unassignedClasses = SchoolClass::whereNull('wali_kelas_id')->get();
             foreach ($unassignedClasses as $class) {
-                $teacherEmail = 'guru.' . \Illuminate\Support\Str::slug($class->nama_kelas ?: ('class-' . $class->id)) . '@hadirsekolah.id';
+                $teacherEmail = 'guru.' . Str::slug($class->nama_kelas ?: ('class-' . $class->id)) . '@hadirsekolah.id';
                 $teacher = User::firstOrCreate(
                     ['email' => $teacherEmail],
                     [
                         'tenant_id' => $class->tenant_id,
                         'name' => 'Wali Kelas ' . ($class->nama_kelas ?: 'Utama'),
-                        'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                        'password' => Hash::make('password123'),
                         'role' => 'teacher',
                         'is_active' => true,
                         'email_verified_at' => now(),

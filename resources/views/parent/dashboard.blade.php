@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#b91c1c">
     <link rel="manifest" href="/manifest.json">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key') }}">
 
     <title>{{ config('app.name', 'HadirYuk') }} - Portal Orang Tua</title>
     <!-- Favicon -->
@@ -73,6 +74,57 @@
 
         <!-- Main Content -->
         <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-6 -mt-6">
+
+            <!-- PWA Push Notification Prompt -->
+            <div x-data="{
+                    showPrompt: false,
+                    isSupported: window.PushManager && window.PushManager.isSupported(),
+                    async init() {
+                        // Delay check to avoid blocking main thread
+                        setTimeout(() => {
+                            if (this.isSupported && Notification.permission === 'default') {
+                                this.showPrompt = true;
+                            }
+                        }, 2000);
+                    },
+                    async enableNotifications() {
+                        try {
+                            const permission = await Notification.requestPermission();
+                            if (permission === 'granted') {
+                                await window.PushManager.subscribe();
+                                this.showPrompt = false;
+                                alert('Notifikasi berhasil diaktifkan!');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            alert('Gagal mengaktifkan notifikasi.');
+                        }
+                    }
+                }" x-show="showPrompt" x-cloak
+                class="bg-brand-primary/5 border border-brand-primary/20 rounded-3xl p-5 shadow-sm mb-2 flex flex-col gap-4">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-3xl">notifications_active</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900">Aktifkan Notifikasi</h4>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Terima pengumuman penting wali kelas putra-putri Anda langsung di HP secara real-time.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button @click="enableNotifications()"
+                        class="flex-1 bg-brand-primary text-white text-xs font-bold py-3 rounded-2xl shadow-sm hover:bg-brand-primary/90 transition">
+                        Ya, Aktifkan
+                    </button>
+                    <button @click="showPrompt = false"
+                        class="px-5 py-3 text-gray-500 text-xs font-bold rounded-2xl hover:bg-gray-100 transition">
+                        Nanti
+                    </button>
+                </div>
+            </div>
 
             <!-- Welcome Widget -->
             <div
@@ -169,43 +221,76 @@
                             </div>
                         </div>
 
-                        <!-- Agenda Accordion -->
-                        <div x-data="{ open: true }" class="border-t border-brand-border">
-                            <button @click="open = !open"
-                                class="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-lg text-brand-primary">auto_stories</span>
-                                    Agenda Hari Ini ({{ count($item->todayAgenda) }})
-                                </div>
-                                <span class="material-symbols-outlined transition-transform"
-                                    :class="open ? 'rotate-180' : ''">expand_more</span>
-                            </button>
-
-                            <div x-show="open" x-collapse class="px-4 pb-4 space-y-2">
-                                @forelse($item->todayAgenda as $ag)
-                                    <div
-                                        class="flex items-center justify-between p-2.5 bg-white border border-gray-100 rounded-xl shadow-xs">
-                                        <div class="flex items-center gap-2.5">
-                                            <span
-                                                class="px-2 py-0.5 rounded-md font-extrabold text-[9px] border {{ $ag->badge_class }}">
-                                                {{ $ag->badge }}
-                                            </span>
-                                            <div>
-                                                <span class="font-bold text-gray-800 text-xs block">{{ $ag->title }}</span>
-                                                <span class="text-[10px] text-gray-500 font-medium">{{ $ag->subtitle }}</span>
-                                            </div>
+                        <!-- Pengumuman & Agenda -->
+                        <div class="border-t border-brand-border">
+                            <!-- Announcements Section -->
+                            <div x-data="{ open: true }">
+                                <button @click="open = !open"
+                                    class="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg text-brand-primary">campaign</span>
+                                        📢 Pengumuman Kelas ({{ isset($item->announcements) ? $item->announcements->count() : 0 }})
+                                    </div>
+                                    <span class="material-symbols-outlined transition-transform"
+                                        :class="open ? 'rotate-180' : ''">expand_more</span>
+                                </button>
+                                <div x-show="open" x-collapse class="px-4 pb-4">
+                                    @if(isset($item->announcements) && $item->announcements->count() > 0)
+                                        <div class="space-y-2 pt-1">
+                                            @foreach($item->announcements as $announcement)
+                                                <div class="bg-blue-50 border border-blue-100 rounded-lg p-2.5">
+                                                    <h5 class="font-bold text-xs text-blue-700">{{ $announcement->title }}</h5>
+                                                    <p class="text-[10px] text-blue-600/80 mt-0.5">{{ $announcement->description }}</p>
+                                                    <span
+                                                        class="text-[9px] text-blue-400 mt-1 block">{{ $announcement->created_at->diffForHumans() }}</span>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <span
-                                            class="font-bold text-[10px] text-brand-primary bg-brand-primary/5 px-2 py-1 rounded-lg border border-brand-primary/10 shrink-0">
-                                            {{ $ag->time_str }}
-                                        </span>
+                                    @else
+                                        <div class="text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                            <p class="text-[10px] text-gray-400 font-medium italic">Tidak ada pengumuman hari ini.</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Agenda Section -->
+                            <div x-data="{ open: true }">
+                                <button @click="open = !open"
+                                    class="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors border-t border-brand-border">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg text-brand-primary">auto_stories</span>
+                                        📅 Agenda & Jadwal Hari Ini ({{ count($item->todayAgenda) }})
                                     </div>
-                                @empty
-                                    <div class="text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                        <p class="text-[10px] text-gray-400 font-medium italic">Tidak ada jadwal KBM atau
-                                            kegiatan hari ini.</p>
-                                    </div>
-                                @endforelse
+                                    <span class="material-symbols-outlined transition-transform"
+                                        :class="open ? 'rotate-180' : ''">expand_more</span>
+                                </button>
+                                <div x-show="open" x-collapse class="px-4 pb-4">
+                                    @forelse($item->todayAgenda as $ag)
+                                        <div
+                                            class="flex items-center justify-between p-2.5 bg-white border border-gray-100 rounded-xl shadow-xs mt-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="px-2 py-0.5 rounded-md font-extrabold text-[9px] border {{ $ag->badge_class }}">
+                                                    {{ $ag->badge }}
+                                                </span>
+                                                <div>
+                                                    <span class="font-bold text-gray-800 text-xs block">{{ $ag->title }}</span>
+                                                    <span class="text-[10px] text-gray-500 font-medium">{{ $ag->subtitle }}</span>
+                                                </div>
+                                            </div>
+                                            <span
+                                                class="font-bold text-[10px] text-brand-primary bg-brand-primary/5 px-2 py-1 rounded-lg border border-brand-primary/10 shrink-0">
+                                                {{ $ag->time_str }}
+                                            </span>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 mt-2">
+                                            <p class="text-[10px] text-gray-400 font-medium italic">Tidak ada jadwal KBM atau
+                                                kegiatan hari ini.</p>
+                                        </div>
+                                    @endforelse
+                                </div>
                             </div>
                         </div>
                     </div>

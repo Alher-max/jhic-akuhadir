@@ -7,25 +7,16 @@ const STATIC_ASSETS = [
     '/images/icon.png',
 ];
 
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
-
 self.addEventListener('install', (event) => {
-    console.log('Service Worker: Installing...');
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('Service Worker: Caching Static Assets');
-                return cache.addAll(STATIC_ASSETS);
-            })
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(STATIC_ASSETS);
+        })
     );
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activating...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -76,4 +67,46 @@ self.addEventListener('fetch', (event) => {
 
     // Fallback for everything else
     event.respondWith(fetch(event.request).catch(() => caches.match('/')));
+});
+
+// Push Notification Handler
+self.addEventListener('push', (event) => {
+    let data = { title: 'Pemberitahuan Baru', body: 'Klik untuk melihat detail.', url: '/dashboard' };
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data.body = event.data.text();
+        }
+    }
+
+    const options = {
+        body: data.body,
+        icon: '/images/logo.png',
+        badge: '/images/icon.png',
+        data: {
+            url: data.url || '/dashboard'
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then((clientList) => {
+            const url = event.notification.data.url;
+            for (const client of clientList) {
+                if (client.url === url && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(url);
+            }
+        })
+    );
 });

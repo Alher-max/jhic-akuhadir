@@ -1,7 +1,11 @@
 
+import './bootstrap';
 import './image-compressor.js';
+import './push-notifications.js';
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse';
 
+Alpine.plugin(collapse);
 window.Alpine = Alpine;
 
 Alpine.data('digitalClock', () => ({
@@ -29,7 +33,7 @@ Alpine.data('digitalClock', () => ({
             this.stream = stream;
             if (this.$refs.videoElement) {
                 this.$refs.videoElement.srcObject = stream;
-                this.$refs.videoElement.play().catch(() => {});
+                this.$refs.videoElement.play().catch(() => { });
             }
             this.cameraStatus = 'Posisikan Wajah di Dalam Bingkai';
         } catch (err) {

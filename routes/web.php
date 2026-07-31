@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeroomAnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,10 @@ Route::domain('{subdomain}.' . env('APP_DOMAIN', 'localhost'))->middleware(['ten
 });
 
 Route::middleware(['auth', 'otp.verified'])->group(function () {
+    // Push Subscription
+    Route::post('/push-subscription', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push-subscription.store');
+    Route::delete('/push-subscription', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])->name('push-subscription.destroy');
+
     // Headmaster Routes
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster'])->group(function () {
         Route::get('/headmaster/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('headmaster.dashboard');
@@ -79,11 +84,17 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Homeroom Dashboard Route (Strict Role: homeroom teacher / wali kelas)
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
         Route::get('/homeroom/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'homeroomIndex'])->name('homeroom.dashboard');
+        
+        // Homeroom Announcements (Protected)
+        Route::get('/teacher/announcements', [HomeroomAnnouncementController::class, 'index'])->name('teacher.announcements.index');
+        Route::post('/teacher/announcements', [HomeroomAnnouncementController::class, 'store'])->name('teacher.announcements.store');
+        Route::delete('/teacher/announcements/{announcement}', [HomeroomAnnouncementController::class, 'destroy'])->name('teacher.announcements.destroy');
     });
 
     // Admin & Wali Kelas Routes (Operational Management)
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,operator,teacher', 'tenant.onboarding'])->group(function () {
         
+
         // Management Routes (Schedules)
         Route::resource('dashboard/schedules', \App\Http\Controllers\Admin\ScheduleController::class)->except(['show']);
         
@@ -193,6 +204,10 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::get('/member/leaves/create', [\App\Http\Controllers\LeaveRequestController::class, 'create'])->name('member.leaves.create');
         Route::post('/member/leaves', [\App\Http\Controllers\LeaveRequestController::class, 'store'])->name('member.leaves.store');
     });
+
+    // Dismiss Announcements
+    Route::post('/student/announcements/{announcement}/dismiss', [\App\Http\Controllers\MemberDashboardController::class, 'dismissAnnouncement'])->name('student.announcements.dismiss');
+    Route::post('/student/announcements/{announcement}/restore', [\App\Http\Controllers\MemberDashboardController::class, 'restoreAnnouncement'])->name('student.announcements.restore');
 
     // Parent Routes
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':parent'])->group(function () {

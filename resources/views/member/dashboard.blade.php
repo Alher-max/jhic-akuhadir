@@ -218,6 +218,118 @@
         <!-- Main Content -->
         <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-6 -mt-6">
 
+            <!-- PWA Push Notification Prompt -->
+            <div x-data="{
+                    showPrompt: false,
+                    isSupported: window.PushManager && window.PushManager.isSupported(),
+                    async init() {
+                        // Delay check to avoid blocking main thread
+                        setTimeout(() => {
+                            if (this.isSupported && Notification.permission === 'default') {
+                                this.showPrompt = true;
+                            }
+                        }, 2000);
+                    },
+                    async enableNotifications() {
+                        try {
+                            const permission = await Notification.requestPermission();
+                            if (permission === 'granted') {
+                                await window.PushManager.subscribe();
+                                this.showPrompt = false;
+                                alert('Notifikasi berhasil diaktifkan!');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            alert('Gagal mengaktifkan notifikasi.');
+                        }
+                    }
+                }" x-show="showPrompt" x-cloak
+                class="bg-brand-primary/5 border border-brand-primary/20 rounded-3xl p-5 shadow-sm mb-2 flex flex-col gap-4">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-3xl">notifications_active</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900">Aktifkan Notifikasi</h4>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Terima pengumuman penting dari Wali Kelas langsung di HP Anda secara real-time.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button @click="enableNotifications()"
+                        class="flex-1 bg-brand-primary text-white text-xs font-bold py-3 rounded-2xl shadow-sm hover:bg-brand-primary/90 transition">
+                        Ya, Aktifkan
+                    </button>
+                    <button @click="showPrompt = false"
+                        class="px-5 py-3 text-gray-500 text-xs font-bold rounded-2xl hover:bg-gray-100 transition">
+                        Nanti
+                    </button>
+                </div>
+            </div>
+
+            <!-- Homeroom Announcements -->
+            <div class="space-y-6">
+                @if(isset($announcements) && $announcements->count() > 0)
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-bold text-gray-900">Pengumuman Kelas</h3>
+                        @foreach($announcements as $announcement)
+                            <div x-data="{ dismissed: false }" x-show="!dismissed"
+                                class="bg-white border border-brand-border rounded-2xl p-4 shadow-sm relative">
+                                <h4 class="font-bold text-sm text-brand-primary pr-6">{{ $announcement->title }}</h4>
+                                <p class="text-xs text-gray-600 mt-1">{{ $announcement->description }}</p>
+                                <span
+                                    class="text-[10px] text-gray-400 mt-2 block">{{ $announcement->created_at->diffForHumans() }}</span>
+
+                                <button @click="
+                                                    fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                            'Content-Type': 'application/json'
+                                                        }
+                                                    }).then(res => { if(res.ok) dismissed = true; });
+                                                " class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                                    <span class="material-symbols-outlined text-base">close</span>
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if(isset($archivedAnnouncements) && $archivedAnnouncements->count() > 0)
+                    <div x-data="{ open: false }" class="space-y-3">
+                        <button @click="open = !open"
+                            class="flex items-center justify-between w-full text-left text-xs font-bold text-gray-500 hover:text-gray-700 transition">
+                            <span>📦 Arsip Pengumuman ({{ $archivedAnnouncements->count() }})</span>
+                            <span class="material-symbols-outlined text-sm"
+                                x-text="open ? 'expand_less' : 'expand_more'"></span>
+                        </button>
+                        <div x-show="open" x-cloak class="space-y-3">
+                            @foreach($archivedAnnouncements as $announcement)
+                                <div x-data="{ restored: false }" x-show="!restored"
+                                    class="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-4 shadow-sm relative">
+                                    <h4 class="font-bold text-sm text-gray-500 pr-6">{{ $announcement->title }}</h4>
+                                    <p class="text-xs text-gray-500 mt-1 italic">{{ $announcement->description }}</p>
+                                    <button @click="
+                                                        fetch('{{ route('student.announcements.restore', $announcement->id) }}', {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                'Content-Type': 'application/json'
+                                                            }
+                                                        }).then(res => { if(res.ok) restored = true; });
+                                                    " class="mt-3 text-[10px] font-bold text-brand-primary hover:underline">
+                                        Tampilkan Kembali
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+
             <!-- Bantuan Operator Sekolah Widget -->
             <div
                 class="w-full bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3 text-amber-900">
@@ -323,70 +435,17 @@
                             (Disetujui)
                         </div>
                     </button>
-                @elseif($hasClockedIn)
-                    @if(!$todayAttendance?->clock_out && !in_array($todayAttendance?->status, ['sick', 'permission', 'duty_trip']))
-                        <!-- KONDISI A1: Sudah Clock In, Belum Pulang -->
-                        <div class="w-full flex flex-col gap-3 mb-4">
-                            <div
-                                class="bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl py-3 px-4 font-bold text-sm tracking-wider flex items-center justify-center gap-2 shadow-inner">
-                                <span class="material-symbols-outlined text-[20px]">check_circle</span>
-                                STATUS: HADIR ({{ \Carbon\Carbon::parse($todayAttendance->clock_in_time)->format('H:i') }} WIB)
-                            </div>
-
-                            <div x-show="endTime !== null"
-                                class="w-full bg-brand-surface border border-brand-border rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
-                                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1"
-                                    x-text="isTimeToGoHome ? 'Status' : 'Sisa Waktu Pulang'"></span>
-                                <div class="text-2xl font-black tabular-nums tracking-wider"
-                                    :class="isTimeToGoHome ? 'text-emerald-500 animate-pulse' : 'text-brand-primary'"
-                                    x-text="remainingTime">
-                                </div>
-                            </div>
+                @elseif($clockInStatus === 'already_clocked_in')
+                    <!-- STATUS: SUDAH PRESENSI MASUK -->
+                    <button disabled class="w-full relative rounded-2xl bg-emerald-100 p-1 shadow-inner cursor-not-allowed">
+                        <div
+                            class="relative bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+                            Sudah Presensi Masuk
                         </div>
-
-                        <form method="POST" action="{{ route('member.clock-out') }}" class="w-full">
-                            @csrf
-                            <input type="hidden" name="latitude" :value="lat">
-                            <input type="hidden" name="longitude" :value="lng">
-
-                            <template x-if="isGpsRequired && gpsError">
-                                <div
-                                    class="mb-3 w-full bg-rose-50 text-rose-600 border border-rose-200 rounded-xl py-2 px-3 font-semibold text-xs text-center">
-                                    <span x-text="gpsError"></span>
-                                </div>
-                            </template>
-                            <template x-if="isGpsRequired && isLoadingGps">
-                                <div
-                                    class="mb-3 w-full bg-blue-50 text-blue-600 border border-blue-200 rounded-xl py-2 px-3 font-semibold text-xs text-center flex items-center justify-center gap-2">
-                                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    Mendapatkan Lokasi GPS...
-                                </div>
-                            </template>
-
-                            <button type="submit" :disabled="isGpsRequired && (!lat || isLoadingGps)"
-                                :class="(isGpsRequired && (!lat || isLoadingGps)) ? 'opacity-60 cursor-not-allowed' : ''"
-                                class="w-full bg-rose-600 text-white hover:bg-rose-700 active:scale-95 transition-all shadow-sm rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[24px]">logout</span>
-                                PULANG
-                            </button>
-                        </form>
-                    @else
-                        <!-- KONDISI A2: Sudah Selesai Keduanya -->
-                        <button disabled class="w-full relative rounded-2xl bg-gray-300 p-1 shadow-inner cursor-not-allowed">
-                            <div
-                                class="relative bg-gray-200 text-gray-600 rounded-xl py-4 font-bold text-lg tracking-wider flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[24px] text-emerald-600">check_circle</span>
-                                ✓ Absensi Hari Ini Selesai
-                            </div>
-                        </button>
-                    @endif
-                @elseif($canClockIn)
+                    </button>
+                    <!-- Tampilkan Clock Out jika diperlukan -->
+                @elseif($clockInStatus === 'open')
                     <!-- KONDISI B: Belum Absen & Dalam Jam KBM Valid -->
                     <form method="POST" action="{{ route('member.clock-in') }}" class="w-full" x-ref="clockInForm">
                         @csrf
@@ -423,13 +482,23 @@
                             Clock In / Presensi Sekarang
                         </button>
                     </form>
-                @else
-                    <!-- KONDISI C: Luar Jam / Batas Waktu Habis / Belum Dibuka -->
+                @elseif($clockInStatus === 'too_early')
+                    <!-- PRESENSI BELUM DIBUKA -->
                     <button disabled class="w-full relative rounded-2xl bg-gray-200 p-1 shadow-inner cursor-not-allowed">
                         <div
                             class="relative bg-gray-100 text-gray-500 border border-gray-300 rounded-xl py-4 font-bold text-base tracking-wider flex items-center justify-center gap-2 px-4">
                             <span class="material-symbols-outlined text-[24px] text-gray-400 shrink-0">schedule</span>
-                            <span class="text-center leading-tight">Presensi Belum Dibuka / Batas Waktu Habis</span>
+                            Presensi Belum Dibuka
+                        </div>
+                    </button>
+                @elseif($clockInStatus === 'expired')
+                    <!-- BATAS WAKTU HABIS -->
+                    <button disabled class="w-full relative rounded-2xl bg-gray-200 p-1 shadow-inner cursor-not-allowed">
+                        <div
+                            class="relative bg-gray-100 text-gray-500 border border-gray-300 rounded-xl py-4 font-bold text-base tracking-wider flex items-center justify-center gap-2 px-4">
+                            <span
+                                class="material-symbols-outlined text-[24px] text-gray-400 shrink-0">history_toggle_off</span>
+                            Batas Waktu Presensi Habis
                         </div>
                     </button>
                 @endif
