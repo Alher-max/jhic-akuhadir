@@ -92,7 +92,7 @@ class PwaAttendanceController extends Controller
         }
 
         // 3. Proses Absensi (Jadwal & Lateness berdasarkan Arsitektur Baru)
-        $today = now()->format('Y-m-d');
+        $today = now('Asia/Jakarta')->format('Y-m-d');
         
         $attendanceService = app(\App\Services\AttendanceService::class);
         $tenant = $user->tenant;
@@ -100,32 +100,44 @@ class PwaAttendanceController extends Controller
 
         $classScheduleId = null;
         $attendanceType = 'school';
-        $dayNameIndo = $attendanceService->getDayNameInIndonesian(now());
+        $dayNameIndo = $attendanceService->getDayNameInIndonesian(now('Asia/Jakarta'));
 
         if ($isSessionBased) {
-            $classSchedule = $attendanceService->findActiveSession($user, now());
+            $classSchedule = $attendanceService->findActiveSession($user, now('Asia/Jakarta'));
             $classScheduleId = $classSchedule?->id;
 
             if ($classScheduleId) {
                 if ($attendanceService->hasAttendedClassSession($user, $today, $classScheduleId)) {
                     $sessionLabel = $classSchedule?->subject?->name ?? 'Sesi KBM';
-                    return response()->json(['success' => false, 'message' => "Anda sudah melakukan presensi untuk {$sessionLabel} hari ini."], 400);
+                    return response()->json([
+                        'success' => true,
+                        'already_attended' => true,
+                        'message' => "Anda sudah melakukan presensi untuk {$sessionLabel}."
+                    ], 200);
                 }
                 $attendanceType = 'class';
             } else {
                 if ($attendanceService->hasAttendedSchool($user, $today)) {
-                    return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'], 400);
+                    return response()->json([
+                        'success' => true,
+                        'already_attended' => true,
+                        'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'
+                    ], 200);
                 }
             }
 
-            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo, $classSchedule);
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now('Asia/Jakarta')->format('H:i:s'), $dayNameIndo, $classSchedule);
             $status = $valResult['status'];
         } else {
             if ($attendanceService->hasAttendedSchool($user, $today)) {
-                return response()->json(['success' => false, 'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'], 400);
+                return response()->json([
+                    'success' => true,
+                    'already_attended' => true,
+                    'message' => 'Anda sudah melakukan clock-in kedatangan sekolah hari ini.'
+                ], 200);
             }
 
-            $valResult = $attendanceService->validateSchoolAttendance($tenant, now()->format('H:i:s'), $dayNameIndo);
+            $valResult = $attendanceService->validateSchoolAttendance($tenant, now('Asia/Jakarta')->format('H:i:s'), $dayNameIndo);
             $status = $valResult['status'];
         }
 
@@ -163,7 +175,7 @@ class PwaAttendanceController extends Controller
             'attendance_type' => $attendanceType,
             'class_schedule_id' => $classScheduleId,
             'date' => $today,
-            'clock_in' => now(),
+            'clock_in' => now('Asia/Jakarta'),
             'status' => $status,
             'photo_path' => $photoPath,
             'face_match_score' => $matchScore,

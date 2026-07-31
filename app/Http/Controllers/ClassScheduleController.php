@@ -114,7 +114,13 @@ class ClassScheduleController extends Controller
             'day_name' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'period_number' => 'required|integer|min:1',
             'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
+            'end_time' => ['required', function ($attribute, $value, $fail) use ($request) {
+                $start = \Carbon\Carbon::createFromFormat('H:i', $request->start_time);
+                $end = \Carbon\Carbon::createFromFormat('H:i', $value);
+                if ($end->lte($start)) {
+                    $fail('Jam Selesai harus lebih akhir daripada Jam Mulai.');
+                }
+            }],
         ], [
             'class_id.required' => 'Kelas wajib dipilih.',
             'subject_id.required' => 'Mata pelajaran wajib dipilih.',

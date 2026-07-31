@@ -90,7 +90,8 @@
                             <option value="">Pilih Kelas / Rombel</option>
                             @foreach($classes as $c)
                                 <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>
-                                    {{ $c->full_name }}</option>
+                                    {{ $c->full_name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -152,11 +153,13 @@
                                                 @endif
                                             </div>
                                             <div class="mt-0.5 text-left">
-                                                @if($student->parent)
-                                                    <span
-                                                        class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200/60">
-                                                        👨‍👩‍👦 Ortu: {{ $student->parent->name }}
-                                                    </span>
+                                                @if($student->parents->isNotEmpty())
+                                                    @foreach($student->parents as $parent)
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200/60 mr-1">
+                                                            👨‍👩‍👦 Ortu: {{ $parent->name }}
+                                                        </span>
+                                                    @endforeach
                                                 @else
                                                     <button type="button" @click="openEditModal(@js($student))"
                                                         title="Klik untuk hubungkan data orang tua"
@@ -187,9 +190,9 @@
                                                 <i class="fa-solid fa-eye text-xs"></i><i
                                                     class="fa-solid fa-pen-to-square"></i> Lihat / Edit
                                             </button>
-                                            <form action="{{ route('students.reset-password', $student->id) }}" method="POST"
-                                                class="inline m-0"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin mereset password siswa {{ addslashes($student->name) }} ke password default ({{ $student->getDefaultPassword() }})?');">
+                                            <form action="{{ route('students.reset-password', $student->id) }}"
+                                                method="POST" class="inline m-0" x-data
+                                                @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Reset Password?', message: 'Apakah Anda yakin ingin mereset password siswa {{ addslashes($student->name) }} ke password default ({{ $student->getDefaultPassword() }})?' })">
                                                 @csrf
                                                 <button type="submit"
                                                     class="px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition inline-flex items-center gap-1">
@@ -197,8 +200,8 @@
                                                 </button>
                                             </form>
                                             <form action="{{ route('students.destroy', $student->id) }}" method="POST"
-                                                class="inline m-0"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($student->name) }}?');">
+                                                class="inline m-0" x-data
+                                                @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Siswa?', message: 'Apakah Anda yakin ingin menghapus data siswa {{ addslashes($student->name) }}?' })">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"

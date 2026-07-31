@@ -34,7 +34,7 @@ class StudentManagementController extends Controller
         }
 
         $query = Student::where('tenant_id', $tenantId)
-            ->with(['parent', 'schoolClass']);
+            ->with(['parents', 'schoolClass']);
 
         // Jika user adalah guru/wali kelas, batasi hanya melihat siswa di kelas asuhannya.
         if ($isTeacherRole && $isHomeroomTeacher) {
@@ -418,7 +418,10 @@ class StudentManagementController extends Controller
             }
         }
 
-        $newPassword = $student->getDefaultPassword();
+        $newPassword = (string)$student->nisn;
+        if (empty($newPassword)) {
+            $newPassword = '12345678';
+        }
 
         $student->update([
             'password' => Hash::make($newPassword),
@@ -426,6 +429,6 @@ class StudentManagementController extends Controller
             'is_password_changed' => false,
         ]);
 
-        return redirect()->back()->with('success', "Password siswa {$student->name} berhasil di-reset ke: {$newPassword}");
+        return redirect()->back()->with('success', "Password siswa {$student->name} berhasil di-reset ke NISN: {$newPassword}");
     }
 }

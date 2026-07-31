@@ -16,7 +16,7 @@ class ParentDashboardController extends Controller
     {
         $parent = Auth::user();
         
-        $children = User::where('parent_id', $parent->id)->with(['schoolClass'])->get();
+        $children = $parent->students()->with(['schoolClass'])->get();
         
         $today = Carbon::today();
         $attendanceService = app(\App\Services\AttendanceService::class);

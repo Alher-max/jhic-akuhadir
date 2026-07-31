@@ -114,7 +114,8 @@
                                     <h4 class="text-sm font-bold text-brand-text-main">{{ $item->child->name }}</h4>
                                     <p class="text-[10px] text-brand-text-muted font-medium">NISN:
                                         {{ $item->child->nisn ?? '-' }} •
-                                        {{ $item->child->schoolClass->nama_kelas ?? 'Tanpa Kelas' }}</p>
+                                        {{ $item->child->schoolClass->nama_kelas ?? 'Tanpa Kelas' }}
+                                    </p>
                                 </div>
                             </div>
 
@@ -152,7 +153,7 @@
                                 <div class="flex items-center gap-2">
                                     <span class="material-symbols-outlined text-emerald-500 text-lg">login</span>
                                     <span class="text-sm font-black text-gray-700">
-                                        {{ $item->attendance && $item->attendance->clock_in_time ? \Carbon\Carbon::parse($item->attendance->clock_in_time)->format('H:i') : '--:--' }}
+                                        {{ $item->attendance && $item->attendance->clock_in ? \Carbon\Carbon::parse($item->attendance->clock_in)->format('H:i') . ' WIB' : '--:--' }}
                                     </span>
                                 </div>
                             </div>
@@ -162,14 +163,14 @@
                                 <div class="flex items-center gap-2">
                                     <span class="material-symbols-outlined text-rose-500 text-lg">logout</span>
                                     <span class="text-sm font-black text-gray-700">
-                                        {{ $item->attendance && $item->attendance->clock_out_time ? \Carbon\Carbon::parse($item->attendance->clock_out_time)->format('H:i') : '--:--' }}
+                                        {{ $item->attendance && $item->attendance->clock_out ? \Carbon\Carbon::parse($item->attendance->clock_out)->format('H:i') . ' WIB' : '--:--' }}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Agenda Accordion -->
-                        <div x-data="{ open: false }" class="border-t border-brand-border">
+                        <div x-data="{ open: true }" class="border-t border-brand-border">
                             <button @click="open = !open"
                                 class="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">

@@ -10,10 +10,12 @@
             <!-- Header Halaman -->
             <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
                 <div class="mb-4 sm:mb-0">
-                    <p class="text-sm text-gray-600">Tambah, edit, dan atur data guru (wali kelas) di institusi Anda.</p>
+                    <p class="text-sm text-gray-600">Tambah, edit, dan atur data guru (wali kelas) di institusi Anda.
+                    </p>
                 </div>
                 <div>
-                    <button @click="showModal = true" class="px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-sm">
+                    <button @click="showModal = true"
+                        class="px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-sm">
                         + Tambah Guru / Staf Baru
                     </button>
                 </div>
@@ -27,7 +29,8 @@
                             <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                                 <th class="px-6 py-4 font-medium border-b border-brand-border">Nama Lengkap</th>
                                 <th class="px-6 py-4 font-medium border-b border-brand-border">Surel</th>
-                                <th class="px-6 py-4 font-medium border-b border-brand-border">Kelas yang Diampu (Wali)</th>
+                                <th class="px-6 py-4 font-medium border-b border-brand-border">Kelas yang Diampu (Wali)
+                                </th>
                                 <th class="px-6 py-4 font-medium border-b border-brand-border">Status</th>
                                 <th class="px-6 py-4 font-medium border-b border-brand-border text-right">Aksi</th>
                             </tr>
@@ -38,9 +41,12 @@
                                     <td class="px-6 py-4 text-sm font-semibold text-gray-900">
                                         <div class="flex items-center">
                                             @if($teacher->avatar || $teacher->master_photo)
-                                                <img src="{{ Storage::url($teacher->avatar ?: $teacher->master_photo) }}" alt="{{ $teacher->name }}" class="h-8 w-8 rounded-full object-cover mr-3 border border-slate-200">
+                                                <img src="{{ Storage::url($teacher->avatar ?: $teacher->master_photo) }}"
+                                                    alt="{{ $teacher->name }}"
+                                                    class="h-8 w-8 rounded-full object-cover mr-3 border border-slate-200">
                                             @else
-                                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm mr-3">
+                                                <div
+                                                    class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm mr-3">
                                                     {{ substr($teacher->name, 0, 1) }}
                                                 </div>
                                             @endif
@@ -54,7 +60,8 @@
                                         @if($teacher->homeroomClasses->count() > 0)
                                             <div class="flex flex-wrap gap-1">
                                                 @foreach($teacher->homeroomClasses as $class)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                                                         {{ $class->nama_kelas }} ({{ $class->jenjang }})
                                                     </span>
                                                 @endforeach
@@ -65,16 +72,21 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         @if($teacher->is_active)
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">Nonaktif</span>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">Nonaktif</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm">
-                                        <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data guru ini?');">
+                                        <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST"
+                                            class="inline" x-data
+                                            @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Guru?', message: 'Apakah Anda yakin ingin menghapus data guru ini?' })">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-rose-600 hover:text-rose-900 font-medium">Hapus</button>
+                                            <button type="submit"
+                                                class="text-rose-600 hover:text-rose-900 font-medium">Hapus</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -96,65 +108,96 @@
         </div>
 
         <!-- Modal Tambah Guru -->
-        <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showModal = false"></div>
+                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showModal = false"></div>
 
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-brand-surface rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-brand-border">
+                <div x-show="showModal" x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-brand-surface rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-brand-border">
                     <div>
-                        <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title">Tambah Guru / Pendidik Baru</h3>
+                        <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title">Tambah Guru /
+                            Pendidik Baru</h3>
                         <p class="mt-2 text-sm text-brand-text-muted">Masukkan informasi guru di bawah ini.</p>
                     </div>
-                    
-                    <form action="{{ route('teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ createPhotoPreview: null }">
+
+                    <form action="{{ route('teachers.store') }}" method="POST" enctype="multipart/form-data"
+                        class="mt-5" x-data="{ createPhotoPreview: null }">
                         @csrf
                         <div class="space-y-4">
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                            </div>
-                            
-                            <div>
-                                <label for="nip" class="block text-sm font-medium text-gray-700">NUPTK (Opsional)</label>
-                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                            </div>
-                            
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">Surel (Opsional)</label>
-                                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd."
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
 
                             <div>
-                                <label for="teacher_avatar" class="block text-sm font-medium text-gray-700">Foto Profil / Avatar (Opsional)</label>
+                                <label for="nip" class="block text-sm font-medium text-gray-700">NUPTK
+                                    (Opsional)</label>
+                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                            </div>
+
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700">Surel
+                                    (Opsional)</label>
+                                <input type="email" name="email" id="email"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm"
+                                    placeholder="Otomatis jika kosong">
+                            </div>
+
+                            <div>
+                                <label for="teacher_avatar" class="block text-sm font-medium text-gray-700">Foto Profil
+                                    / Avatar (Opsional)</label>
                                 <div class="mt-1 flex items-center">
                                     <template x-if="!createPhotoPreview">
-                                        <span class="inline-block h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-gray-100">
-                                            <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        <span
+                                            class="inline-block h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-gray-100">
+                                            <svg class="h-full w-full text-gray-300" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
                                         </span>
                                     </template>
                                     <template x-if="createPhotoPreview">
-                                        <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
+                                        <img :src="createPhotoPreview"
+                                            class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm"
+                                            alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*"
+                                        @change="compressFileInput($event, (url) => { createPhotoPreview = url })"
+                                        class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                                 </div>
                                 <template x-if="createPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
-                                        <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
+                                        <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah
+                                        dikompresi secara otomatis)
                                     </div>
                                 </template>
-                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
+                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di
+                                    sisi klien &lt; 200KB).</p>
                             </div>
                         </div>
 
                         <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6">
-                            <button type="button" @click="showModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                            <button type="button" @click="showModal = false"
+                                class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                                 Batal
                             </button>
-                            <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                            <button type="submit"
+                                class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                                 Simpan Data
                             </button>
                         </div>

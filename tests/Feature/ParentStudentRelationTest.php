@@ -44,6 +44,7 @@ class ParentStudentRelationTest extends TestCase
         $operator = User::factory()->create([
             'tenant_id' => $tenant->id,
             'role' => 'operator',
+            'is_active' => true,
             'onboarding_completed' => true,
         ]);
 

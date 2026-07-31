@@ -200,11 +200,11 @@ class MemberDashboardController extends Controller
         $weeklyTimetable = [];
         foreach ($dayNameMap as $num => $dName) {
             $schedulesForDay = $realClassSchedules->where('day_name', $dName)->values();
-            $kbmItems = $schedulesForDay->map(function ($cs) {
+            $kbmItems = $schedulesForDay->map(function ($cs) use ($tz) {
                 return [
                     'jam' => $cs->period_number ? 'Jam ke-' . $cs->period_number : 'Sesi KBM',
                     'start_time' => $cs->start_time,
-                    'waktu' => Carbon::parse($cs->start_time)->format('H:i') . ' - ' . Carbon::parse($cs->end_time)->format('H:i'),
+                    'waktu' => Carbon::parse($cs->start_time, $tz)->format('H:i') . ' - ' . Carbon::parse($cs->end_time, $tz)->format('H:i'),
                     'mapel' => $cs->subject->name ?? 'Mata Pelajaran',
                     'guru' => $cs->teacher->name ?? '-',
                     'ruang' => $cs->schoolClass->nama_kelas ?? '-',
@@ -215,11 +215,11 @@ class MemberDashboardController extends Controller
             });
 
             $actForDay = $relevantActivities->where('day_name', $dName)->values();
-            $actItems = $actForDay->map(function ($act) {
+            $actItems = $actForDay->map(function ($act) use ($tz) {
                 return [
                     'jam' => 'Kegiatan',
                     'start_time' => $act->start_time,
-                    'waktu' => Carbon::parse($act->start_time)->format('H:i') . ' - ' . Carbon::parse($act->end_time)->format('H:i'),
+                    'waktu' => Carbon::parse($act->start_time, $tz)->format('H:i') . ' - ' . Carbon::parse($act->end_time, $tz)->format('H:i'),
                     'mapel' => $act->name,
                     'guru' => 'Toleransi ' . $act->late_tolerance_minutes . 'm',
                     'ruang' => $act->target_scope === 'members' ? 'Ekskul' : 'Kegiatan Sekolah',

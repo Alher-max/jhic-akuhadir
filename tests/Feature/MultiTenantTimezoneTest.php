@@ -74,16 +74,16 @@ class MultiTenantTimezoneTest extends TestCase
      */
     public function test_student_in_wit_tenant_calculates_current_time_with_two_hour_difference_from_wib(): void
     {
+        // Force Carbon to treat time as UTC, but create instances with correct timezone
         $nowUTC = Carbon::create(2026, 7, 29, 0, 0, 0, 'UTC');
-        Carbon::setTestNow($nowUTC);
 
-        $nowJayapura = Carbon::now('Asia/Jayapura'); // 09:00:00 WIT (+9)
-        $nowJakarta  = Carbon::now('Asia/Jakarta');  // 07:00:00 WIB (+7)
+        $nowJayapura = $nowUTC->copy()->setTimezone('Asia/Jayapura'); // 09:00:00 WIT (+9)
+        $nowJakarta  = $nowUTC->copy()->setTimezone('Asia/Jakarta');  // 07:00:00 WIB (+7)
 
         $this->assertEquals('09:00:00', $nowJayapura->format('H:i:s'));
         $this->assertEquals('07:00:00', $nowJakarta->format('H:i:s'));
-        $this->assertEquals(2, $nowJayapura->diffInHours($nowJakarta));
-
-        Carbon::setTestNow(); // Reset test now
+        
+        // Use differenceInMinutes or comparing offsets
+        $this->assertEquals(2, ($nowJayapura->offset - $nowJakarta->offset) / 3600);
     }
 }

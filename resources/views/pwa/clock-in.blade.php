@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -7,7 +8,8 @@
 
     <title>{{ config('app.name', 'HadirYuk') }} - Mobile Clock-In</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85' font-style='italic' font-weight='900' fill='%23b91c1c' font-family='sans-serif'>H</text></svg>">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85' font-style='italic' font-weight='900' fill='%23b91c1c' font-family='sans-serif'>H</text></svg>">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -22,20 +24,53 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-    
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fafafa; }
-        .video-container { position: relative; width: 100%; max-width: 480px; margin: 0 auto; aspect-ratio: 3/4; overflow: hidden; border-radius: 1rem; }
-        #webcam { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        #output_canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); pointer-events: none; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+
+        #webcam {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        #output_canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            pointer-events: none;
+        }
     </style>
 </head>
+
 <body class="antialiased text-gray-900 h-screen flex flex-col justify-between overflow-hidden">
-    
+
     <!-- Top Nav -->
     <div class="px-5 py-4 bg-white shadow-sm flex items-center justify-between z-10 relative">
         <div class="flex items-center gap-3">
-            <a href="{{ route('member.dashboard') }}" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
+            <a href="{{ route('member.dashboard') }}"
+                class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div>
@@ -47,30 +82,35 @@
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col items-center justify-center p-5 relative">
-        
+
         <!-- Camera Viewport -->
-        <div class="video-container shadow-2xl border-4 border-yellow-400 transition-colors duration-500" id="camera-border">
+        <div class="video-container shadow-2xl border-4 border-yellow-400 transition-colors duration-500"
+            id="camera-border">
             <video id="webcam" autoplay playsinline></video>
             <canvas id="output_canvas"></canvas>
-            
+
             <!-- Loading Overlay -->
-            <div id="camera-loading" class="absolute inset-0 bg-gray-900/80 flex flex-col items-center justify-center text-white z-10">
+            <div id="camera-loading"
+                class="absolute inset-0 bg-gray-900/80 flex flex-col items-center justify-center text-white z-10">
                 <i class="fa-solid fa-spinner fa-spin text-4xl mb-3 text-rose-500"></i>
                 <p class="text-sm font-medium">Mengaktifkan Kamera...</p>
             </div>
         </div>
 
         <!-- Status Indicator -->
-        <div class="mt-6 bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 max-w-sm w-full">
-            <div id="status-icon" class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-xl shrink-0 transition-colors">
+        <div
+            class="mt-6 bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 max-w-sm w-full">
+            <div id="status-icon"
+                class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-xl shrink-0 transition-colors">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
             <div>
                 <h3 id="status-title" class="font-bold text-gray-800 text-sm">Mencari Wajah</h3>
-                <p id="status-desc" class="text-xs text-gray-500 leading-tight">Arahkan wajah Anda ke dalam frame kamera.</p>
+                <p id="status-desc" class="text-xs text-gray-500 leading-tight">Arahkan wajah Anda ke dalam frame
+                    kamera.</p>
             </div>
         </div>
-        
+
     </div>
 
     <!-- Bottom Actions -->
@@ -81,8 +121,9 @@
             <input type="hidden" name="face_match_score" id="face_match_score" value="">
             <input type="hidden" name="latitude" id="latitude" value="">
             <input type="hidden" name="longitude" id="longitude" value="">
-            
-            <button type="submit" id="submit-btn" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-not-allowed">
+
+            <button type="submit" id="submit-btn" disabled
+                class="w-full bg-gray-300 text-gray-500 font-bold py-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-not-allowed">
                 <i class="fa-regular fa-clock text-xl"></i>
                 <span>Clock In Sekarang</span>
             </button>
@@ -100,9 +141,9 @@
         const statusTitle = document.getElementById('status-title');
         const statusDesc = document.getElementById('status-desc');
         const cameraLoading = document.getElementById('camera-loading');
-        
+
         let livenessVerified = false;
-        let isGeofencingValid = true; 
+        let isGeofencingValid = true;
         const REQUIRE_GEOFENCING = {{ ($settings->latitude && $settings->longitude) ? 'true' : 'false' }};
         const SETTINGS_LAT = {{ $settings->latitude ?? 'null' }};
         const SETTINGS_LNG = {{ $settings->longitude ?? 'null' }};
@@ -171,18 +212,18 @@
                         const lng = position.coords.longitude;
                         document.getElementById('latitude').value = lat;
                         document.getElementById('longitude').value = lng;
-                        
+
                         // Simple Haversine Check (Optional front-end feedback, backend will verify anyway)
                         const R = 6371e3; // metres
-                        const φ1 = lat * Math.PI/180;
-                        const φ2 = SETTINGS_LAT * Math.PI/180;
-                        const Δφ = (SETTINGS_LAT-lat) * Math.PI/180;
-                        const Δλ = (SETTINGS_LNG-lng) * Math.PI/180;
+                        const φ1 = lat * Math.PI / 180;
+                        const φ2 = SETTINGS_LAT * Math.PI / 180;
+                        const Δφ = (SETTINGS_LAT - lat) * Math.PI / 180;
+                        const Δλ = (SETTINGS_LNG - lng) * Math.PI / 180;
 
-                        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                                Math.cos(φ1) * Math.cos(φ2) *
-                                Math.sin(Δλ/2) * Math.sin(Δλ/2);
-                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                            Math.cos(φ1) * Math.cos(φ2) *
+                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                         const distance = R * c;
 
                         if (distance <= SETTINGS_RAD) {
@@ -255,7 +296,7 @@
 
         const HAS_MASTER = {{ isset($masterPhotoUrl) && $masterPhotoUrl ? 'true' : 'false' }};
         const MASTER_PHOTO_URL = "{!! $masterPhotoUrl ?? '' !!}";
-        
+
         let faceApiLoaded = false;
         let masterDescriptor = null;
 
@@ -270,13 +311,15 @@
                     const img = await faceapi.fetchImage(MASTER_PHOTO_URL);
                     const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
                     if (detection) masterDescriptor = detection.descriptor;
-                } catch(e) { console.error("Error load master", e); }
+                } catch (e) { console.error("Error load master", e); }
             });
         }
 
-        const faceMesh = new FaceMesh({locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-        }});
+        const faceMesh = new FaceMesh({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+            }
+        });
 
         faceMesh.setOptions({
             maxNumFaces: 1,
@@ -301,42 +344,49 @@
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                 if (!livenessVerified) {
                     const landmarks = results.multiFaceLandmarks[0];
-                    
+
                     const leftV = calculateDistancePoints(landmarks[159], landmarks[145]);
                     const leftH = calculateDistancePoints(landmarks[133], landmarks[33]);
                     const rightV = calculateDistancePoints(landmarks[386], landmarks[374]);
                     const rightH = calculateDistancePoints(landmarks[362], landmarks[263]);
-                    
+
                     const leftEAR = leftV / leftH;
                     const rightEAR = rightV / rightH;
                     const ear = (leftEAR + rightEAR) / 2;
-                    
-                    if (ear < 0.18) { // Blink detected
+
+                    // Pelonggaran threshold blink dari 0.18 menjadi 0.22
+                    if (ear < 0.22) { // Blink detected
                         livenessVerified = true;
-                        
+
                         const snapshot = captureAndCompressSnapshot(videoElement, 500, 500, 0.7);
                         const snapCanvas = snapshot.canvas;
-                        
+
                         document.getElementById('image_snapshot').value = snapshot.dataUrl;
-                        
+
                         if (HAS_MASTER && masterDescriptor && faceApiLoaded) {
-                            updateStatus(4); // AI Matching Phase
-                            faceapi.detectSingleFace(snapCanvas).withFaceLandmarks().withFaceDescriptor().then(detection => {
-                                if (detection) {
-                                    const distance = faceapi.euclideanDistance(masterDescriptor, detection.descriptor);
-                                    // Convert Euclidean distance to pseudo-similarity percentage where distance 0.45 is ~85%
-                                    const similarity = Math.max(0, 100 - (distance * 33.3)); 
-                                    document.getElementById('face_match_score').value = similarity.toFixed(2);
-                                    
-                                    if (distance < 0.45) { // Match success
-                                        updateStatus(3);
+                            // Bypass untuk lingkungan lokal
+                            @if(config('app.env') === 'local')
+                                console.log("Bypassing face matching in local environment");
+                                updateStatus(3);
+                            @else
+                                updateStatus(4); // AI Matching Phase
+                                faceapi.detectSingleFace(snapCanvas).withFaceLandmarks().withFaceDescriptor().then(detection => {
+                                    if (detection) {
+                                        const distance = faceapi.euclideanDistance(masterDescriptor, detection.descriptor);
+                                        // Convert Euclidean distance to pseudo-similarity percentage where distance 0.45 is ~85%
+                                        const similarity = Math.max(0, 100 - (distance * 33.3));
+                                        document.getElementById('face_match_score').value = similarity.toFixed(2);
+
+                                        if (distance < 0.60) { // Pelonggaran threshold dari 0.45 ke 0.60
+                                            updateStatus(3);
+                                        } else {
+                                            updateStatus(5); // Wajah tidak cocok
+                                        }
                                     } else {
-                                        updateStatus(5); // Wajah tidak cocok
+                                        updateStatus(5);
                                     }
-                                } else {
-                                    updateStatus(5);
-                                }
-                            });
+                                });
+                            @endif
                         } else {
                             updateStatus(3); // Langsung sukses jika tidak ada master
                         }
@@ -354,13 +404,13 @@
 
         const camera = new Camera(videoElement, {
             onFrame: async () => {
-                await faceMesh.send({image: videoElement});
+                await faceMesh.send({ image: videoElement });
             },
             width: 720,
             height: 1280,
             facingMode: "user"
         });
-        
+
         camera.start().catch((err) => {
             alert("Tidak dapat mengakses kamera. Pastikan Anda mengizinkan akses kamera.");
             cameraLoading.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-4xl mb-3 text-red-500"></i><p class="text-sm font-medium">Kamera Diblokir</p>';
@@ -378,7 +428,7 @@
             const form = e.target;
             const btn = document.getElementById('submit-btn');
             const originalContent = btn.innerHTML;
-            
+
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xl"></i><span>Memproses...</span>';
 
@@ -391,9 +441,31 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-                
+
                 const data = await response.json();
-                if (data.success) {
+
+                // Menangani kondisi "Sudah Presensi"
+                if (data.already_attended) {
+                    btn.className = "w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all cursor-not-allowed";
+                    btn.innerHTML = '<i class="fa-solid fa-check-circle text-xl"></i><span>Sudah Presensi</span>';
+                    btn.disabled = true;
+
+                    // Menambahkan badge sukses informatif
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = "mt-6 bg-green-100 border border-green-200 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-500";
+                    statusDiv.innerHTML = `
+                        <i class="fa-solid fa-circle-check text-green-600 text-2xl"></i>
+                        <div>
+                            <h4 class="font-bold text-green-800">Presensi Berhasil</h4>
+                            <p class="text-green-700 text-sm">${data.message}</p>
+                        </div>
+                    `;
+                    document.querySelector('.flex-1').appendChild(statusDiv);
+
+                    // Sembunyikan elemen kamera
+                    document.querySelector('.video-container').style.display = 'none';
+                    document.querySelector('.mt-6').style.display = 'none';
+                } else if (data.success) {
                     btn.className = "w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all cursor-not-allowed";
                     btn.innerHTML = '<i class="fa-solid fa-check text-xl"></i><span>' + data.message + '</span>';
                     setTimeout(() => {
@@ -413,4 +485,5 @@
 
     </script>
 </body>
+
 </html>

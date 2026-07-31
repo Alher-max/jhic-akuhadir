@@ -75,7 +75,7 @@
                                                     </td>
                                                     <td class="px-6 py-4 text-right text-sm">
                                                         <button @click="editForm.id = {{ $class->id }}; editForm.jenjang = '{{ $class->jenjang }}'; editForm.tingkat = '{{ $class->tingkat }}'; editForm.nama_kelas = '{{ addslashes($class->nama_kelas) }}'; editForm.wali_kelas_id = '{{ $class->wali_kelas_id }}'; showEditModal = true;" class="text-indigo-600 hover:text-indigo-900 font-medium mr-3">Edit</button>
-                                                        <form action="{{ route('classes.destroy', $class->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kelas ini?');">
+                                                        <form action="{{ route('classes.destroy', $class->id) }}" method="POST" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Kelas?', message: 'Apakah Anda yakin ingin menghapus kelas ini?' })">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="text-rose-600 hover:text-rose-900 font-medium">Hapus</button>

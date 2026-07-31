@@ -23,7 +23,7 @@ class AttendanceController extends Controller
     public function clockIn(Request $request)
     {
         $user = Auth::user();
-        $now = now();
+        $now = now('Asia/Jakarta');
         $today = $now->format('Y-m-d');
 
         $tenant = $user->tenant;
@@ -143,7 +143,7 @@ class AttendanceController extends Controller
             'attendance_type' => $attendanceType,
             'class_schedule_id' => $classScheduleId,
             'date' => $today,
-            'clock_in' => now(),
+            'clock_in' => now('Asia/Jakarta'),
             'status' => $status,
             'photo_path' => $photoPath,
             'notes' => $notes,
@@ -157,7 +157,7 @@ class AttendanceController extends Controller
     public function clockOut(Request $request)
     {
         $user = Auth::user();
-        $now = now();
+        $now = now('Asia/Jakarta');
         $today = $now->format('Y-m-d');
 
         $tenant = $user->tenant;
@@ -227,7 +227,7 @@ class AttendanceController extends Controller
         }
 
         $attendance->update([
-            'clock_out' => now(),
+            'clock_out' => now('Asia/Jakarta'),
         ]);
 
         return redirect()->back()->with('success', 'Berhasil pulang (clock-out).');
