@@ -57,11 +57,17 @@ window.PushManager = {
     },
 
     async saveSubscription(subscription) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken) {
+            console.error('CSRF token not found');
+            return;
+        }
+
         const response = await fetch('/push-subscription', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify(subscription)
         });
@@ -79,12 +85,18 @@ window.PushManager = {
             const subscription = await registration.pushManager.getSubscription();
 
             if (subscription) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    return;
+                }
+
                 await subscription.unsubscribe();
                 await fetch('/push-subscription', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({ endpoint: subscription.endpoint })
                 });

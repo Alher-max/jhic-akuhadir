@@ -283,14 +283,14 @@
                                     class="text-[10px] text-gray-400 mt-2 block">{{ $announcement->created_at->diffForHumans() }}</span>
 
                                 <button @click="
-                                                                                    fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {
-                                                                                        method: 'POST',
-                                                                                        headers: {
-                                                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                                                            'Content-Type': 'application/json'
-                                                                                        }
-                                                                                    }).then(res => { if(res.ok) dismissed = true; });
-                                                                                "
+                                                                                                    fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {
+                                                                                                        method: 'POST',
+                                                                                                        headers: {
+                                                                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                                            'Content-Type': 'application/json'
+                                                                                                        }
+                                                                                                    }).then(res => { if(res.ok) dismissed = true; });
+                                                                                                "
                                     class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                                     <span class="material-symbols-outlined text-base">close</span>
                                 </button>
@@ -314,14 +314,14 @@
                                     <h4 class="font-bold text-sm text-gray-500 pr-6">{{ $announcement->title }}</h4>
                                     <p class="text-xs text-gray-500 mt-1 italic">{{ $announcement->description }}</p>
                                     <button @click="
-                                                                                        fetch('{{ route('student.announcements.restore', $announcement->id) }}', {
-                                                                                            method: 'POST',
-                                                                                            headers: {
-                                                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                                                                'Content-Type': 'application/json'
-                                                                                            }
-                                                                                        }).then(res => { if(res.ok) restored = true; });
-                                                                                    "
+                                                                                                        fetch('{{ route('student.announcements.restore', $announcement->id) }}', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                                                'Content-Type': 'application/json'
+                                                                                                            }
+                                                                                                        }).then(res => { if(res.ok) restored = true; });
+                                                                                                    "
                                         class="mt-3 text-[10px] font-bold text-brand-primary hover:underline">
                                         Tampilkan Kembali
                                     </button>
@@ -762,11 +762,7 @@
                         <input type="text" x-model="newItem" placeholder="Tambah barang..."
                             class="text-sm border-gray-200 rounded-xl px-3 py-2">
                         <div class="flex items-center gap-2">
-                            <select x-model="newTarget" class="text-xs border-gray-200 rounded-xl px-2 py-2">
-                                <option value="today">Hari Ini</option>
-                                <option value="tomorrow">Besok</option>
-                            </select>
-                            <button @click="addItem()"
+                            <button @click="addItem(tab)"
                                 class="flex-1 bg-brand-primary text-white text-xs font-bold px-4 py-2 rounded-xl">+
                                 Tambah</button>
                         </div>
