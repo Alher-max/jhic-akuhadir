@@ -23,9 +23,10 @@ window.PushManager = {
             return;
         }
 
-        const vapidPublicKey = document.querySelector('meta[name="vapid-public-key"]')?.content;
+        const meta = document.querySelector('meta[name="vapid-public-key"]');
+        const vapidPublicKey = meta ? meta.content : null;
         if (!vapidPublicKey) {
-            console.error('VAPID public key not found');
+            console.warn('VAPID public key not set');
             return;
         }
 

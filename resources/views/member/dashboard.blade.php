@@ -283,14 +283,15 @@
                                     class="text-[10px] text-gray-400 mt-2 block">{{ $announcement->created_at->diffForHumans() }}</span>
 
                                 <button @click="
-                                                    fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                            'Content-Type': 'application/json'
-                                                        }
-                                                    }).then(res => { if(res.ok) dismissed = true; });
-                                                " class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                                                                                    fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                            'Content-Type': 'application/json'
+                                                                                        }
+                                                                                    }).then(res => { if(res.ok) dismissed = true; });
+                                                                                "
+                                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                                     <span class="material-symbols-outlined text-base">close</span>
                                 </button>
                             </div>
@@ -313,14 +314,15 @@
                                     <h4 class="font-bold text-sm text-gray-500 pr-6">{{ $announcement->title }}</h4>
                                     <p class="text-xs text-gray-500 mt-1 italic">{{ $announcement->description }}</p>
                                     <button @click="
-                                                        fetch('{{ route('student.announcements.restore', $announcement->id) }}', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                                'Content-Type': 'application/json'
-                                                            }
-                                                        }).then(res => { if(res.ok) restored = true; });
-                                                    " class="mt-3 text-[10px] font-bold text-brand-primary hover:underline">
+                                                                                        fetch('{{ route('student.announcements.restore', $announcement->id) }}', {
+                                                                                            method: 'POST',
+                                                                                            headers: {
+                                                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                                'Content-Type': 'application/json'
+                                                                                            }
+                                                                                        }).then(res => { if(res.ok) restored = true; });
+                                                                                    "
+                                        class="mt-3 text-[10px] font-bold text-brand-primary hover:underline">
                                         Tampilkan Kembali
                                     </button>
                                 </div>
@@ -697,6 +699,79 @@
                         <p class="text-sm font-medium text-gray-600">Belum ada jadwal pelajaran mingguan yang diatur.</p>
                     </div>
                 @endif
+            </div>
+
+            <!-- Pengingat Perlengkapan -->
+            <div x-data="{
+                tab: 'today',
+                todayStr: new Date().toISOString().split('T')[0],
+                tomorrowStr: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
+                newItem: '',
+                newTarget: 'today',
+                items: JSON.parse(localStorage.getItem('perlengkapan_data_v2') || '[]'),
+                
+                init() {
+                    this.items = this.items.filter(i => i.targetDate >= this.todayStr);
+                    this.save();
+                },
+                get currentItems() {
+                    const target = this.tab === 'today' ? this.todayStr : this.tomorrowStr;
+                    const day = new Date(target).getDay();
+                    let defaults = [];
+                    if (day === 1) defaults = ['Topi', 'Dasi', 'Sabuk', 'Seragam Lengkap UPK'];
+                    else if (day >= 2 && day <= 4) defaults = ['Dasi', 'Sabuk', 'Seragam Harian', 'Buku Sesuai Jadwal'];
+                    else if (day === 5) defaults = ['Seragam Pramuka/Batik', 'Peralatan Ibadah'];
+                    else if (day === 6) defaults = ['Kegiatan Ekstrakurikuler'];
+                    
+                    const custom = this.items.filter(i => i.targetDate === target);
+                    return defaults.map(n => ({ name: n, checked: false, isCustom: false, targetDate: target }))
+                           .concat(custom);
+                },
+                addItem() {
+                    if (!this.newItem.trim()) return;
+                    this.items.push({
+                        name: this.newItem,
+                        checked: false,
+                        isCustom: true,
+                        targetDate: this.newTarget === 'today' ? this.todayStr : this.tomorrowStr
+                    });
+                    this.newItem = '';
+                    this.save();
+                },
+                save() { localStorage.setItem('perlengkapan_data_v2', JSON.stringify(this.items)); }
+            }" class="mb-6">
+                <h3 class="text-lg font-bold text-brand-text-main mb-4">🎒 Pengingat Perlengkapan Sekolah</h3>
+                <div class="flex gap-2 mb-3">
+                    <button @click="tab = 'today'; newTarget = 'today'"
+                        :class="tab === 'today' ? 'bg-brand-primary text-white' : 'bg-gray-100 text-gray-600'"
+                        class="flex-1 py-2 text-xs font-bold rounded-xl transition">Hari Ini</button>
+                    <button @click="tab = 'tomorrow'; newTarget = 'tomorrow'"
+                        :class="tab === 'tomorrow' ? 'bg-brand-primary text-white' : 'bg-gray-100 text-gray-600'"
+                        class="flex-1 py-2 text-xs font-bold rounded-xl transition">Besok</button>
+                </div>
+                <div class="bg-brand-surface border border-brand-border rounded-2xl p-4 shadow-sm space-y-3">
+                    <template x-for="(item, index) in currentItems" :key="index">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" :checked="item.checked"
+                                class="w-5 h-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary">
+                            <span class="text-sm text-gray-700"
+                                :class="item.checked ? 'line-through text-gray-400' : ''" x-text="item.name"></span>
+                        </div>
+                    </template>
+                    <div class="flex flex-col gap-2 mt-2">
+                        <input type="text" x-model="newItem" placeholder="Tambah barang..."
+                            class="text-sm border-gray-200 rounded-xl px-3 py-2">
+                        <div class="flex items-center gap-2">
+                            <select x-model="newTarget" class="text-xs border-gray-200 rounded-xl px-2 py-2">
+                                <option value="today">Hari Ini</option>
+                                <option value="tomorrow">Besok</option>
+                            </select>
+                            <button @click="addItem()"
+                                class="flex-1 bg-brand-primary text-white text-xs font-bold px-4 py-2 rounded-xl">+
+                                Tambah</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- History Section -->
