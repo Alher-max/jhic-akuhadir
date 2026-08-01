@@ -1,3 +1,15 @@
+:root {
+  --brand-bg: #FBF9F9;
+  --brand-surface: #FFFFFF;
+  --brand-surface-variant: #F4EFEB;
+  --brand-border: #EAE2E3;
+  --brand-primary: #B81D24;
+  --brand-primary-hover: #9B181E;
+  --brand-on-primary: #FFFFFF;
+  --brand-text-main: #1A1516;
+  --brand-text-muted: #6B5E60;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

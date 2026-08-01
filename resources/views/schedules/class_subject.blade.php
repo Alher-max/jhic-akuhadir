@@ -458,7 +458,7 @@
                                         <i class="fa-solid fa-bullhorn"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-base text-gray-900">{{ $act->name }}</h4>
+                                        <h4 class="font-bold text-base text-gray-900 pr-16">{{ $act->name }}</h4>
                                         <div class="flex items-center gap-1.5 flex-wrap mt-1">
                                             <span
                                                 class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100">
@@ -484,20 +484,39 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1">
+
+                                <!-- AKSI EDIT & HAPUS -->
+                                <div class="absolute top-3 right-3 flex items-center gap-1.5">
+                                    <!-- Tombol Edit -->
                                     <button type="button" @click="openEditActivity({{ json_encode($act) }})"
-                                        class="text-gray-400 hover:text-indigo-600 p-1 transition" title="Edit Kegiatan">
-                                        <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                        class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition flex items-center justify-center w-8 h-8"
+                                        title="Edit Kegiatan">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
                                     </button>
-                                    <form id="delete-activity-{{ $act->id }}"
-                                        action="{{ route('activities.destroy', $act->id) }}" method="POST">
+
+                                    <!-- Tombol Hapus -->
+                                    <button type="button"
+                                        @click="confirmDeleteActivity('delete-activity-form-{{ $act->id }}')"
+                                        class="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition flex items-center justify-center w-8 h-8"
+                                        title="Hapus Kegiatan">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Hidden Delete Form -->
+                                    <form id="delete-activity-form-{{ $act->id }}"
+                                        action="{{ route('activities.destroy', $act->id) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button"
-                                            @click="confirmDeleteActivity('delete-activity-{{ $act->id }}')"
-                                            class="text-gray-400 hover:text-red-600 p-1 transition" title="Hapus">
-                                            <i class="fa-solid fa-trash-can text-sm"></i>
-                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -592,7 +611,8 @@
                             <option value="">-- Pilih Mata Pelajaran --</option>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}">{{ $subject->name }}
-                                    {{ $subject->code ? '(' . $subject->code . ')' : '' }}</option>
+                                    {{ $subject->code ? '(' . $subject->code . ')' : '' }}
+                                </option>
                             @endforeach
                         </select>
                         @if($subjects->isEmpty())
@@ -601,8 +621,7 @@
                         @endif
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Guru Pengampu <span
+                    <div> <label class="block text-xs font-semibold text-gray-700 mb-1">Guru Pengampu <span
                                 class="text-red-500">*</span></label>
                         <select id="select-teacher" name="teacher_id" x-model="scheduleForm.teacher_id" required
                             class="w-full">
@@ -610,9 +629,9 @@
                             @foreach($teachers as $teacher)
                                 <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                             @endforeach
-                        </select>
-                        @if($teachers->isEmpty())
-                            <p class="mt-1 text-xs text-amber-600">Belum ada data guru. Silakan daftarkan guru terlebih
+                        </select> @if($teachers->isEmpty())
+                            <p class="mt-1 text-xs text-amber-600">Belum ada data guru. Silakan daftarkan guru
+                                terlebih
                                 dahulu di menu Kelola Guru.</p>
                         @endif
                     </div>
@@ -653,9 +672,8 @@
 
         @if(in_array(auth()->user()->role, ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin']))
             <!-- MODAL 2: TAMBAH MATA PELAJARAN BARU -->
-            <div x-cloak x-show="showSubjectModal" style="display: none;"
-                class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" role="dialog"
-                aria-modal="true">
+            <div x-cloak x-show="showSubjectModal" style="display: none;" class="fixed inset-0 z-50 flex items-center
+                        justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true">
                 <div x-show="showSubjectModal" x-transition.opacity class="fixed inset-0 bg-gray-900/60 transition-opacity"
                     @click="showSubjectModal = false"></div>
 
@@ -866,7 +884,8 @@
                         @forelse($allStudents as $student)
                             <label x-cloak
                                 x-show="!memberSearchQuery || '{{ strtolower($student->name) }}'.includes(memberSearchQuery.toLowerCase()) || '{{ strtolower($student->nisn ?? '') }}'.includes(memberSearchQuery.toLowerCase())"
-                                class="flex items-center justify-between p-2.5 bg-white hover:bg-indigo-50/50 rounded-lg border border-gray-200 cursor-pointer transition">
+                                class="flex items-center justify-between p-2.5 bg-white hover:bg-indigo-50/50 rounded-lg
+                                        border border-gray-200 cursor-pointer transition">
                                 <div class="flex items-center gap-2.5">
                                     <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
                                         x-model="selectedMemberIds"

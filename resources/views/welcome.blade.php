@@ -37,11 +37,15 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'brand-primary': '#B81D24',
-                        'brand-secondary': '#10B981',
-                        'brand-dark': '#1A1516',
-                        'brand-muted': '#6B5E60',
-                        'brand-bg': '#FBF9F9',
+                        'brand-primary': 'var(--brand-primary)',
+                        'brand-primary-hover': 'var(--brand-primary-hover)',
+                        'brand-on-primary': 'var(--brand-on-primary)',
+                        'brand-surface': 'var(--brand-surface)',
+                        'brand-surface-variant': 'var(--brand-surface-variant)',
+                        'brand-border': 'var(--brand-border)',
+                        'brand-dark': 'var(--brand-text-main)',
+                        'brand-muted': 'var(--brand-text-muted)',
+                        'brand-bg': 'var(--brand-bg)',
                     }
                 }
             }
@@ -86,9 +90,9 @@
                             <a href="{{ route('dashboard') }}" class="text-sm font-bold text-brand-primary">Dasbor Saya</a>
                         @else
                             <a href="{{ route('login') }}"
-                                class="text-sm font-bold hover:text-brand-primary transition-colors">Masuk</a>
+                                class="text-sm font-bold border border-[#EAE2E3] text-[#1A1516] px-5 py-2.5 rounded-full hover:bg-[#F4EFEB] transition-colors">Masuk</a>
                             <a href="https://wa.me/6281234567890" target="_blank"
-                                class="bg-brand-secondary text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-sm hover:scale-105 transition-transform flex items-center gap-2">
+                                class="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-sm hover:bg-emerald-700 hover:scale-105 transition-all flex items-center gap-2">
                                 <i class="fa-brands fa-whatsapp"></i> Konsultasi WA
                             </a>
                         @endauth
@@ -108,9 +112,11 @@
             <a href="#keunggulan" @click="mobileMenuOpen = false" class="block font-bold">Keunggulan</a>
             <a href="#faq" @click="mobileMenuOpen = false" class="block font-bold">FAQ</a>
             <hr>
-            <a href="{{ route('login') }}" class="block font-bold text-brand-primary">Masuk ke Aplikasi</a>
+            <a href="{{ route('login') }}"
+                class="block font-bold text-[#1A1516] border border-[#EAE2E3] p-3 rounded-xl text-center hover:bg-[#F4EFEB]">Masuk
+                ke Aplikasi</a>
             <a href="https://wa.me/6281234567890"
-                class="block bg-brand-secondary text-white text-center py-3 rounded-xl font-bold">Konsultasi
+                class="block bg-emerald-600 text-white text-center py-3 rounded-xl font-bold hover:bg-emerald-700">Konsultasi
                 WhatsApp</a>
         </div>
     </nav>
@@ -121,13 +127,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center max-w-4xl mx-auto">
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs sm:text-sm font-bold mb-8 animate-bounce">
-                    <span class="relative flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-primary"></span>
-                    </span>
-                    🚀 Platform Manajemen & Presensi Sekolah No. 1 di Indonesia
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100/80 border border-red-200 text-[#B81D24] text-xs sm:text-sm font-semibold mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-[#B81D24]"></span>
+                    <span>🚀 Platform Manajemen & Presensi Sekolah No. 1 di Indonesia</span>
                 </div>
 
                 <h1
@@ -143,11 +145,11 @@
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="/register?role=owner"
-                        class="w-full sm:w-auto px-10 py-5 bg-brand-primary text-white rounded-2xl font-black text-lg shadow-xl shadow-brand-primary/20 hover:scale-105 active:scale-95 transition-all">
+                        class="w-full sm:w-auto px-10 py-5 bg-[#B81D24] hover:bg-[#9B181E] text-white rounded-2xl font-black text-lg shadow-xl shadow-[#B81D24]/20 hover:scale-105 active:scale-95 transition-all text-center">
                         Daftarkan Sekolah Sekarang
                     </a>
                     <a href="https://wa.me/6281234567890" target="_blank"
-                        class="w-full sm:w-auto px-10 py-5 bg-brand-secondary text-white rounded-2xl font-black text-lg shadow-xl shadow-brand-secondary/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3">
+                        class="w-full sm:w-auto px-10 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3">
                         <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi via WhatsApp
                     </a>
                 </div>
@@ -156,11 +158,8 @@
                     class="mt-16 flex flex-wrap justify-center items-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all">
                     <p class="w-full text-center text-xs font-bold uppercase tracking-widest mb-2">Dipercaya oleh
                         berbagai jenjang pendidikan</p>
-                    <span class="font-black text-xl italic">PAUD/TK</span>
-                    <span class="font-black text-xl italic">SD/MI</span>
-                    <span class="font-black text-xl italic">SMP/MTs</span>
-                    <span class="font-black text-xl italic">SMA/SMK/MA</span>
-                    <span class="font-black text-xl italic">PONDOK PESANTREN</span>
+                    <span class="font-black text-xl italic">PAUD/TK • SD/MI • SMP/MTs • SMA/SMK/MA • PONDOK PESANTREN •
+                        PKBM & SKB</span>
                 </div>
             </div>
         </div>
@@ -221,7 +220,7 @@
                 <div
                     class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-brand-primary text-white flex items-center justify-center mb-8 shadow-lg shadow-brand-primary/20 group-hover:rotate-6 transition-transform">
+                        class="w-20 h-20 rounded-3xl bg-[#B81D24] text-white flex items-center justify-center mb-8 shadow-lg shadow-[#B81D24]/20 group-hover:rotate-6 transition-transform">
                         <span class="material-symbols-outlined text-4xl">sensors</span>
                     </div>
                     <h3 class="text-3xl font-black mb-6">Presensi Fleksibel & Multi-Mode</h3>
@@ -285,7 +284,7 @@
                 <div
                     class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-brand-secondary text-white flex items-center justify-center mb-8 shadow-lg shadow-brand-secondary/20 group-hover:rotate-6 transition-transform">
+                        class="w-20 h-20 rounded-3xl bg-emerald-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-emerald-600/20 group-hover:rotate-6 transition-transform">
                         <span class="material-symbols-outlined text-4xl">send_and_archive</span>
                     </div>
                     <h3 class="text-3xl font-black mb-6">Komunikasi Otomatis</h3>
@@ -351,37 +350,39 @@
             <div class="overflow-hidden rounded-[40px] border border-brand-border shadow-2xl">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-brand-dark text-white">
-                            <th class="p-6 sm:p-8 text-xl font-black">Aspek / Fitur</th>
-                            <th class="p-6 sm:p-8 text-xl font-black">Sistem Lain / Manual</th>
-                            <th class="p-6 sm:p-8 text-xl font-black bg-brand-primary">HadirYuk</th>
+                        <tr>
+                            <th class="p-6 sm:p-8 text-lg font-black bg-[#F4EFEB] text-[#1A1516]">Fitur / Perbandingan
+                            </th>
+                            <th class="p-6 sm:p-8 text-lg font-black bg-[#F4EFEB] text-[#6B5E60]">Sistem Konvensional /
+                                Lain</th>
+                            <th class="p-6 sm:p-8 text-lg font-black bg-[#B81D24] text-white">HadirYuk</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y font-bold text-sm sm:text-base">
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Metode Absensi</td>
                             <td class="p-6 sm:p-8">Terbatas (Hanya 1-2)</td>
-                            <td class="p-6 sm:p-8 text-brand-primary italic">5 Metode (Lengkap!)</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">5 Metode (Lengkap!)</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Biaya Server</td>
                             <td class="p-6 sm:p-8">Mahal (Jutaan/Bulan)</td>
-                            <td class="p-6 sm:p-8 text-brand-primary italic">Sangat Murah & Efisien</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Sangat Murah & Efisien</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Akses Orang Tua</td>
                             <td class="p-6 sm:p-8">Seringkali Tidak Ada</td>
-                            <td class="p-6 sm:p-8 text-brand-primary italic">Dasbor Khusus Ortu</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Dasbor Khusus Ortu</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Notifikasi WA</td>
                             <td class="p-6 sm:p-8">Bayar Per Pesan / Mahal</td>
-                            <td class="p-6 sm:p-8 text-brand-primary italic">Tersedia & Terjangkau</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Tersedia & Terjangkau</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Kecepatan Tap RFID</td>
                             <td class="p-6 sm:p-8">Butuh PC & Operator</td>
-                            <td class="p-6 sm:p-8 text-brand-primary italic">Stand-alone IoT (Tap & Go!)</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Stand-alone IoT (Tap & Go!)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -443,15 +444,15 @@
     </section>
 
     <!-- Final CTA -->
-    <section class="py-24 bg-brand-dark relative overflow-hidden">
+    <section class="py-24 bg-[#1A1516] relative overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tighter mb-8 leading-tight">
-                Mulai Digitalisasi Sekolah Anda <br> Bersama <span class="text-brand-primary">HadirYuk</span> Hari Ini.
+                Mulai Digitalisasi Sekolah Anda <br> Bersama <span class="text-[#B81D24]">HadirYuk</span> Hari Ini.
             </h2>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12">
                 <a href="/register?role=owner"
-                    class="w-full sm:w-auto px-12 py-6 bg-brand-primary text-white rounded-3xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-brand-primary/40">
+                    class="w-full sm:w-auto px-12 py-6 bg-[#B81D24] hover:bg-[#9B181E] text-white rounded-3xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-[#B81D24]/40">
                     Daftar Sekolah & Mulai Sekarang
                 </a>
             </div>
@@ -482,10 +483,10 @@
 
     <!-- Floating WA -->
     <a href="https://wa.me/6281234567890" target="_blank"
-        class="fixed bottom-6 right-6 z-[60] bg-brand-secondary text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group">
+        class="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
         <span
-            class="absolute right-20 bg-brand-secondary px-4 py-2 rounded-xl text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
+            class="absolute right-20 bg-emerald-600 px-4 py-2 rounded-xl text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
             Tanya Admin via WhatsApp
         </span>
     </a>
