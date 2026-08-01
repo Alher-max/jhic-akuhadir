@@ -40,10 +40,11 @@ class ScheduleController extends Controller
         if ($user->role === 'wali_kelas') {
             $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)
                 ->where('wali_kelas_id', $user->id)
-                ->ordered()
+                ->orderBy('tingkat')
+                ->orderBy('nama_kelas')
                 ->get();
         } else {
-            $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
+            $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();
         }
         
         $teachers = User::where('role', 'wali_kelas')->where('tenant_id', $tenantId)->get();
@@ -59,10 +60,11 @@ class ScheduleController extends Controller
         if ($user->role === 'wali_kelas') {
             $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)
                 ->where('wali_kelas_id', $user->id)
-                ->ordered()
+                ->orderBy('tingkat')
+                ->orderBy('nama_kelas')
                 ->get();
         } else {
-            $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
+            $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();
         }
         
         $teachers = User::where('role', 'wali_kelas')

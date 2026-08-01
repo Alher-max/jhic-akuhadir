@@ -32,15 +32,16 @@ class ClassScheduleController extends Controller
         if (in_array($user->role, ['guru', 'wali_kelas', 'guru_mapel'])) {
             $classes = SchoolClass::where('tenant_id', $tenantId)
                 ->where('wali_kelas_id', $user->id)
-                ->ordered()
+                ->orderBy('tingkat')
+                ->orderBy('nama_kelas')
                 ->get();
 
             // Jika tidak ada kelas binaan khusus, tampilkan semua kelas tenant
             if ($classes->isEmpty()) {
-                $classes = SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
+                $classes = SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();
             }
         } else {
-            $classes = SchoolClass::where('tenant_id', $tenantId)->ordered()->get();
+            $classes = SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();
         }
 
         $selectedClassId = $request->get('class_id', $classes->first()?->id);
@@ -78,7 +79,7 @@ class ClassScheduleController extends Controller
         $activities = \App\Models\ActivitySchedule::with(['members'])
             ->withCount('members')
             ->where('tenant_id', $tenantId)
-            ->orderBy('name')
+            ->orderBy('start_time', 'asc')
             ->get();
 
         $allStudents = User::where('tenant_id', $tenantId)

@@ -76,7 +76,7 @@ class TenantRegisterController extends Controller
                 'id' => $student->id,
                 'name' => $student->name,
                 'nisn' => $student->nisn ?? '-',
-                'class_name' => $student->schoolClass->nama_kelas ?? null,
+                'nama_kelas' => $student->schoolClass->nama_kelas ?? null,
             ];
         });
 

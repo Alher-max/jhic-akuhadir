@@ -22,7 +22,8 @@ class StudentCardController extends Controller
 
         // Ambil daftar kelas untuk filter
         $classes = SchoolClass::where('tenant_id', $tenantId)
-            ->ordered()
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
             ->get();
 
         // Query data siswa

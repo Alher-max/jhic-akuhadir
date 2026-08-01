@@ -34,8 +34,57 @@
     <script src="{{ asset('js/image-compressor.js') }}"></script>
 </head>
 
-<body class="font-sans antialiased" x-data="{ offline: !navigator.onLine }" @online.window="offline = false"
-    @offline.window="offline = true">
+<body class="font-sans antialiased" style="overscroll-behavior-y: contain;" x-data="{ offline: !navigator.onLine }"
+    @online.window="offline = false" @offline.window="offline = true">
+
+    <!-- Pull to Refresh Spinner -->
+    <div x-data="{
+            startY: 0,
+            pullDistance: 0,
+            isPulling: false,
+            isLoading: false,
+            handleTouchStart(e) {
+                if (window.scrollY === 0) {
+                    this.startY = e.touches[0].clientY;
+                    this.isPulling = true;
+                }
+            },
+            handleTouchMove(e) {
+                if (!this.isPulling) return;
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - this.startY;
+                if (diff > 0) {
+                    this.pullDistance = Math.min(diff, 100);
+                    e.preventDefault();
+                }
+            },
+            handleTouchEnd() {
+                if (this.pullDistance > 75) {
+                    this.isLoading = true;
+                    window.location.reload();
+                } else {
+                    this.pullDistance = 0;
+                    this.isPulling = false;
+                }
+            }
+        }" @touchstart.window="handleTouchStart($event)" @touchmove.window="handleTouchMove($event)"
+        @touchend.window="handleTouchEnd()"
+        class="fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out" :style="{
+            transform: `translateX(-50%) translateY(${isLoading ? '20px' : (pullDistance > 0 ? (pullDistance / 2) + 'px' : '-50px')}) scale(${Math.min(pullDistance / 75, 1)})`,
+            opacity: pullDistance > 0 || isLoading ? 1 : 0
+        }">
+        <div class="bg-white shadow-md rounded-full p-2.5 border border-gray-100">
+            <div :class="{'animate-spin': isLoading}" class="w-6 h-6 flex items-center justify-center">
+                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path v-if="!isLoading" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M19 9l-7 7-7-7"></path>
+                    <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+            </div>
+        </div>
+    </div>
 
     <!-- Offline Banner -->
     <div x-show="offline" style="display: none;" x-transition:enter="transition ease-out duration-300"

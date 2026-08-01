@@ -29,6 +29,11 @@ class SchoolClass extends Model
         return $this->belongsTo(User::class, 'wali_kelas_id');
     }
 
+    public function students(): HasMany
+    {
+        return $this->hasMany(User::class, 'class_id')->where('role', 'student');
+    }
+
     public function scopeForTenant($query, $tenantId)
     {
         return $query->where('tenant_id', $tenantId);
