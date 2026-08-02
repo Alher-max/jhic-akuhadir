@@ -133,9 +133,9 @@
                 </div>
 
                 <h1
-                    class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.1] mb-8 text-brand-dark">
-                    Sistem Sekolah Lengkap & Canggih. <br>
-                    <span class="text-brand-primary">Harga Termurah</span> se-Indonesia.
+                    class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-8 text-brand-dark">
+                    Sistem Sekolah <span class="text-[#B81D24]">Lengkap & Canggih</span>. <br>
+                    <span class="text-[#B81D24]">Harga Termurah</span> se-Indonesia.
                 </h1>
 
                 <p class="text-lg sm:text-xl text-brand-muted font-medium mb-10 leading-relaxed max-w-3xl mx-auto">
@@ -145,11 +145,11 @@
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="/register?role=owner"
-                        class="w-full sm:w-auto px-10 py-5 bg-[#B81D24] hover:bg-[#9B181E] text-white rounded-2xl font-black text-lg shadow-xl shadow-[#B81D24]/20 hover:scale-105 active:scale-95 transition-all text-center">
+                        class="w-full sm:w-auto px-8 py-4 bg-[#B81D24] text-white hover:bg-[#9B181E] rounded-xl font-bold text-lg shadow-sm transition-all text-center">
                         Daftarkan Sekolah Sekarang
                     </a>
                     <a href="https://wa.me/6281234567890" target="_blank"
-                        class="w-full sm:w-auto px-10 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3">
+                        class="w-full sm:w-auto px-8 py-4 bg-white border border-[#EAE2E3] text-[#1A1516] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3">
                         <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi via WhatsApp
                     </a>
                 </div>
@@ -169,36 +169,34 @@
     <section class="py-12 bg-white border-y">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="flex items-center gap-5 p-6 rounded-3xl bg-brand-bg">
+                <div class="flex items-center gap-4 p-5 rounded-2xl bg-brand-bg border border-[#EAE2E3]">
                     <div
-                        class="w-16 h-16 rounded-2xl bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-4xl font-bold">payments</span>
+                        class="w-12 h-12 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl font-bold">payments</span>
                     </div>
                     <div>
-                        <h4 class="font-black text-lg">Harga Termurah</h4>
-                        <p class="text-sm text-brand-muted font-medium">Investasi sistem sekolah paling efisien di
-                            Indonesia.</p>
+                        <h4 class="text-sm font-bold text-[#1A1516]">Harga Termurah</h4>
+                        <p class="text-xs text-[#6B5E60]">Investasi sistem sekolah paling efisien di Indonesia.</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-5 p-6 rounded-3xl bg-brand-bg">
+                <div class="flex items-center gap-4 p-5 rounded-2xl bg-brand-bg border border-[#EAE2E3]">
                     <div
-                        class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-4xl font-bold">fingerprint</span>
+                        class="w-12 h-12 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl font-bold">fingerprint</span>
                     </div>
                     <div>
-                        <h4 class="font-black text-lg">5 Metode Absensi</h4>
-                        <p class="text-sm text-brand-muted font-medium">RFID, QR, Geofencing, Face AI, & Manual.</p>
+                        <h4 class="text-sm font-bold text-[#1A1516]">5 Metode Absensi</h4>
+                        <p class="text-xs text-[#6B5E60]">RFID, QR, Geofencing, Face AI, & Manual.</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-5 p-6 rounded-3xl bg-brand-bg">
+                <div class="flex items-center gap-4 p-5 rounded-2xl bg-brand-bg border border-[#EAE2E3]">
                     <div
-                        class="w-16 h-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-4xl font-bold">hub</span>
+                        class="w-12 h-12 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl font-bold">hub</span>
                     </div>
                     <div>
-                        <h4 class="font-black text-lg">All-in-One Ecosystem</h4>
-                        <p class="text-sm text-brand-muted font-medium">Terintegrasi penuh untuk semua peran di sekolah.
-                        </p>
+                        <h4 class="text-sm font-bold text-[#1A1516]">All-in-One Ecosystem</h4>
+                        <p class="text-xs text-[#6B5E60]">Terintegrasi penuh untuk semua peran di sekolah.</p>
                     </div>
                 </div>
             </div>
@@ -209,7 +207,7 @@
     <section id="fitur" class="py-24 bg-brand-bg relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-20">
-                <h2 class="text-3xl sm:text-5xl font-black tracking-tighter mb-4">Fitur Dahsyat Untuk Sekolah Modern
+                <h2 class="text-2xl sm:text-4xl font-bold text-[#1A1516] tracking-tight mb-3">Fitur Dahsyat Untuk <span class="text-[#B81D24]">Sekolah Modern</span>
                 </h2>
                 <p class="text-brand-muted font-medium">Satu platform untuk menjawab semua kebutuhan operasional sekolah
                     Anda.</p>
@@ -218,12 +216,12 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <!-- Pilar 1 -->
                 <div
-                    class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
+                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-[#B81D24] text-white flex items-center justify-center mb-8 shadow-lg shadow-[#B81D24]/20 group-hover:rotate-6 transition-transform">
+                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
                         <span class="material-symbols-outlined text-4xl">sensors</span>
                     </div>
-                    <h3 class="text-3xl font-black mb-6">Presensi Fleksibel & Multi-Mode</h3>
+                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Presensi Fleksibel & Multi-Mode</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
@@ -250,12 +248,12 @@
 
                 <!-- Pilar 2 -->
                 <div
-                    class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
+                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-blue-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
                         <span class="material-symbols-outlined text-4xl">dashboard</span>
                     </div>
-                    <h3 class="text-3xl font-black mb-6">Dasbor Terintegrasi Multi-Role</h3>
+                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Dasbor Terintegrasi Multi-Role</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
@@ -282,12 +280,12 @@
 
                 <!-- Pilar 3 -->
                 <div
-                    class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
+                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-emerald-600 text-white flex items-center justify-center mb-8 shadow-lg shadow-emerald-600/20 group-hover:rotate-6 transition-transform">
+                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
                         <span class="material-symbols-outlined text-4xl">send_and_archive</span>
                     </div>
-                    <h3 class="text-3xl font-black mb-6">Komunikasi Otomatis</h3>
+                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Komunikasi Otomatis</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
@@ -310,12 +308,12 @@
 
                 <!-- Pilar 4 -->
                 <div
-                    class="bg-white p-8 sm:p-12 rounded-[40px] shadow-sm border border-brand-border/50 group hover:shadow-xl transition-all duration-500">
+                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
                     <div
-                        class="w-20 h-20 rounded-3xl bg-amber-500 text-white flex items-center justify-center mb-8 shadow-lg shadow-amber-500/20 group-hover:rotate-6 transition-transform">
+                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
                         <span class="material-symbols-outlined text-4xl">badge</span>
                     </div>
-                    <h3 class="text-3xl font-black mb-6">Cetak Kartu & Laporan Instan</h3>
+                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Cetak Kartu & Laporan Instan</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
@@ -343,7 +341,7 @@
     <section id="keunggulan" class="py-24 bg-white">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl sm:text-5xl font-black tracking-tighter mb-4">Mengapa Harus HadirYuk?</h2>
+                <h2 class="text-2xl sm:text-4xl font-bold text-[#1A1516] tracking-tight mb-3">Mengapa Harus <span class="text-[#B81D24]">HadirYuk?</span></h2>
                 <p class="text-brand-muted font-medium">Bandingkan dan tentukan masa depan digital sekolah Anda.</p>
             </div>
 
@@ -394,46 +392,46 @@
     <section id="faq" class="py-24 bg-brand-bg">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl sm:text-5xl font-black tracking-tighter mb-4">Paling Sering Ditanyakan</h2>
+                <h2 class="text-2xl sm:text-4xl font-bold text-[#1A1516] tracking-tight mb-8">Paling Sering Ditanyakan</h2>
             </div>
 
             <div class="space-y-4" x-data="{ active: null }">
-                <div class="bg-white rounded-3xl border border-brand-border overflow-hidden">
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
                     <button @click="active = active === 0 ? null : 0"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
-                        <span class="font-black">Apakah benar harga HadirYuk termurah di Indonesia?</span>
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah benar harga HadirYuk termurah di Indonesia?</span>
                         <span class="material-symbols-outlined transform transition-transform"
                             :class="active === 0 ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="active === 0" x-cloak class="p-6 pt-0 text-brand-muted font-medium border-t">
+                    <div x-show="active === 0" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         Ya, benar. Kami merancang HadirYuk dengan arsitektur cloud yang sangat efisien sehingga bisa
                         menekan biaya server seminimal mungkin. Fokus kami adalah membantu sekolah mendigitalisasi
                         operasionalnya tanpa beban biaya bulanan yang mencekik.
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl border border-brand-border overflow-hidden">
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
                     <button @click="active = active === 1 ? null : 1"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
-                        <span class="font-black">Apakah kami harus membeli alat RFID khusus?</span>
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah kami harus membeli alat RFID khusus?</span>
                         <span class="material-symbols-outlined transform transition-transform"
                             :class="active === 1 ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="active === 1" x-cloak class="p-6 pt-0 text-brand-muted font-medium border-t">
+                    <div x-show="active === 1" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         HadirYuk mendukung berbagai metode. Jika sekolah ingin menggunakan RFID, kami menyediakan skema
                         IoT yang sangat murah. Namun jika sekolah ingin GRATIS tanpa alat, Anda bisa menggunakan metode
                         QR Code atau Geofencing GPS yang hanya membutuhkan smartphone.
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl border border-brand-border overflow-hidden">
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
                     <button @click="active = active === 2 ? null : 2"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
-                        <span class="font-black">Bagaimana jika guru atau admin kami gaptek?</span>
+                        <span class="font-semibold text-[#1A1516] text-base">Bagaimana jika guru atau admin kami gaptek?</span>
                         <span class="material-symbols-outlined transform transition-transform"
                             :class="active === 2 ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="active === 2" x-cloak class="p-6 pt-0 text-brand-muted font-medium border-t">
+                    <div x-show="active === 2" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         HadirYuk didesain dengan antarmuka yang sangat modern dan user-friendly. Kami mengadopsi prinsip
                         "Sekali Lihat Langsung Paham". Selain itu, tim kami menyediakan dokumentasi lengkap dan
                         konsultasi via WhatsApp jika dibutuhkan.
@@ -447,22 +445,22 @@
     <section class="py-24 bg-[#1A1516] relative overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tighter mb-8 leading-tight">
-                Mulai Digitalisasi Sekolah Anda <br> Bersama <span class="text-[#B81D24]">HadirYuk</span> Hari Ini.
+            <h2 class="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-snug mb-8">
+                Mulai Digitalisasi Sekolah Anda <br> Bersama <span class="text-[#FF4D4D]">HadirYuk</span> Hari Ini.
             </h2>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12">
                 <a href="/register?role=owner"
-                    class="w-full sm:w-auto px-12 py-6 bg-[#B81D24] hover:bg-[#9B181E] text-white rounded-3xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-[#B81D24]/40">
+                    class="w-full sm:w-auto px-8 py-4 bg-[#B81D24] text-white hover:bg-[#9B181E] rounded-xl font-semibold shadow-md active:scale-95 transition-all text-center">
                     Daftar Sekolah & Mulai Sekarang
                 </a>
             </div>
-            <p class="mt-8 text-gray-400 font-bold uppercase tracking-widest text-xs">Tanpa biaya pendaftaran awal •
+            <p class="mt-8 text-xs text-zinc-400 tracking-wider uppercase">Tanpa biaya pendaftaran awal •
                 Batalkan kapan saja</p>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 bg-white border-t">
+    <footer class="py-12 bg-white border-t border-[#EAE2E3]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex items-center gap-2">
@@ -470,12 +468,12 @@
                     <span class="font-black text-xl tracking-tighter">Hadir<span
                             class="text-brand-primary">Yuk</span></span>
                 </div>
-                <div class="flex gap-8 text-sm font-bold text-brand-muted">
-                    <a href="#" class="hover:text-brand-primary">Tentang Kami</a>
-                    <a href="#" class="hover:text-brand-primary">Syarat & Ketentuan</a>
-                    <a href="#" class="hover:text-brand-primary">Kebijakan Privasi</a>
+                <div class="flex gap-8">
+                    <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Tentang Kami</a>
+                    <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Syarat & Ketentuan</a>
+                    <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Kebijakan Privasi</a>
                 </div>
-                <p class="text-xs font-bold text-brand-muted">© 2026 Almas Alfatih, CTO PT Thortech. Hak Cipta
+                <p class="text-xs font-medium text-[#6B5E60]">© 2026 Almas Alfatih, CTO PT Thortech. Hak Cipta
                     Dilindungi.</p>
             </div>
         </div>
