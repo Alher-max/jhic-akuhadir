@@ -31,4 +31,9 @@ class Tenant extends Model
     {
         return ($this->attendance_mode ?? 'daily_arrival') === 'session_based';
     }
+
+    public function getBannerImageAttribute(): ?string
+    {
+        return $this->banner_path;
+    }
 }

@@ -411,26 +411,11 @@
                             </div>
 
                             <div>
-                                <label for="role" class="block text-sm font-medium text-gray-700">Peran / Jabatan</label>
+                                <label for="role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem</label>
                                 <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <optgroup label="-- Pendidik (Guru) --">
-                                        <option value="guru_kelas">Guru Kelas</option>
-                                        <option value="guru">Guru Mata Pelajaran</option>
-                                        <option value="guru_bk">Guru Bimbingan dan Konseling (BK)</option>
-                                        <option value="guru_inklusi">Guru Pembimbing Khusus (Inklusi)</option>
-                                        <option value="guru_kejuruan">Guru Produktif (Kejuruan)</option>
-                                        <option value="wali_kelas">Wali Kelas</option>
-                                    </optgroup>
-                                    <optgroup label="-- Tenaga Kependidikan --">
-                                        <option value="headmaster">Kepala Sekolah</option>
-                                        <option value="manager_teacher">Wakil Kepala Sekolah / Manajemen</option>
-                                        <option value="staff">Tenaga Administrasi Sekolah (Tata Usaha)</option>
-                                        <option value="pustakawan">Tenaga Perpustakaan (Pustakawan)</option>
-                                        <option value="laboran">Tenaga Laboratorium (Laboran)</option>
-                                        <option value="it_support">Teknisi Sumber Belajar / IT Support</option>
-                                        <option value="satpam">Petugas Keamanan (Satpam)</option>
-                                        <option value="caraka">Tenaga Kebersihan (Caraka)</option>
-                                    </optgroup>
+                                    <option value="guru" selected>Guru / Tenaga Pendidik</option>
+                                    <option value="operator">Staf / Operator / Admin</option>
+                                    <option value="kepala_sekolah">Kepala Sekolah</option>
                                 </select>
                             </div>
 
@@ -506,26 +491,11 @@
                             </div>
 
                             <div>
-                                <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan <span class="text-red-500">*</span></label>
+                                <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem <span class="text-red-500">*</span></label>
                                 <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <optgroup label="-- Pendidik (Guru) --">
-                                        <option value="guru_kelas">Guru Kelas</option>
-                                        <option value="guru">Guru Mata Pelajaran</option>
-                                        <option value="guru_bk">Guru Bimbingan dan Konseling (BK)</option>
-                                        <option value="guru_inklusi">Guru Pembimbing Khusus (Inklusi)</option>
-                                        <option value="guru_kejuruan">Guru Produktif (Kejuruan)</option>
-                                        <option value="wali_kelas">Wali Kelas</option>
-                                    </optgroup>
-                                    <optgroup label="-- Tenaga Kependidikan --">
-                                        <option value="headmaster">Kepala Sekolah</option>
-                                        <option value="manager_teacher">Wakil Kepala Sekolah / Manajemen</option>
-                                        <option value="staff">Tenaga Administrasi Sekolah (Tata Usaha)</option>
-                                        <option value="pustakawan">Tenaga Perpustakaan (Pustakawan)</option>
-                                        <option value="laboran">Tenaga Laboratorium (Laboran)</option>
-                                        <option value="it_support">Teknisi Sumber Belajar / IT Support</option>
-                                        <option value="satpam">Petugas Keamanan (Satpam)</option>
-                                        <option value="caraka">Tenaga Kebersihan (Caraka)</option>
-                                    </optgroup>
+                                    <option value="guru">Guru / Tenaga Pendidik</option>
+                                    <option value="operator">Staf / Operator / Admin</option>
+                                    <option value="kepala_sekolah">Kepala Sekolah</option>
                                 </select>
                             </div>
 

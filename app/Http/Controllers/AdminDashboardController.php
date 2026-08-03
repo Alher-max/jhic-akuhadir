@@ -333,17 +333,53 @@ class AdminDashboardController extends Controller
 
     public function updateBanner(Request $request)
     {
+        if ($request->hasFile('banner_image')) {
+            $file = $request->file('banner_image');
+            $errorCode = $file->getError();
+            $errorMessage = $file->getErrorMessage();
+
+            \Illuminate\Support\Facades\Log::warning('Banner Image Upload Debug Log', [
+                'is_valid' => $file->isValid(),
+                'error_code' => $errorCode,
+                'error_message' => $errorMessage,
+                'original_name' => $file->getClientOriginalName(),
+                'client_size' => $file->getSize(),
+                'mime_type' => $file->getClientMimeType(),
+                'ini_upload_max_filesize' => ini_get('upload_max_filesize'),
+                'ini_post_max_size' => ini_get('post_max_size'),
+            ]);
+
+            if (!$file->isValid()) {
+                $errorExplanation = match ($errorCode) {
+                    UPLOAD_ERR_INI_SIZE => 'Ukuran file melebihi batas upload_max_filesize di php.ini server (' . ini_get('upload_max_filesize') . ').',
+                    UPLOAD_ERR_FORM_SIZE => 'Ukuran file melebihi batas MAX_FILE_SIZE form.',
+                    UPLOAD_ERR_PARTIAL => 'File hanya terunggah sebagian.',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Folder temporary upload (upload_tmp_dir) di server tidak ditemukan.',
+                    UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk server (I/O error / permission error).',
+                    default => 'Error upload PHP: ' . $errorMessage . ' (Kode: ' . $errorCode . ')',
+                };
+
+                return redirect()->back()->withErrors([
+                    'banner_image' => 'File gambar banner gagal diunggah (PHP Error Code ' . $errorCode . ': ' . $errorExplanation . ')'
+                ])->withInput();
+            }
+        }
+
         $request->validate([
-            'banner_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'banner_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'banner_title' => 'nullable|string|max:255',
             'banner_description' => 'nullable|string|max:500',
             'banner_color' => 'nullable|string|in:red,blue,green,slate'
+        ], [
+            'banner_image.uploaded' => 'File gambar banner gagal diunggah. Silakan pilih file dengan ukuran lebih kecil (maksimal 2MB).',
+            'banner_image.max' => 'Ukuran file gambar banner maksimal adalah 2MB.',
+            'banner_image.mimes' => 'Format gambar harus berupa JPEG, PNG, JPG, atau WEBP.',
         ]);
 
         $tenant = \App\Models\Tenant::find(Auth::user()->tenant_id);
         
         if ($request->hasFile('banner_image')) {
-            $path = $request->file('banner_image')->store('banners', 'public');
+            $path = $this->compressAndStoreBanner($request->file('banner_image'), 'banners');
             
             // Delete old banner if exists
             if ($tenant->banner_path) {
@@ -368,6 +404,85 @@ class AdminDashboardController extends Controller
         $tenant->save();
 
         return redirect()->back()->with('success', 'Pengaturan Banner berhasil diperbarui.');
+    }
+
+    /**
+     * Kompres dan simpan file gambar banner ke direktori storage public.
+     */
+    private function compressAndStoreBanner($file, string $directory = 'banners'): string
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = \Illuminate\Support\Str::random(40) . '.' . ($extension === 'png' ? 'png' : 'jpg');
+        $destinationPath = $directory . '/' . $filename;
+        
+        \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($directory);
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($destinationPath);
+
+        if (!extension_loaded('gd')) {
+            return $file->store($directory, 'public');
+        }
+
+        try {
+            $realPath = $file->getRealPath();
+            if (!$realPath || !file_exists($realPath)) {
+                return $file->store($directory, 'public');
+            }
+
+            $imageInfo = @getimagesize($realPath);
+            if (!$imageInfo) {
+                return $file->store($directory, 'public');
+            }
+
+            [$width, $height, $type] = $imageInfo;
+
+            $srcImage = match ($type) {
+                IMAGETYPE_JPEG => @imagecreatefromjpeg($realPath),
+                IMAGETYPE_PNG => @imagecreatefrompng($realPath),
+                IMAGETYPE_WEBP => @imagecreatefromwebp($realPath),
+                default => null,
+            };
+
+            if (!$srcImage) {
+                return $file->store($directory, 'public');
+            }
+
+            $maxWidth = 1920;
+            $maxHeight = 1080;
+
+            $newWidth = $width;
+            $newHeight = $height;
+
+            if ($width > $maxWidth || $height > $maxHeight) {
+                $ratio = min($maxWidth / $width, $maxHeight / $height);
+                $newWidth = (int) round($width * $ratio);
+                $newHeight = (int) round($height * $ratio);
+            }
+
+            $dstImage = imagecreatetruecolor($newWidth, $newHeight);
+
+            if ($type === IMAGETYPE_PNG) {
+                imagealphablending($dstImage, false);
+                imagesavealpha($dstImage, true);
+                $transparent = imagecolorallocatealpha($dstImage, 255, 255, 255, 127);
+                imagefilledrectangle($dstImage, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+
+            imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            if ($type === IMAGETYPE_PNG) {
+                imagepng($dstImage, $fullPath, 7);
+            } else {
+                imagejpeg($dstImage, $fullPath, 82);
+            }
+
+            imagedestroy($srcImage);
+            imagedestroy($dstImage);
+
+            return $destinationPath;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Banner image compression failed, fallback to store(): ' . $e->getMessage());
+            return $file->store($directory, 'public');
+        }
     }
 
     /**

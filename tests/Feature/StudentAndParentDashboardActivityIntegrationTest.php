@@ -68,6 +68,8 @@ class StudentAndParentDashboardActivityIntegrationTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
+        $this->parent->students()->attach($this->student->id, ['relationship' => 'Orang Tua']);
+
         $this->subject = Subject::create([
             'tenant_id' => $this->tenant->id,
             'name' => 'Fisika Dasar',

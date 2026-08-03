@@ -48,7 +48,7 @@ class TeacherManagementController extends Controller
             'name' => 'required_without:teachers_file|string|max:255',
             'email' => 'nullable|email|max:255',
             'nip' => 'nullable|string|max:50',
-            'role' => 'nullable|string|in:teacher,guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'role' => 'nullable|string|in:operator,kepala_sekolah,guru,siswa,parent',
             'avatar' => 'nullable|image|max:2048',
             'teachers_file' => 'nullable|file|mimes:csv,txt|max:2048'
         ]);
@@ -109,7 +109,7 @@ class TeacherManagementController extends Controller
         }
 
         $password = Hash::make($defaultPassword);
-        $role = $request->role ?: 'wali_kelas';
+        $role = $request->role ?: 'guru';
 
         $existing = User::where('email', $email)->first();
         if ($existing) return $existing;
@@ -176,32 +176,36 @@ class TeacherManagementController extends Controller
                 $roleInput = !empty($roleInput) ? strtolower($roleInput) : 'guru';
                 
                 $roleMap = [
-                    'guru kelas' => 'guru_kelas',
+                    'guru kelas' => 'guru',
                     'guru' => 'guru',
-                    'guru bk' => 'guru_bk',
-                    'guru inklusi' => 'guru_inklusi',
-                    'guru kejuruan' => 'guru_kejuruan',
-                    'wali kelas' => 'wali_kelas',
-                    'kepala sekolah' => 'headmaster',
-                    'wakil kepala sekolah' => 'manager_teacher',
-                    'wakasek' => 'manager_teacher',
-                    'manajemen' => 'manager_teacher',
-                    'staf' => 'staff',
-                    'staff' => 'staff',
-                    'tu' => 'staff',
-                    'tata usaha' => 'staff',
-                    'pustakawan' => 'pustakawan',
-                    'laboran' => 'laboran',
-                    'it support' => 'it_support',
-                    'teknisi' => 'it_support',
-                    'satpam' => 'satpam',
-                    'keamanan' => 'satpam',
-                    'caraka' => 'caraka',
-                    'kebersihan' => 'caraka'
+                    'guru bk' => 'guru',
+                    'guru inklusi' => 'guru',
+                    'guru kejuruan' => 'guru',
+                    'wali kelas' => 'guru',
+                    'kepala sekolah' => 'kepala_sekolah',
+                    'headmaster' => 'kepala_sekolah',
+                    'wakil kepala sekolah' => 'guru',
+                    'wakasek' => 'guru',
+                    'manajemen' => 'operator',
+                    'operator' => 'operator',
+                    'staf' => 'operator',
+                    'staff' => 'operator',
+                    'tu' => 'operator',
+                    'tata usaha' => 'operator',
+                    'pustakawan' => 'guru',
+                    'laboran' => 'guru',
+                    'it support' => 'operator',
+                    'teknisi' => 'operator',
+                    'satpam' => 'operator',
+                    'keamanan' => 'operator',
+                    'caraka' => 'operator',
+                    'kebersihan' => 'operator',
+                    'siswa' => 'siswa',
+                    'parent' => 'parent'
                 ];
                 
-                // Jika roleInput sudah merupakan key yang valid (misal: 'headmaster'), gunakan langsung
-                if (in_array($roleInput, array_values($roleMap))) {
+                // Jika roleInput sudah merupakan clean role yang valid, gunakan langsung
+                if (in_array($roleInput, ['operator', 'kepala_sekolah', 'guru', 'siswa', 'parent'])) {
                     $role = $roleInput;
                 } else {
                     $role = $roleMap[$roleInput] ?? 'guru';
@@ -240,7 +244,7 @@ class TeacherManagementController extends Controller
     
     public function update(Request $request, User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
             abort(403);
         }
 
@@ -248,7 +252,7 @@ class TeacherManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['nullable', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($teacher->id)],
             'nip' => ['nullable', 'string', 'max:50', \Illuminate\Validation\Rule::unique('users', 'nisn')->ignore($teacher->id)],
-            'role' => 'required|string|in:teacher,guru_kelas,guru,guru_bk,guru_inklusi,guru_kejuruan,wali_kelas,headmaster,manager_teacher,staff,pustakawan,laboran,it_support,satpam,caraka',
+            'role' => 'required|string|in:operator,kepala_sekolah,guru,siswa,parent',
             'is_active' => 'required|boolean',
             'class_id' => 'nullable|exists:school_classes,id',
             'avatar' => 'nullable|image|max:2048',
@@ -299,7 +303,7 @@ class TeacherManagementController extends Controller
 
     public function show(User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
             abort(403);
         }
 
@@ -311,7 +315,7 @@ class TeacherManagementController extends Controller
 
     public function destroy(User $teacher)
     {
-        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
+        if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
             abort(403);
         }
         

@@ -17,6 +17,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if(auth()->user()->tenant)
             @php
+                $tenant = $tenant ?? auth()->user()->tenant;
+                $bannerImage = $tenant->banner_image ?? $tenant->banner_path ?? null;
                 $bannerColor = $tenant->banner_color ?? 'red';
                 $gradientClass = match($bannerColor) {
                     'blue' => 'from-blue-700 to-blue-900',
@@ -25,15 +27,16 @@
                     default => 'from-red-600 to-red-700'
                 };
                 $gradientStyle = match($bannerColor) {
-                    'blue' => 'rgba(29, 78, 216, 0.93) 0%, rgba(30, 58, 138, 0.82) 100%',
-                    'green' => 'rgba(5, 150, 105, 0.93) 0%, rgba(6, 78, 59, 0.82) 100%',
-                    'slate' => 'rgba(51, 65, 85, 0.93) 0%, rgba(15, 23, 42, 0.82) 100%',
-                    default => 'rgba(184, 29, 36, 0.93) 0%, rgba(150, 15, 20, 0.82) 100%'
+                    'blue' => 'rgba(29, 78, 216, 0.88) 0%, rgba(30, 58, 138, 0.82) 100%',
+                    'green' => 'rgba(5, 150, 105, 0.88) 0%, rgba(6, 78, 59, 0.82) 100%',
+                    'slate' => 'rgba(51, 65, 85, 0.88) 0%, rgba(15, 23, 42, 0.82) 100%',
+                    default => 'rgba(184, 29, 36, 0.88) 0%, rgba(150, 15, 20, 0.82) 100%'
                 };
+                $bannerUrl = $bannerImage ? (\Illuminate\Support\Str::startsWith($bannerImage, ['http://', 'https://']) ? $bannerImage : asset('storage/' . ltrim($bannerImage, '/'))) : null;
             @endphp
-            <div class="mb-8 rounded-2xl border border-white/10 shadow-lg overflow-hidden {{ $tenant->banner_path ? '' : 'bg-gradient-to-br ' . $gradientClass }} p-5 lg:p-6 text-white"
-                 @if($tenant->banner_path)
-                    style="background: linear-gradient(135deg, {{ $gradientStyle }}), url('{{ asset('storage/' . $tenant->banner_path) }}') center/cover no-repeat;"
+            <div class="mb-8 rounded-2xl border border-white/10 shadow-lg overflow-hidden {{ $bannerUrl ? '' : 'bg-gradient-to-br ' . $gradientClass }} p-5 lg:p-6 text-white relative"
+                 @if($bannerUrl)
+                    style="background: linear-gradient(135deg, {{ $gradientStyle }}), url('{{ $bannerUrl }}') center/cover no-repeat;"
                  @endif
             >
                 <!-- ===== BARIS ATAS: Header + Kontrol ===== -->

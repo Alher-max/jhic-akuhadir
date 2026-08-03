@@ -61,6 +61,7 @@
             @if(auth()->user()->tenant)
                 @php
                     $tenant = $tenant ?? auth()->user()->tenant;
+                    $bannerImage = $tenant->banner_image ?? $tenant->banner_path ?? null;
                     $bannerColor = $tenant->banner_color ?? 'red';
                     $gradientClass = match ($bannerColor) {
                         'blue' => 'from-blue-700 to-blue-900',
@@ -68,9 +69,20 @@
                         'slate' => 'from-slate-700 to-slate-900',
                         default => 'from-red-600 to-red-700'
                     };
+                    $gradientStyle = match ($bannerColor) {
+                        'blue' => 'rgba(29, 78, 216, 0.88) 0%, rgba(30, 58, 138, 0.82) 100%',
+                        'green' => 'rgba(5, 150, 105, 0.88) 0%, rgba(6, 78, 59, 0.82) 100%',
+                        'slate' => 'rgba(51, 65, 85, 0.88) 0%, rgba(15, 23, 42, 0.82) 100%',
+                        default => 'rgba(184, 29, 36, 0.88) 0%, rgba(150, 15, 20, 0.82) 100%'
+                    };
+                    $bannerUrl = $bannerImage ? (\Illuminate\Support\Str::startsWith($bannerImage, ['http://', 'https://']) ? $bannerImage : asset('storage/' . ltrim($bannerImage, '/'))) : null;
                 @endphp
                 <div
-                    class="rounded-2xl border border-white/10 shadow-lg bg-gradient-to-br {{ $gradientClass }} p-6 text-white relative overflow-hidden">
+                    class="rounded-2xl border border-white/10 shadow-lg {{ $bannerUrl ? '' : 'bg-gradient-to-br ' . $gradientClass }} p-6 text-white relative overflow-hidden"
+                    @if($bannerUrl)
+                        style="background: linear-gradient(135deg, {{ $gradientStyle }}), url('{{ $bannerUrl }}') center/cover no-repeat;"
+                    @endif
+                >
 
                     <!-- BARIS 1: INFORMASI & KODE SEKOLAH -->
                     <div class="flex flex-col md:flex-row justify-between items-start gap-4">

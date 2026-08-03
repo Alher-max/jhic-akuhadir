@@ -114,7 +114,7 @@ class OperatorTeacherManagementTest extends TestCase
                 'name' => 'Drs. Budi Santoso, M.Pd.',
                 'email' => 'budi@smkgaruda.sch.id',
                 'nip' => '198501012010011001',
-                'role' => 'wali_kelas',
+                'role' => 'guru',
                 'is_active' => 1,
                 'class_id' => $schoolClass->id,
             ]);
@@ -124,7 +124,7 @@ class OperatorTeacherManagementTest extends TestCase
 
         $teacher->refresh();
         $this->assertEquals('Drs. Budi Santoso, M.Pd.', $teacher->name);
-        $this->assertEquals('wali_kelas', $teacher->role);
+        $this->assertEquals('guru', $teacher->role);
 
         $schoolClass->refresh();
         $this->assertEquals($teacher->id, $schoolClass->wali_kelas_id);
@@ -164,5 +164,42 @@ class OperatorTeacherManagementTest extends TestCase
 
         $teacher->refresh();
         $this->assertTrue(\Illuminate\Support\Facades\Hash::check('198501012010011001', $teacher->password));
+    }
+
+    public function test_operator_can_update_banner_with_compressed_image(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $tenant = Tenant::create(['name' => 'SMK Garuda', 'code' => 'SMKGAR', 'slug' => 'smk-garuda']);
+        $operator = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Operator Admin',
+            'email' => 'operator@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'operator',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('banner.jpg', 2000, 1500);
+
+        $response = $this->actingAs($operator)
+            ->post(route('operator.dashboard.banner'), [
+                'banner_image' => $file,
+                'banner_title' => 'Selamat Datang',
+                'banner_description' => 'Deskripsi Banner',
+                'banner_color' => 'blue',
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $tenant->refresh();
+        $this->assertEquals('Selamat Datang', $tenant->banner_title);
+        $this->assertEquals('Deskripsi Banner', $tenant->banner_description);
+        $this->assertEquals('blue', $tenant->banner_color);
+        $this->assertNotNull($tenant->banner_path);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($tenant->banner_path);
     }
 }

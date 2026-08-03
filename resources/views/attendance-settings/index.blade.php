@@ -158,7 +158,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unggah
-                                    Gambar Background Banner (Maks. 3MB)</label>
+                                    Gambar Background Banner (Maks. 2MB)</label>
                                 <input type="file" name="banner_image" accept="image/*"
                                     class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-primary/10 file:text-brand-primary hover:file:bg-brand-primary/20">
                             </div>
