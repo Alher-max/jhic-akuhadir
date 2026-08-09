@@ -16,16 +16,16 @@ class TeacherManagementController extends Controller
     public function index(Request $request)
     {
         $tenantId = Auth::user()->tenant_id;
-        $selectedRole = $request->get('role');
-        
+        $selectedPosition = $request->get('position');
+
         $search = $request->get('search');
-        
+
         $query = User::with('homeroomClasses')
             ->where('tenant_id', $tenantId)
-            ->whereIn('role', ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka']);
-            
-        if (!empty($selectedRole)) {
-            $query->where('role', $selectedRole);
+            ->whereIn('role', ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka', 'operator', 'kepala_sekolah', 'guru', 'siswa', 'parent', 'guru_penggerak', 'guru_mapel']);
+
+        if (!empty($selectedPosition)) {
+            $query->where('position', $selectedPosition);
         }
 
         if (!empty($search)) {
@@ -35,11 +35,11 @@ class TeacherManagementController extends Controller
                   ->orWhere('nisn', 'like', '%'.$search.'%');
             });
         }
-            
+
         $teachers = $query->orderBy('name')->paginate(10)->withQueryString();
         $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();
-            
-        return view('operator.teachers.index', compact('teachers', 'selectedRole', 'search', 'classes'));
+
+        return view('operator.teachers.index', compact('teachers', 'selectedPosition', 'search', 'classes'));
     }
 
     public function store(Request $request)
@@ -48,7 +48,7 @@ class TeacherManagementController extends Controller
             'name' => 'required_without:teachers_file|string|max:255',
             'email' => 'nullable|email|max:255',
             'nip' => 'nullable|string|max:50',
-            'role' => 'nullable|string|in:operator,kepala_sekolah,guru,siswa,parent',
+            'role' => 'nullable|string|in:kepala_sekolah,guru_penggerak,guru_mapel,guru_kelas,guru_kejuruan,guru_bk,guru_inklusi,wali_kelas,staff,pustakawan,laboran,it_support,satpam,caraka,operator,guru,siswa,parent',
             'avatar' => 'nullable|image|max:2048',
             'teachers_file' => 'nullable|file|mimes:csv,txt|max:2048'
         ]);
@@ -67,7 +67,7 @@ class TeacherManagementController extends Controller
 
         return redirect()->route('operator.teachers.index')->with('success', 'Data Pendidik / Staf berhasil ditambahkan.');
     }
-    
+
     public function quickStore(Request $request)
     {
         $request->validate([
@@ -75,9 +75,9 @@ class TeacherManagementController extends Controller
             'email' => 'nullable|email|max:255',
             'nip' => 'nullable|string|max:50',
         ]);
-        
+
         $teacher = $this->validateAndCreateTeacher($request);
-        
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -88,20 +88,20 @@ class TeacherManagementController extends Controller
                 ]
             ]);
         }
-        
+
         return redirect()->back()->with('success', 'Pendidik / Guru berhasil ditambahkan dan dapat dipilih.');
     }
-    
+
     private function validateAndCreateTeacher(Request $request)
     {
         $tenant = Tenant::findOrFail(Auth::user()->tenant_id);
-        
+
         $email = $request->email;
         if (!$email) {
             $identifier = $request->nip ?: Str::random(6);
             $email = 'guru.' . $identifier . '@hadirsekolah.id';
         }
-        
+
         $nipOrPhone = $request->nip;
         $defaultPassword = 'hadiryuk123';
         if (!empty($nipOrPhone)) {
@@ -109,7 +109,10 @@ class TeacherManagementController extends Controller
         }
 
         $password = Hash::make($defaultPassword);
-        $role = $request->role ?: 'guru';
+        $position = $request->role ?: 'guru';
+
+        // Determine system role based on position for access control
+        $systemRole = User::getSystemRoleFromPosition($position);
 
         $existing = User::where('email', $email)->first();
         if ($existing) return $existing;
@@ -127,7 +130,8 @@ class TeacherManagementController extends Controller
             'nisn' => $request->nip,
             'password' => $password,
             'must_change_password' => true,
-            'role' => $role,
+            'role' => $systemRole, // System role for access control
+            'position' => $position, // Actual position/jabatan
             'is_active' => true,
             'onboarding_completed' => true,
             'email_verified_at' => Carbon::now(),
@@ -139,12 +143,12 @@ class TeacherManagementController extends Controller
         $tenantId = Auth::user()->tenant_id;
         $content = file_get_contents($file->getRealPath());
         $lines = explode("\n", str_replace("\r", "", $content));
-        
+
         $isFirstRow = true;
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) continue;
-            
+
             if ($isFirstRow) {
                 $isFirstRow = false;
                 $lowerLine = strtolower(str_replace(' ', '', $line));
@@ -155,74 +159,80 @@ class TeacherManagementController extends Controller
 
             $delimiter = strpos($line, ';') !== false ? ';' : ',';
             $items = str_getcsv($line, $delimiter);
-            
+
             // Smart Reverse Parsing: if split fails to yield at least 4 items and it's comma delimited, try raw explode
             if (count($items) < 4 && $delimiter === ',') {
                 $items = explode(',', $line);
             }
-            
+
             if (count($items) >= 4) {
                 $roleInput = trim(trim(array_pop($items)), " \t\n\r\0\x0B\"'"); // Ambil elemen TERAKHIR (Role)
                 $emailInput = trim(trim(array_pop($items)), " \t\n\r\0\x0B\"'"); // Ambil elemen KEDUA DARI BELAKANG (Email)
                 $nipInput = trim(trim(array_pop($items)), " \t\n\r\0\x0B\"'"); // Ambil elemen KETIGA DARI BELAKANG (NIP)
                 $name = trim(trim(implode(', ', $items)), " \t\n\r\0\x0B\"'"); // SISA elemen di depan disatukan kembali sebagai NAMA
-                
+
                 $nip = !empty($nipInput) ? $nipInput : null;
-                
+
                 $cleanNama = \Illuminate\Support\Str::slug(explode(',', $name)[0]);
                 $fallbackEmail = $cleanNama . '@smkn2garuda.sch.id';
-                
+
                 $email = !empty($emailInput) ? $emailInput : $fallbackEmail;
                 $roleInput = !empty($roleInput) ? strtolower($roleInput) : 'guru';
-                
+
                 $roleMap = [
-                    'guru kelas' => 'guru',
+                    'guru kelas' => 'guru_kelas',
+                    'guru mapel' => 'guru_mapel',
+                    'guru penggerak' => 'guru_penggerak',
+                    'guru koordinator' => 'guru_penggerak',
                     'guru' => 'guru',
-                    'guru bk' => 'guru',
-                    'guru inklusi' => 'guru',
-                    'guru kejuruan' => 'guru',
-                    'wali kelas' => 'guru',
+                    'guru bk' => 'guru_bk',
+                    'guru inklusi' => 'guru_inklusi',
+                    'guru kejuruan' => 'guru_kejuruan',
+                    'wali kelas' => 'wali_kelas',
                     'kepala sekolah' => 'kepala_sekolah',
                     'headmaster' => 'kepala_sekolah',
                     'wakil kepala sekolah' => 'guru',
                     'wakasek' => 'guru',
                     'manajemen' => 'operator',
                     'operator' => 'operator',
-                    'staf' => 'operator',
-                    'staff' => 'operator',
-                    'tu' => 'operator',
-                    'tata usaha' => 'operator',
-                    'pustakawan' => 'guru',
-                    'laboran' => 'guru',
-                    'it support' => 'operator',
-                    'teknisi' => 'operator',
-                    'satpam' => 'operator',
-                    'keamanan' => 'operator',
-                    'caraka' => 'operator',
-                    'kebersihan' => 'operator',
+                    'staf' => 'staff',
+                    'staff' => 'staff',
+                    'tu' => 'staff',
+                    'tata usaha' => 'staff',
+                    'pustakawan' => 'pustakawan',
+                    'laboran' => 'laboran',
+                    'it support' => 'it_support',
+                    'teknisi' => 'it_support',
+                    'satpam' => 'satpam',
+                    'keamanan' => 'satpam',
+                    'caraka' => 'caraka',
+                    'kebersihan' => 'caraka',
                     'siswa' => 'siswa',
                     'parent' => 'parent'
                 ];
-                
+
                 // Jika roleInput sudah merupakan clean role yang valid, gunakan langsung
                 if (in_array($roleInput, ['operator', 'kepala_sekolah', 'guru', 'siswa', 'parent'])) {
                     $role = $roleInput;
                 } else {
                     $role = $roleMap[$roleInput] ?? 'guru';
                 }
-                
+
                 if (!empty($name)) {
                     $isEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
                     if (!$isEmail) {
                         $email = $fallbackEmail;
                     }
-                    
+
                     $nisnValue = $nip;
                     $defaultPassword = 'hadiryuk123';
                     if (!empty($nisnValue)) {
                         $defaultPassword = $nisnValue;
                     }
-                    
+
+                    $position = $role; // Use the mapped role as position
+                    $systemRole = User::getSystemRoleFromPosition($position);
+
                     User::updateOrCreate(
                         ['email' => $email],
                         [
@@ -231,7 +241,8 @@ class TeacherManagementController extends Controller
                             'nisn' => $nisnValue,
                             'password' => Hash::make($defaultPassword),
                             'must_change_password' => true,
-                            'role' => $role,
+                            'role' => $systemRole, // System role for access control
+                            'position' => $position, // Actual position/jabatan
                             'is_active' => true,
                             'onboarding_completed' => true,
                             'email_verified_at' => Carbon::now(),
@@ -241,7 +252,7 @@ class TeacherManagementController extends Controller
             }
         }
     }
-    
+
     public function update(Request $request, User $teacher)
     {
         if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
@@ -252,7 +263,7 @@ class TeacherManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['nullable', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($teacher->id)],
             'nip' => ['nullable', 'string', 'max:50', \Illuminate\Validation\Rule::unique('users', 'nisn')->ignore($teacher->id)],
-            'role' => 'required|string|in:operator,kepala_sekolah,guru,siswa,parent',
+            'role' => 'required|string|in:kepala_sekolah,guru_penggerak,guru_mapel,guru_kelas,guru_kejuruan,guru_bk,guru_inklusi,wali_kelas,staff,pustakawan,laboran,it_support,satpam,caraka,operator,guru,siswa,parent',
             'is_active' => 'required|boolean',
             'class_id' => 'nullable|exists:school_classes,id',
             'avatar' => 'nullable|image|max:2048',
@@ -266,11 +277,15 @@ class TeacherManagementController extends Controller
             $email = $teacher->email;
         }
 
+        $position = $request->role;
+        $systemRole = User::getSystemRoleFromPosition($position);
+
         $updateData = [
             'name' => $request->name,
             'email' => $email,
             'nisn' => $request->nip,
-            'role' => $request->role,
+            'role' => $systemRole, // System role for access control
+            'position' => $position, // Actual position/jabatan
             'is_active' => (bool)$request->is_active,
         ];
 
@@ -309,7 +324,7 @@ class TeacherManagementController extends Controller
 
         $teacher->load('homeroomClasses');
         $classes = \App\Models\SchoolClass::where('tenant_id', Auth::user()->tenant_id)->orderBy('tingkat')->orderBy('nama_kelas')->get();
-        
+
         return view('operator.teachers.show', compact('teacher', 'classes'));
     }
 
@@ -318,7 +333,7 @@ class TeacherManagementController extends Controller
         if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
             abort(403);
         }
-        
+
         $teacher->delete();
 
         return redirect()->route('operator.teachers.index')->with('success', 'Pendidik / Staf berhasil dihapus.');
@@ -352,11 +367,15 @@ class TeacherManagementController extends Controller
         ];
 
         $columns = ['Nama Lengkap', 'NIP / NUPTK', 'Email', 'Peran'];
-        
+
         $data = [
-            ['Drs. Supriyadi, M.Si.', '197501122000031001', 'supriyadi@smkn2garuda.sch.id', 'headmaster'],
+            ['Drs. Supriyadi, M.Si.', '197501122000031001', 'supriyadi@smkn2garuda.sch.id', 'kepala_sekolah'],
             ['Hendra Gunawan, S.Kom.', '198807092015031002', 'hendra.gunawan@smkn2garuda.sch.id', 'it_support'],
-            ['Siti Rahmah, S.Ag.', '198203112006042005', 'siti.rahmah@smkn2garuda.sch.id', 'guru']
+            ['Siti Rahmah, S.Ag.', '198203112006042005', 'siti.rahmah@smkn2garuda.sch.id', 'guru_mapel'],
+            ['Budi Santoso, S.Pd.', '199005152018031003', 'budi.santoso@smkn2garuda.sch.id', 'wali_kelas'],
+            ['Dewi Lestari, S.Pd.', '199208202019032004', 'dewi.lestari@smkn2garuda.sch.id', 'guru_bk'],
+            ['Ahmad Fauzi, S.T.', '198511102010031005', 'ahmad.fauzi@smkn2garuda.sch.id', 'guru_kejuruan'],
+            ['Sari Indah, S.Pd.', '199503252020032006', 'sari.indah@smkn2garuda.sch.id', 'staff'],
         ];
 
         $callback = function() use($columns, $data) {

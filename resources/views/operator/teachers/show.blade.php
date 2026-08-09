@@ -13,7 +13,7 @@
     <div class="py-12 bg-brand-bg min-h-screen" x-data="{ showEditModal: false }">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-200 p-6 md:p-8">
-                
+
                 <!-- Profil Header -->
                 <div class="flex flex-col md:flex-row gap-6 items-start md:items-center border-b border-gray-100 pb-8 mb-8">
                     <!-- Avatar -->
@@ -24,32 +24,33 @@
                             {{ substr(trim($teacher->name, '"'), 0, 1) }}
                         @endif
                     </div>
-                    
+
                     <div class="flex-grow">
                         <h1 class="text-2xl font-bold text-gray-900">{{ trim($teacher->name, '"') }}</h1>
                         <p class="text-gray-500 font-mono mt-1"><i class="fa-regular fa-id-card w-5"></i> {{ $teacher->nisn ?? 'Belum ada NUPTK/NIP' }}</p>
                         <p class="text-gray-500 mt-1"><i class="fa-regular fa-envelope w-5"></i> {{ $teacher->email }}</p>
                     </div>
-                    
+
                     <div class="flex flex-col gap-2 min-w-[140px]">
                         @php
-                            $roleLabels = [
+                            $positionLabels = [
                                 'guru_kelas' => 'Guru Kelas',
-                                'guru' => 'Guru Mapel',
+                                'guru_mapel' => 'Guru Mapel',
                                 'guru_bk' => 'Guru BK',
                                 'guru_inklusi' => 'Guru Inklusi',
                                 'guru_kejuruan' => 'Guru Kejuruan',
                                 'wali_kelas' => 'Wali Kelas',
-                                'headmaster' => 'Kepala Sekolah',
-                                'manager_teacher' => 'Wakasek / Manajemen',
-                                'staff' => 'Staf TU / Ops',
+                                'kepala_sekolah' => 'Kepala Sekolah',
+                                'guru_penggerak' => 'Guru Penggerak / Koordinator',
+                                'staff' => 'Tata Usaha / Staf Admin',
                                 'pustakawan' => 'Pustakawan',
                                 'laboran' => 'Laboran',
-                                'it_support' => 'IT Support',
-                                'satpam' => 'Satpam',
-                                'caraka' => 'Caraka',
+                                'it_support' => 'IT Support / Tim Teknis',
+                                'satpam' => 'Petugas Keamanan',
+                                'caraka' => 'Petugas Kebersihan',
                             ];
-                            $labelText = $roleLabels[$teacher->role] ?? ucfirst(str_replace('_', ' ', $teacher->role));
+                            $position = $teacher->position ?? $teacher->role;
+                            $labelText = $positionLabels[$position] ?? ucfirst(str_replace('_', ' ', $position));
                         @endphp
                         <span class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-brand-primary/10 text-brand-primary border border-brand-primary/20 shadow-sm">
                             {{ $labelText }}
@@ -60,7 +61,7 @@
                         @else
                             <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-xs font-medium bg-rose-100 text-rose-800 border border-rose-200 shadow-sm">Nonaktif</span>
                         @endif
-                        
+
                         <button type="button" @click="showEditModal = true" class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors cursor-pointer gap-1 mt-1">
                             <i class="fa-solid fa-pen-to-square"></i> Edit Data Guru
                         </button>
@@ -96,7 +97,7 @@
                 <!-- Kelas yang Diampu -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 border-l-4 border-brand-primary pl-3">Tugas Wali Kelas</h3>
-                    
+
                     @if($teacher->homeroomClasses && $teacher->homeroomClasses->count() > 0)
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             @foreach($teacher->homeroomClasses as $class)
@@ -116,7 +117,7 @@
                         </div>
                     @endif
                 </div>
-                
+
             </div>
         </div>
 
@@ -132,23 +133,23 @@
                         <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-edit-title">Edit Data Guru / Pendidik</h3>
                         <p class="mt-1 text-sm text-brand-text-muted">Perbarui informasi dan peran pendidik di bawah ini.</p>
                     </div>
-                    
+
                     <form action="{{ route('operator.teachers.update', $teacher->id) }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ editPhotoPreview: null }">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="space-y-4">
                             <div>
                                 <label for="edit_name" class="block text-sm font-medium text-gray-700">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
                                 <input type="text" name="name" id="edit_name" value="{{ old('name', $teacher->name) }}" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
-                            
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="edit_nip" class="block text-sm font-medium text-gray-700">NIP / NIK / NUPTK</label>
                                     <input type="text" name="nip" id="edit_nip" value="{{ old('nip', $teacher->nisn) }}" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 </div>
-                                
+
                                 <div>
                                     <label for="edit_email" class="block text-sm font-medium text-gray-700">Surel / Email</label>
                                     <input type="email" name="email" id="edit_email" value="{{ old('email', $teacher->email) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id">
@@ -159,22 +160,22 @@
                                 <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan <span class="text-red-500">*</span></label>
                                 <select name="role" id="edit_role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                     <optgroup label="-- Pendidik (Guru) --">
-                                        <option value="guru_kelas" {{ old('role', $teacher->role) === 'guru_kelas' ? 'selected' : '' }}>Guru Kelas</option>
-                                        <option value="guru" {{ old('role', $teacher->role) === 'guru' ? 'selected' : '' }}>Guru Mata Pelajaran</option>
-                                        <option value="guru_bk" {{ old('role', $teacher->role) === 'guru_bk' ? 'selected' : '' }}>Guru Bimbingan dan Konseling (BK)</option>
-                                        <option value="guru_inklusi" {{ old('role', $teacher->role) === 'guru_inklusi' ? 'selected' : '' }}>Guru Pembimbing Khusus (Inklusi)</option>
-                                        <option value="guru_kejuruan" {{ old('role', $teacher->role) === 'guru_kejuruan' ? 'selected' : '' }}>Guru Produktif (Kejuruan)</option>
-                                        <option value="wali_kelas" {{ old('role', $teacher->role) === 'wali_kelas' ? 'selected' : '' }}>Wali Kelas</option>
+                                        <option value="kepala_sekolah" {{ old('role', $teacher->position ?? $teacher->role) === 'kepala_sekolah' ? 'selected' : '' }}>Kepala Sekolah</option>
+                                        <option value="guru_penggerak" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_penggerak' ? 'selected' : '' }}>Guru Penggerak / Koordinator</option>
+                                        <option value="guru_mapel" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_mapel' ? 'selected' : '' }}>Guru Mapel</option>
+                                        <option value="guru_kelas" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_kelas' ? 'selected' : '' }}>Guru Kelas</option>
+                                        <option value="guru_kejuruan" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_kejuruan' ? 'selected' : '' }}>Guru Kejuruan</option>
+                                        <option value="guru_bk" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_bk' ? 'selected' : '' }}>Guru BK</option>
+                                        <option value="guru_inklusi" {{ old('role', $teacher->position ?? $teacher->role) === 'guru_inklusi' ? 'selected' : '' }}>Guru Inklusi</option>
+                                        <option value="wali_kelas" {{ old('role', $teacher->position ?? $teacher->role) === 'wali_kelas' ? 'selected' : '' }}>Wali Kelas</option>
                                     </optgroup>
                                     <optgroup label="-- Tenaga Kependidikan --">
-                                        <option value="headmaster" {{ old('role', $teacher->role) === 'headmaster' ? 'selected' : '' }}>Kepala Sekolah</option>
-                                        <option value="manager_teacher" {{ old('role', $teacher->role) === 'manager_teacher' ? 'selected' : '' }}>Wakil Kepala Sekolah / Manajemen</option>
-                                        <option value="staff" {{ old('role', $teacher->role) === 'staff' ? 'selected' : '' }}>Tenaga Administrasi Sekolah (Tata Usaha)</option>
-                                        <option value="pustakawan" {{ old('role', $teacher->role) === 'pustakawan' ? 'selected' : '' }}>Tenaga Perpustakaan (Pustakawan)</option>
-                                        <option value="laboran" {{ old('role', $teacher->role) === 'laboran' ? 'selected' : '' }}>Tenaga Laboratorium (Laboran)</option>
-                                        <option value="it_support" {{ old('role', $teacher->role) === 'it_support' ? 'selected' : '' }}>Teknisi Sumber Belajar / IT Support</option>
-                                        <option value="satpam" {{ old('role', $teacher->role) === 'satpam' ? 'selected' : '' }}>Petugas Keamanan (Satpam)</option>
-                                        <option value="caraka" {{ old('role', $teacher->role) === 'caraka' ? 'selected' : '' }}>Tenaga Kebersihan (Caraka)</option>
+                                        <option value="staff" {{ old('role', $teacher->position ?? $teacher->role) === 'staff' ? 'selected' : '' }}>Tata Usaha / Staf Admin</option>
+                                        <option value="pustakawan" {{ old('role', $teacher->position ?? $teacher->role) === 'pustakawan' ? 'selected' : '' }}>Pustakawan</option>
+                                        <option value="laboran" {{ old('role', $teacher->position ?? $teacher->role) === 'laboran' ? 'selected' : '' }}>Laboran</option>
+                                        <option value="it_support" {{ old('role', $teacher->position ?? $teacher->role) === 'it_support' ? 'selected' : '' }}>IT Support / Tim Teknis</option>
+                                        <option value="satpam" {{ old('role', $teacher->position ?? $teacher->role) === 'satpam' ? 'selected' : '' }}>Petugas Keamanan</option>
+                                        <option value="caraka" {{ old('role', $teacher->position ?? $teacher->role) === 'caraka' ? 'selected' : '' }}>Petugas Kebersihan</option>
                                     </optgroup>
                                 </select>
                             </div>

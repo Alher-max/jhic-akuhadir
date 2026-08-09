@@ -29,9 +29,9 @@
                     <button @click="showImport = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times"></i></button>
                 </div>
                 <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data"
-                      x-data="{ 
-                          fileName: '', 
-                          fileSize: '', 
+                      x-data="{
+                          fileName: '',
+                          fileSize: '',
                           hasFile: false,
                           isUploading: false,
                           handleFileDrop(e) {
@@ -63,7 +63,7 @@
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors"
                          :class="hasFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:bg-gray-50 bg-white'"
                          @dragover.prevent="" @drop.prevent="handleFileDrop($event)">
-                        
+
                         <div class="space-y-1 text-center" x-show="!hasFile">
                             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -79,7 +79,7 @@
                                 Hanya mendukung format CSV.
                             </p>
                         </div>
-                        
+
                         <div class="space-y-3 text-center w-full" x-show="hasFile" style="display: none;">
                             <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-2">
                                 <i class="fa-solid fa-file-csv text-green-600 text-xl"></i>
@@ -160,27 +160,27 @@
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, NIP, atau email..." class="pl-10 pr-4 py-2 w-64 rounded-lg border-gray-300 text-sm focus:ring-rose-500 focus:border-rose-500">
                 </div>
-                
-                <!-- Dropdown Filter Role -->
-                <select name="role" onchange="this.form.submit()" class="rounded-lg border-gray-300 text-sm focus:ring-rose-500 focus:border-rose-500">
+
+                <!-- Dropdown Filter Jabatan -->
+                <select name="position" onchange="this.form.submit()" class="rounded-lg border-gray-300 text-sm focus:ring-rose-500 focus:border-rose-500">
                     <option value="">-- Semua Peran / Jabatan --</option>
                     <optgroup label="Pendidik (Guru)">
-                        <option value="headmaster" {{ request('role') == 'headmaster' ? 'selected' : '' }}>Kepala Sekolah</option>
-                        <option value="manager_teacher" {{ request('role') == 'manager_teacher' ? 'selected' : '' }}>Guru Penggerak / Koordinator</option>
-                        <option value="guru" {{ request('role') == 'guru' ? 'selected' : '' }}>Guru Mapel</option>
-                        <option value="guru_kelas" {{ request('role') == 'guru_kelas' ? 'selected' : '' }}>Guru Kelas</option>
-                        <option value="guru_kejuruan" {{ request('role') == 'guru_kejuruan' ? 'selected' : '' }}>Guru Kejuruan</option>
-                        <option value="guru_bk" {{ request('role') == 'guru_bk' ? 'selected' : '' }}>Guru BK</option>
-                        <option value="guru_inklusi" {{ request('role') == 'guru_inklusi' ? 'selected' : '' }}>Guru Inklusi</option>
-                        <option value="wali_kelas" {{ request('role') == 'wali_kelas' ? 'selected' : '' }}>Wali Kelas</option>
+                        <option value="kepala_sekolah" {{ request('position') == 'kepala_sekolah' ? 'selected' : '' }}>Kepala Sekolah</option>
+                        <option value="guru_penggerak" {{ request('position') == 'guru_penggerak' ? 'selected' : '' }}>Guru Penggerak / Koordinator</option>
+                        <option value="guru_mapel" {{ request('position') == 'guru_mapel' ? 'selected' : '' }}>Guru Mapel</option>
+                        <option value="guru_kelas" {{ request('position') == 'guru_kelas' ? 'selected' : '' }}>Guru Kelas</option>
+                        <option value="guru_kejuruan" {{ request('position') == 'guru_kejuruan' ? 'selected' : '' }}>Guru Kejuruan</option>
+                        <option value="guru_bk" {{ request('position') == 'guru_bk' ? 'selected' : '' }}>Guru BK</option>
+                        <option value="guru_inklusi" {{ request('position') == 'guru_inklusi' ? 'selected' : '' }}>Guru Inklusi</option>
+                        <option value="wali_kelas" {{ request('position') == 'wali_kelas' ? 'selected' : '' }}>Wali Kelas</option>
                     </optgroup>
                     <optgroup label="Tenaga Kependidikan (Staf)">
-                        <option value="staff" {{ request('role') == 'staff' ? 'selected' : '' }}>Tata Usaha / Staf Admin</option>
-                        <option value="pustakawan" {{ request('role') == 'pustakawan' ? 'selected' : '' }}>Pustakawan</option>
-                        <option value="laboran" {{ request('role') == 'laboran' ? 'selected' : '' }}>Laboran</option>
-                        <option value="it_support" {{ request('role') == 'it_support' ? 'selected' : '' }}>IT Support / Tim Teknis</option>
-                        <option value="satpam" {{ request('role') == 'satpam' ? 'selected' : '' }}>Petugas Keamanan (Satpam)</option>
-                        <option value="caraka" {{ request('role') == 'caraka' ? 'selected' : '' }}>Petugas Kebersihan (Caraka)</option>
+                        <option value="staff" {{ request('position') == 'staff' ? 'selected' : '' }}>Tata Usaha / Staf Admin</option>
+                        <option value="pustakawan" {{ request('position') == 'pustakawan' ? 'selected' : '' }}>Pustakawan</option>
+                        <option value="laboran" {{ request('position') == 'laboran' ? 'selected' : '' }}>Laboran</option>
+                        <option value="it_support" {{ request('position') == 'it_support' ? 'selected' : '' }}>IT Support / Tim Teknis</option>
+                        <option value="satpam" {{ request('position') == 'satpam' ? 'selected' : '' }}>Petugas Keamanan</option>
+                        <option value="caraka" {{ request('position') == 'caraka' ? 'selected' : '' }}>Petugas Kebersihan</option>
                     </optgroup>
                 </select>
 
@@ -188,7 +188,7 @@
                 <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors">
                     Cari
                 </button>
-                @if(request('role') || request('search'))
+                @if(request('position') || request('search'))
                     <a href="{{ route('operator.teachers.index') }}" class="text-xs text-rose-600 hover:underline">
                         ✕ Reset Filter
                     </a>
@@ -237,15 +237,15 @@
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $teacher->email }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">
                                         @php
-                                            $roleColors = [
+                                            $positionColors = [
                                                 'guru_kelas' => 'bg-purple-100 text-purple-800',
-                                                'guru' => 'bg-purple-100 text-purple-800',
+                                                'guru_mapel' => 'bg-purple-100 text-purple-800',
                                                 'guru_bk' => 'bg-indigo-100 text-indigo-800',
                                                 'guru_inklusi' => 'bg-teal-100 text-teal-800',
                                                 'guru_kejuruan' => 'bg-orange-100 text-orange-800',
                                                 'wali_kelas' => 'bg-blue-100 text-blue-800',
-                                                'headmaster' => 'bg-red-100 text-red-800',
-                                                'manager_teacher' => 'bg-amber-100 text-amber-800',
+                                                'kepala_sekolah' => 'bg-red-100 text-red-800',
+                                                'guru_penggerak' => 'bg-amber-100 text-amber-800',
                                                 'staff' => 'bg-gray-100 text-gray-800',
                                                 'pustakawan' => 'bg-cyan-100 text-cyan-800',
                                                 'laboran' => 'bg-lime-100 text-lime-800',
@@ -253,24 +253,25 @@
                                                 'satpam' => 'bg-stone-100 text-stone-800',
                                                 'caraka' => 'bg-neutral-100 text-neutral-800',
                                             ];
-                                            $roleLabels = [
+                                            $positionLabels = [
                                                 'guru_kelas' => 'Guru Kelas',
-                                                'guru' => 'Guru Mapel',
+                                                'guru_mapel' => 'Guru Mapel',
                                                 'guru_bk' => 'Guru BK',
                                                 'guru_inklusi' => 'Guru Inklusi',
                                                 'guru_kejuruan' => 'Guru Kejuruan',
                                                 'wali_kelas' => 'Wali Kelas',
-                                                'headmaster' => 'Kepala Sekolah',
-                                                'manager_teacher' => 'Wakasek / Manajemen',
-                                                'staff' => 'Staf TU / Ops',
+                                                'kepala_sekolah' => 'Kepala Sekolah',
+                                                'guru_penggerak' => 'Guru Penggerak / Koordinator',
+                                                'staff' => 'Tata Usaha / Staf Admin',
                                                 'pustakawan' => 'Pustakawan',
                                                 'laboran' => 'Laboran',
-                                                'it_support' => 'IT Support',
-                                                'satpam' => 'Satpam',
-                                                'caraka' => 'Caraka',
+                                                'it_support' => 'IT Support / Tim Teknis',
+                                                'satpam' => 'Petugas Keamanan',
+                                                'caraka' => 'Petugas Kebersihan',
                                             ];
-                                            $colorClass = $roleColors[$teacher->role] ?? 'bg-gray-100 text-gray-800';
-                                            $labelText = $roleLabels[$teacher->role] ?? ucfirst(str_replace('_', ' ', $teacher->role));
+                                            $position = $teacher->position ?? $teacher->role;
+                                            $colorClass = $positionColors[$position] ?? 'bg-gray-100 text-gray-800';
+                                            $labelText = $positionLabels[$position] ?? ucfirst(str_replace('_', ' ', $position));
                                         @endphp
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium {{ $colorClass }}">{{ $labelText }}</span>
                                     </td>
@@ -324,11 +325,11 @@
                                                   x-transition:leave-end="transform opacity-0 scale-95"
                                                   style="display: none;"
                                                   class="origin-top-right absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 divide-y divide-gray-100 text-left">
-                                                 
+
                                                  <!-- Group 1: Aksi Utama -->
                                                  <div class="py-1">
                                                      <!-- Edit Data -->
-                                                     <button type="button" @click="open = false; openEdit({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', nip: '{{ addslashes($teacher->nisn ?? '') }}', email: '{{ addslashes($teacher->email) }}', role: '{{ $teacher->role }}', is_active: {{ $teacher->is_active ? 1 : 0 }}, class_id: '{{ $teacher->homeroomClasses->first()?->id ?? '' }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
+                                                     <button type="button" @click="open = false; openEdit({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', nip: '{{ addslashes($teacher->nisn ?? '') }}', email: '{{ addslashes($teacher->email) }}', role: '{{ $teacher->position ?? $teacher->role }}', is_active: {{ $teacher->is_active ? 1 : 0 }}, class_id: '{{ $teacher->homeroomClasses->first()?->id ?? '' }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
                                                          <i class="fa-solid fa-pen-to-square text-blue-500 w-4 text-center"></i> Edit Data
                                                      </button>
 
@@ -391,7 +392,7 @@
                         <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-title">Tambah Guru / Pendidik Baru</h3>
                         <p class="mt-2 text-sm text-brand-text-muted">Masukkan informasi guru di bawah ini.</p>
                     </div>
-                    
+
                     <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ createPhotoPreview: null }">
                         @csrf
                         <div class="space-y-4">
@@ -399,12 +400,12 @@
                                 <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
                                 <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
-                            
+
                             <div>
                                 <label for="nip" class="block text-sm font-medium text-gray-700">NUPTK (Opsional)</label>
                                 <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
-                            
+
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Surel (Opsional)</label>
                                 <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong">
@@ -413,9 +414,25 @@
                             <div>
                                 <label for="role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem</label>
                                 <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <option value="guru" selected>Guru / Tenaga Pendidik</option>
-                                    <option value="operator">Staf / Operator / Admin</option>
-                                    <option value="kepala_sekolah">Kepala Sekolah</option>
+                                    <option value="">-- Pilih Peran / Jabatan --</option>
+                                    <optgroup label="Pendidik (Guru)">
+                                        <option value="kepala_sekolah">Kepala Sekolah</option>
+                                        <option value="guru_penggerak">Guru Penggerak / Koordinator</option>
+                                        <option value="guru_mapel">Guru Mapel</option>
+                                        <option value="guru_kelas">Guru Kelas</option>
+                                        <option value="guru_kejuruan">Guru Kejuruan</option>
+                                        <option value="guru_bk">Guru BK</option>
+                                        <option value="guru_inklusi">Guru Inklusi</option>
+                                        <option value="wali_kelas">Wali Kelas</option>
+                                    </optgroup>
+                                    <optgroup label="Tenaga Kependidikan (Staf)">
+                                        <option value="staff">Tata Usaha / Staf Admin</option>
+                                        <option value="pustakawan">Pustakawan</option>
+                                        <option value="laboran">Laboran</option>
+                                        <option value="it_support">IT Support / Tim Teknis</option>
+                                        <option value="satpam">Petugas Keamanan</option>
+                                        <option value="caraka">Petugas Kebersihan</option>
+                                    </optgroup>
                                 </select>
                             </div>
 
@@ -467,23 +484,23 @@
                         <h3 class="text-lg font-bold leading-6 text-brand-text-main" id="modal-edit-title">Edit Data Guru / Pendidik</h3>
                         <p class="mt-1 text-sm text-brand-text-muted">Perbarui informasi dan peran pendidik di bawah ini.</p>
                     </div>
-                    
+
                     <form :action="'/operator/teachers/' + editForm.id" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ editPhotoPreview: null }">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="space-y-4">
                             <div>
                                 <label for="edit_name" class="block text-sm font-medium text-gray-700">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
                                 <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
-                            
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="edit_nip" class="block text-sm font-medium text-gray-700">NIP / NIK / NUPTK</label>
                                     <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 </div>
-                                
+
                                 <div>
                                     <label for="edit_email" class="block text-sm font-medium text-gray-700">Surel / Email</label>
                                     <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id">
@@ -493,9 +510,25 @@
                             <div>
                                 <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem <span class="text-red-500">*</span></label>
                                 <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
-                                    <option value="guru">Guru / Tenaga Pendidik</option>
-                                    <option value="operator">Staf / Operator / Admin</option>
-                                    <option value="kepala_sekolah">Kepala Sekolah</option>
+                                    <option value="">-- Pilih Peran / Jabatan --</option>
+                                    <optgroup label="Pendidik (Guru)">
+                                        <option value="kepala_sekolah">Kepala Sekolah</option>
+                                        <option value="guru_penggerak">Guru Penggerak / Koordinator</option>
+                                        <option value="guru_mapel">Guru Mapel</option>
+                                        <option value="guru_kelas">Guru Kelas</option>
+                                        <option value="guru_kejuruan">Guru Kejuruan</option>
+                                        <option value="guru_bk">Guru BK</option>
+                                        <option value="guru_inklusi">Guru Inklusi</option>
+                                        <option value="wali_kelas">Wali Kelas</option>
+                                    </optgroup>
+                                    <optgroup label="Tenaga Kependidikan (Staf)">
+                                        <option value="staff">Tata Usaha / Staf Admin</option>
+                                        <option value="pustakawan">Pustakawan</option>
+                                        <option value="laboran">Laboran</option>
+                                        <option value="it_support">IT Support / Tim Teknis</option>
+                                        <option value="satpam">Petugas Keamanan</option>
+                                        <option value="caraka">Petugas Kebersihan</option>
+                                    </optgroup>
                                 </select>
                             </div>
 

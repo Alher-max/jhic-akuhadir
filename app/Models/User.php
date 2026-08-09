@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['tenant_id', 'location_id', 'name', 'email', 'avatar', 'password', 'nisn', 'nis', 'nik', 'gender', 'birth_place', 'birth_date', 'religion', 'father_name', 'mother_name', 'parent_phone', 'address', 'blood_type', 'medical_notes', 'pin', 'role', 'onboarding_completed', 'otp_code', 'otp_expires_at', 'parent_id', 'class_id', 'is_active', 'master_photo', 'email_verified_at'])]
+#[Fillable(['tenant_id', 'location_id', 'name', 'email', 'avatar', 'password', 'nisn', 'nis', 'nik', 'gender', 'birth_place', 'birth_date', 'religion', 'father_name', 'mother_name', 'parent_phone', 'address', 'blood_type', 'medical_notes', 'pin', 'role', 'position', 'onboarding_completed', 'otp_code', 'otp_expires_at', 'parent_id', 'class_id', 'is_active', 'master_photo', 'email_verified_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVerifyEmail
 {
@@ -129,8 +129,23 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         return [
             'teacher', 'guru', 'guru_mapel', 'guru_kelas', 'guru_bk', 'guru_inklusi',
             'guru_kejuruan', 'wali_kelas', 'headmaster', 'kepala_sekolah',
-            'manager_teacher', 'operator', 'staff', 'admin_dapodik'
+            'manager_teacher', 'guru_penggerak', 'operator', 'staff', 'admin_dapodik',
+            'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'
         ];
+    }
+
+    /**
+     * Determine the system role based on the position/jabatan.
+     * This is used for access control and dashboard routing.
+     */
+    public static function getSystemRoleFromPosition(string $position): string
+    {
+        return match ($position) {
+            'wali_kelas' => 'wali_kelas',
+            'headmaster', 'kepala_sekolah' => 'kepala_sekolah',
+            'guru_penggerak' => 'guru', // Guru Penggerak uses standard guru role
+            default => 'guru', // Standard role for other teachers/staff
+        };
     }
 
     public function scopeActiveTeachers($query)
@@ -148,21 +163,21 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         $role = $this->role ?? 'user';
 
         if (in_array($role, static::getTeacherRoles()) || in_array($role, ['pustakawan', 'laboran', 'it_support', 'satpam', 'caraka'])) {
-            return $this->profile?->nuptk 
-                ?: ($this->profile?->employee_id 
-                ?: ($this->nisn 
+            return $this->profile?->nuptk
+                ?: ($this->profile?->employee_id
+                ?: ($this->nisn
                 ?: '12345678'));
         }
 
         if ($role === 'student') {
-            return $this->nisn 
-                ?: ($this->nis 
+            return $this->nisn
+                ?: ($this->nis
                 ?: '12345678');
         }
 
         if ($role === 'parent') {
-            return $this->parent_phone 
-                ?: ($this->nik 
+            return $this->parent_phone
+                ?: ($this->nik
                 ?: '12345678');
         }
 
@@ -193,7 +208,7 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
     {
         $name = $this->name;
         $titles = ['Bapak', 'Ibu', 'Bpk', 'Bpk.', 'Ibu.', 'Sdr', 'Sdr.', 'Sdri', 'Sdri.'];
-        
+
         $hasTitle = false;
         foreach ($titles as $title) {
             // Check if name starts with title followed by space or is exactly the title
