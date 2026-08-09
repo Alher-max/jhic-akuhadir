@@ -334,6 +334,12 @@ class TeacherManagementController extends Controller
             abort(403);
         }
 
+        // Prevent self-deletion
+        if ($teacher->id === Auth::id()) {
+            return redirect()->route('operator.teachers.index')
+                ->with('error', 'Anda tidak dapat menghapus akun yang sedang digunakan.');
+        }
+
         $teacher->delete();
 
         return redirect()->route('operator.teachers.index')->with('success', 'Pendidik / Staf berhasil dihapus.');

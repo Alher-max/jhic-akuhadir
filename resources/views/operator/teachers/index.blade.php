@@ -347,13 +347,19 @@
                                                      </form>
                                                  </div>
 
-                                                 <!-- Group 2: Aksi Destruktif -->
-                                                 <div class="py-1">
-                                                     <!-- Hapus Pendidik -->
-                                                     <button type="button" @click="open = false; confirmDelete({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', deleteUrl: '{{ route('operator.teachers.destroy', $teacher->id) }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors cursor-pointer">
-                                                         <i class="fa-solid fa-trash-can text-red-500 w-4 text-center"></i> Hapus Pendidik
-                                                     </button>
-                                                 </div>
+                                                  <!-- Group 2: Aksi Destruktif -->
+                                                  <div class="py-1">
+                                                      <!-- Hapus Pendidik -->
+                                                      @if($teacher->id !== auth()->id())
+                                                          <button type="button" @click="open = false; confirmDelete({ id: {{ $teacher->id }}, name: '{{ addslashes(trim($teacher->name, '"')) }}', deleteUrl: '{{ route('operator.teachers.destroy', $teacher->id) }}' })" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                                                              <i class="fa-solid fa-trash-can text-red-500 w-4 text-center"></i> Hapus Pendidik
+                                                          </button>
+                                                      @else
+                                                          <button type="button" disabled class="w-full text-left px-4 py-2.5 text-xs font-medium text-gray-400 hover:bg-gray-50 flex items-center gap-2.5 transition-colors cursor-not-allowed">
+                                                              <i class="fa-solid fa-trash-can text-gray-300 w-4 text-center"></i> Hapus Pendidik (Akun Anda)
+                                                          </button>
+                                                      @endif
+                                                  </div>
                                              </div>
                                          </div>
                                     </td>
