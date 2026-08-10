@@ -13,7 +13,7 @@ class UpdateTeacherRequest extends FormRequest
     public function authorize(): bool
     {
         $teacher = $this->route('teacher');
-        return $teacher->tenant_id === auth()->user()->tenant_id 
+        return $teacher->tenant_id === auth()->user()->tenant_id
             && in_array($teacher->role, \App\Models\User::getTeacherRoles());
     }
 
@@ -63,8 +63,23 @@ class UpdateTeacherRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'Email ini sudah terdaftar di institusi Anda.',
-            'nip.unique' => 'NIP/NUPTK ini sudah terdaftar di institusi Anda.',
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.string' => 'Nama lengkap harus berupa teks.',
+            'name.max' => 'Nama lengkap tidak boleh lebih dari :max karakter.',
+            'email.email' => 'Format alamat surel/email tidak valid.',
+            'email.max' => 'Alamat surel/email tidak boleh lebih dari :max karakter.',
+            'email.unique' => 'Alamat surel/email sudah terdaftar di sistem.',
+            'nip.string' => 'NIP/NUPTK harus berupa teks.',
+            'nip.max' => 'NIP/NUPTK tidak boleh lebih dari :max karakter.',
+            'nip.unique' => 'NIP/NUPTK sudah terdaftar di sistem.',
+            'role.required' => 'Peran / Jabatan sistem wajib dipilih.',
+            'role.string' => 'Peran/Jabatan harus berupa teks.',
+            'role.in' => 'Peran/Jabatan yang dipilih tidak valid.',
+            'is_active.required' => 'Status akun wajib dipilih.',
+            'is_active.boolean' => 'Status akun tidak valid.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'avatar.image' => 'File yang diunggah harus berupa gambar.',
+            'avatar.max' => 'Ukuran file gambar tidak boleh lebih dari :max KB.',
         ];
     }
 }

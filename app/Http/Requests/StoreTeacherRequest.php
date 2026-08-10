@@ -54,8 +54,23 @@ class StoreTeacherRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'Email ini sudah terdaftar di institusi Anda.',
-            'nip.unique' => 'NIP/NUPTK ini sudah terdaftar di institusi Anda.',
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.required_without' => 'Nama lengkap wajib diisi jika tidak mengunggah file impor guru.',
+            'name.string' => 'Nama lengkap harus berupa teks.',
+            'name.max' => 'Nama lengkap tidak boleh lebih dari :max karakter.',
+            'email.email' => 'Format alamat surel/email tidak valid.',
+            'email.max' => 'Alamat surel/email tidak boleh lebih dari :max karakter.',
+            'email.unique' => 'Alamat surel/email sudah terdaftar di sistem.',
+            'nip.string' => 'NIP/NUPTK harus berupa teks.',
+            'nip.max' => 'NIP/NUPTK tidak boleh lebih dari :max karakter.',
+            'nip.unique' => 'NIP/NUPTK sudah terdaftar di sistem.',
+            'role.string' => 'Peran/Jabatan harus berupa teks.',
+            'role.in' => 'Peran/Jabatan yang dipilih tidak valid.',
+            'avatar.image' => 'File yang diunggah harus berupa gambar.',
+            'avatar.max' => 'Ukuran file gambar tidak boleh lebih dari :max KB.',
+            'teachers_file.file' => 'File yang diunggah harus berupa dokumen.',
+            'teachers_file.mimes' => 'Format file harus CSV atau TXT.',
+            'teachers_file.max' => 'Ukuran file tidak boleh lebih dari :max KB.',
         ];
     }
 

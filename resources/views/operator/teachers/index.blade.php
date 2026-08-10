@@ -404,22 +404,22 @@
                         <div class="space-y-4">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
 
                             <div>
                                 <label for="nip" class="block text-sm font-medium text-gray-700">NUPTK (Opsional)</label>
-                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
 
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Surel (Opsional)</label>
-                                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong" :disabled="isSubmitting">
+                                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong">
                             </div>
 
                             <div>
                                 <label for="role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem</label>
-                                <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                     <option value="">-- Pilih Peran / Jabatan --</option>
                                     <optgroup label="Pendidik (Guru)">
                                         <option value="kepala_sekolah">Kepala Sekolah</option>
@@ -455,7 +455,7 @@
                                     <template x-if="createPhotoPreview">
                                         <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full" :disabled="isSubmitting">
+                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                                 </div>
                                 <template x-if="createPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
@@ -499,24 +499,24 @@
                         <div class="space-y-4">
                             <div>
                                 <label for="edit_name" class="block text-sm font-medium text-gray-700">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="edit_nip" class="block text-sm font-medium text-gray-700">NIP / NIK / NUPTK</label>
-                                    <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                    <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                 </div>
 
                                 <div>
                                     <label for="edit_email" class="block text-sm font-medium text-gray-700">Surel / Email</label>
-                                    <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id" :disabled="isSubmitting">
+                                    <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id">
                                 </div>
                             </div>
 
                             <div>
                                 <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem <span class="text-red-500">*</span></label>
-                                <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                     <option value="">-- Pilih Peran / Jabatan --</option>
                                     <optgroup label="Pendidik (Guru)">
                                         <option value="kepala_sekolah">Kepala Sekolah</option>
@@ -542,7 +542,7 @@
                             <!-- Penugasan Wali Kelas -->
                             <div>
                                 <label for="edit_class_id" class="block text-sm font-medium text-gray-700">Penugasan Wali Kelas (Opsional)</label>
-                                <select name="class_id" id="edit_class_id" x-model="editForm.class_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <select name="class_id" id="edit_class_id" x-model="editForm.class_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                     <option value="">-- Belum Ditugaskan ke Kelas --</option>
                                     @foreach($classes ?? [] as $cls)
                                         <option value="{{ $cls->id }}">
@@ -559,7 +559,7 @@
                             <!-- Status Akun -->
                             <div>
                                 <label for="edit_is_active" class="block text-sm font-medium text-gray-700">Status Akun <span class="text-red-500">*</span></label>
-                                <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
+                                <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
                                     <option value="1">Aktif</option>
                                     <option value="0">Nonaktif</option>
                                 </select>
@@ -578,7 +578,7 @@
                                     <template x-if="editPhotoPreview">
                                         <img :src="editPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full" :disabled="isSubmitting">
+                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
                                 </div>
                                 <template x-if="editPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
