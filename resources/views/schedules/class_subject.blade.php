@@ -39,7 +39,7 @@
         }
     </style>
 
-    <div class="py-10 bg-brand-bg min-h-screen" x-data="classSubjectHub">
+    <div class="py-10 bg-brand-bg min-h-screen" x-data="classSubjectHub" x-cloak>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- TAB NAVIGATION BAR (3 TABS) -->
@@ -80,7 +80,7 @@
             </div>
 
             <!-- TAB 1: MASTER MAPEL -->
-            <div x-show="activeTab === 'subjects'" x-transition class="space-y-4">
+            <div x-show="activeTab === 'subjects'" x-transition class="space-y-4" x-cloak>
                 <div
                     class="bg-brand-surface p-5 rounded-2xl border border-brand-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -215,7 +215,7 @@
             </div>
 
             <!-- TAB 2: JADWAL KBM RUTIN -->
-            <div x-show="activeTab === 'schedules'" x-transition class="space-y-6">
+            <div x-show="activeTab === 'schedules'" x-transition class="space-y-6" x-cloak>
                 <!-- Header Controller Controls -->
                 <div
                     class="bg-brand-surface p-5 rounded-2xl border border-brand-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -372,7 +372,7 @@
             </div>
 
             <!-- TAB 3: EKSKUL & KEGIATAN SEKOLAH -->
-            <div x-show="activeTab === 'activities'" x-transition class="space-y-4">
+            <div x-show="activeTab === 'activities'" x-transition class="space-y-4" x-cloak>
                 <div
                     class="bg-brand-surface p-5 rounded-2xl border border-brand-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -926,7 +926,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('classSubjectHub', () => ({
-                activeTab: new URLSearchParams(window.location.search).get('tab') || 'subjects',
+                activeTab: '{{ request("tab", "schedules") }}',
                 hideSubjectPresets: false,
                 hideActivityPresets: false,
                 showScheduleModal: {{ $errors->has('start_time') || $errors->has('end_time') || $errors->has('subject_id') ? 'true' : 'false' }},
