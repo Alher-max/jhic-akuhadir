@@ -399,27 +399,27 @@
                         <p class="mt-2 text-sm text-brand-text-muted">Masukkan informasi guru di bawah ini.</p>
                     </div>
 
-                    <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ createPhotoPreview: null }">
+                    <form action="{{ route('operator.teachers.store') }}" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ createPhotoPreview: null, isSubmitting: false }" @submit="isSubmitting = true">
                         @csrf
                         <div class="space-y-4">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <input type="text" name="name" id="name" required placeholder="Cth: Budi Santoso, S.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                             </div>
 
                             <div>
                                 <label for="nip" class="block text-sm font-medium text-gray-700">NUPTK (Opsional)</label>
-                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <input type="text" name="nip" id="nip" placeholder="Masukkan NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                             </div>
 
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Surel (Opsional)</label>
-                                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong">
+                                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="Otomatis jika kosong" :disabled="isSubmitting">
                             </div>
 
                             <div>
                                 <label for="role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem</label>
-                                <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                                     <option value="">-- Pilih Peran / Jabatan --</option>
                                     <optgroup label="Pendidik (Guru)">
                                         <option value="kepala_sekolah">Kepala Sekolah</option>
@@ -455,23 +455,24 @@
                                     <template x-if="createPhotoPreview">
                                         <img :src="createPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                    <input type="file" name="avatar" id="teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { createPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full" :disabled="isSubmitting">
                                 </div>
                                 <template x-if="createPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
                                         <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
                                     </div>
                                 </template>
-                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
+                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien < 200KB).</p>
                             </div>
                         </div>
 
                         <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6">
-                            <button type="button" @click="showModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                            <button type="button" @click="showModal = false" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                                 Batal
                             </button>
-                            <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
-                                Simpan Data
+                            <button type="submit" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-75 cursor-wait' : ''" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                                <span x-show="!isSubmitting">Simpan Data</span>
+                                <span x-show="isSubmitting" style="display: none;"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan...</span>
                             </button>
                         </div>
                     </form>
@@ -491,31 +492,31 @@
                         <p class="mt-1 text-sm text-brand-text-muted">Perbarui informasi dan peran pendidik di bawah ini.</p>
                     </div>
 
-                    <form :action="'/operator/teachers/' + editForm.id" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ editPhotoPreview: null }">
+                    <form :action="'/operator/teachers/' + editForm.id" method="POST" enctype="multipart/form-data" class="mt-5" x-data="{ editPhotoPreview: null, isSubmitting: false }" @submit="isSubmitting = true">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-4">
                             <div>
                                 <label for="edit_name" class="block text-sm font-medium text-gray-700">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <input type="text" name="name" id="edit_name" x-model="editForm.name" required placeholder="Cth: Drs. Budi Santoso, M.Pd." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="edit_nip" class="block text-sm font-medium text-gray-700">NIP / NIK / NUPTK</label>
-                                    <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                    <input type="text" name="nip" id="edit_nip" x-model="editForm.nip" placeholder="Masukkan NIP/NIK/NUPTK" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                                 </div>
 
                                 <div>
                                     <label for="edit_email" class="block text-sm font-medium text-gray-700">Surel / Email</label>
-                                    <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id">
+                                    <input type="email" name="email" id="edit_email" x-model="editForm.email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" placeholder="email@sekolah.sch.id" :disabled="isSubmitting">
                                 </div>
                             </div>
 
                             <div>
                                 <label for="edit_role" class="block text-sm font-medium text-gray-700">Peran / Jabatan Sistem <span class="text-red-500">*</span></label>
-                                <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="role" id="edit_role" x-model="editForm.role" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                                     <option value="">-- Pilih Peran / Jabatan --</option>
                                     <optgroup label="Pendidik (Guru)">
                                         <option value="kepala_sekolah">Kepala Sekolah</option>
@@ -541,7 +542,7 @@
                             <!-- Penugasan Wali Kelas -->
                             <div>
                                 <label for="edit_class_id" class="block text-sm font-medium text-gray-700">Penugasan Wali Kelas (Opsional)</label>
-                                <select name="class_id" id="edit_class_id" x-model="editForm.class_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="class_id" id="edit_class_id" x-model="editForm.class_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                                     <option value="">-- Belum Ditugaskan ke Kelas --</option>
                                     @foreach($classes ?? [] as $cls)
                                         <option value="{{ $cls->id }}">
@@ -558,7 +559,7 @@
                             <!-- Status Akun -->
                             <div>
                                 <label for="edit_is_active" class="block text-sm font-medium text-gray-700">Status Akun <span class="text-red-500">*</span></label>
-                                <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm">
+                                <select name="is_active" id="edit_is_active" x-model="editForm.is_active" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm" :disabled="isSubmitting">
                                     <option value="1">Aktif</option>
                                     <option value="0">Nonaktif</option>
                                 </select>
@@ -577,23 +578,24 @@
                                     <template x-if="editPhotoPreview">
                                         <img :src="editPhotoPreview" class="w-12 h-12 flex-shrink-0 rounded-full object-cover border border-emerald-500 shadow-sm" alt="Pratinjau Foto">
                                     </template>
-                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full">
+                                    <input type="file" name="avatar" id="edit_teacher_avatar" accept="image/*" @change="compressFileInput($event, (url) => { editPhotoPreview = url })" class="compress-avatar ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary w-full" :disabled="isSubmitting">
                                 </div>
                                 <template x-if="editPhotoPreview">
                                     <div class="mt-2 flex items-center text-xs text-emerald-600 font-medium">
                                         <i class="fa-solid fa-circle-check mr-1"></i> Pratinjau Foto Siap (Telah dikompresi secara otomatis)
                                     </div>
                                 </template>
-                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien &lt; 200KB).</p>
+                                <p class="mt-1.5 text-xs text-gray-500">Format: JPG, PNG, WEBP. (Otomatis dikompresi di sisi klien < 200KB).</p>
                             </div>
                         </div>
 
                         <div class="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 mt-6">
-                            <button type="button" @click="showEditModal = false" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                            <button type="button" @click="showEditModal = false" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
                                 Batal
                             </button>
-                            <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
-                                Simpan Perubahan
+                            <button type="submit" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-75 cursor-wait' : ''" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm bg-brand-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:w-auto sm:text-sm">
+                                <span x-show="!isSubmitting">Simpan Perubahan</span>
+                                <span x-show="isSubmitting" style="display: none;"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan...</span>
                             </button>
                         </div>
                     </form>
@@ -625,14 +627,15 @@
                         </div>
                     </div>
                     <div class="mt-6 sm:mt-5 sm:flex sm:flex-row-reverse gap-2">
-                        <form :action="deleteTeacher.deleteUrl" method="POST" class="inline">
+                        <form :action="deleteTeacher.deleteUrl" method="POST" class="inline" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
-                                Ya, Hapus
+                            <button type="submit" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-75 cursor-wait' : ''" class="inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
+                                <span x-show="!isSubmitting">Ya, Hapus</span>
+                                <span x-show="isSubmitting" style="display: none;"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menghapus...</span>
                             </button>
                         </form>
-                        <button type="button" @click="showDeleteModal = false" class="mt-3 sm:mt-0 inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer">
+                        <button type="button" @click="showDeleteModal = false" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''" class="mt-3 sm:mt-0 inline-flex justify-center w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer">
                             Batal
                         </button>
                     </div>

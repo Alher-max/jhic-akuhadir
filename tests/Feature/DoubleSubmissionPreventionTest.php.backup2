@@ -1,0 +1,408 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\SchoolClass;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+
+class DoubleSubmissionPreventionTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        $this->tenant = Tenant::create([
+            'name' => 'SMK Garuda',
+            'code' => 'SMKGAR',
+            'slug' => 'smk-garuda',
+        ]);
+
+        $this->operator = User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Operator Admin',
+            'email' => 'operator@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'operator',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /** @test */
+    public function double_submission_on_teacher_create_only_creates_one_record(): void
+    {
+        $teacherData = [
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'nip' => '198501012010011001',
+            'role' => 'guru',
+        ];
+
+        // First request
+        $response1 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Second request (simulating double click)
+        $response2 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Both should redirect (Post-Redirect-Get pattern)
+        $response1->assertRedirect();
+        $response2->assertRedirect();
+
+        // Only ONE record should exist in database
+        $this->assertDatabaseCount('users', 2); // 1 operator + 1 teacher
+        
+        $teacher = User::where('email', 'budi@smkgaruda.sch.id')->first();
+        $this->assertNotNull($teacher);
+        $this->assertEquals('Budi Santoso, S.Pd.', $teacher->name);
+        $this->assertEquals('guru', $teacher->role);
+    }
+
+    /** @test */
+    public function double_submission_on_teacher_update_only_updates_once(): void
+    {
+        $teacher = User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $updateData = [
+            'name' => 'Drs. Budi Santoso, M.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'nip' => '198501012010011001',
+            'role' => 'guru',
+            'is_active' => 1,
+        ];
+
+        // First update request
+        $response1 = $this->actingAs($this->operator)
+            ->put(route('operator.teachers.update', $teacher->id), $updateData);
+
+        // Second update request (simulating double click)
+        $response2 = $this->actingAs($this->operator)
+            ->put(route('operator.teachers.update', $teacher->id), $updateData);
+
+        // Both should redirect
+        $response1->assertRedirect();
+        $response2->assertRedirect();
+
+        // Teacher should be updated only once
+        $teacher->refresh();
+        $this->assertEquals('Drs. Budi Santoso, M.Pd.', $teacher->name);
+         
+        // Only one teacher record should exist
+        $this->assertDatabaseCount('users', 2); // 1 operator + 1 teacher
+    }
+
+    /** @test */
+    public function double_submission_with_same_email_prevents_duplicate(): void
+    {
+        // Create first teacher
+        User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $teacherData = [
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id', // Same email
+            'nip' => '198501012010011002', // Different NIP
+            'role' => 'guru',
+        ];
+
+        // First request
+        $response1 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Second request
+        $response2 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Both should redirect (validation error redirects back)
+        $response1->assertRedirect();
+        $response2->assertRedirect();
+
+        // Only ONE teacher record should exist (the original one)
+        $this->assertDatabaseCount('users', 2); // 1 operator + 1 teacher
+    }
+
+    /** @test */
+    public function double_submission_with_same_nip_prevents_duplicate(): void
+    {
+        // Create first teacher
+        User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $teacherData = [
+            'name' => 'Budi Santoso Baru, S.Pd.',
+            'email' => 'budi.baru@smkgaruda.sch.id', // Different email
+            'nip' => '198501012010011001', // Same NIP
+            'role' => 'guru',
+        ];
+
+        // First request
+        $response1 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Second request
+        $response2 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Both should redirect
+        $response1->assertRedirect();
+        $response2->assertRedirect();
+
+        // Only ONE teacher record should exist (the original one)
+        $this->assertDatabaseCount('users', 2); // 1 operator + 1 teacher
+    }
+
+    /** @test */
+    public function double_submission_on_csv_import_only_processes_once(): void
+    {
+        $csvContent = "Nama Lengkap,NUPTK,Email,Peran\n";
+        $csvContent .= "Budi Santoso, S.Pd.,198501012010011001,budi@smkgaruda.sch.id,guru\n";
+        $csvContent .= "Siti Rahmah, S.Ag.,198203112006042005,siti@smkgaruda.sch.id,guru\n";
+
+        $file = UploadedFile::fake()->createWithContent('teachers.csv', $csvContent);
+
+        // First import request
+        $response1 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), [
+                'teachers_file' => $file,
+            ]);
+
+        // Second import request (simulating double click)
+        $file2 = UploadedFile::fake()->createWithContent('teachers.csv', $csvContent);
+        $response2 = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), [
+                'teachers_file' => $file2,
+            ]);
+
+        // Both should redirect
+        $response1->assertRedirect();
+        $response2->assertRedirect();
+
+        // Only TWO teacher records should exist (from CSV)
+        $this->assertDatabaseCount('users', 3); // 1 operator + 2 teachers
+        
+        $this->assertDatabaseHas('users', ['email' => 'budi@smkgaruda.sch.id']);
+        $this->assertDatabaseHas('users', ['email' => 'siti@smkgaruda.sch.id']);
+    }
+
+    /** @test */
+    public function double_submission_on_teacher_delete_only_deletes_once(): void
+    {
+        $teacher = User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Budi Santoso, S.Pd.',
+            'email' => 'budi@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // First delete request
+        $response1 = $this->actingAs($this->operator)
+            ->delete(route('operator.teachers.destroy', $teacher->id));
+
+        // Second delete request (simulating double click)
+        $response2 = $this->actingAs($this->operator)
+            ->delete(route('operator.teachers.destroy', $teacher->id));
+
+        // First should redirect with success, second should redirect (404 or similar)
+        $response1->assertRedirect();
+        $response1->assertSessionHas('success');
+        
+        // Teacher should be deleted
+        $this->assertDatabaseCount('users', 1); // Only operator remains
+        $this->assertDatabaseMissing('users', ['id' => $teacher->id]);
+    }
+
+    /** @test */
+    public function concurrent_requests_simulation_creates_only_one_teacher(): void
+    {
+        $teacherData = [
+            'name' => 'Concurrent Test Teacher',
+            'email' => 'concurrent@smkgaruda.sch.id',
+            'nip' => '199001012015011001',
+            'role' => 'guru',
+        ];
+
+        // Simulate concurrent requests by making multiple rapid requests
+        $responses = [];
+        for ($i = 0; $i < 5; $i++) {
+            $responses[] = $this->actingAs($this->operator)
+                ->post(route('operator.teachers.store'), $teacherData);
+        }
+
+        // All should redirect
+        foreach ($responses as $response) {
+            $response->assertRedirect();
+        }
+
+        // Only ONE teacher record should exist
+        $this->assertDatabaseCount('users', 2); // 1 operator + 1 teacher
+        
+        $teacher = User::where('email', 'concurrent@smkgaruda.sch.id')->first();
+        $this->assertNotNull($teacher);
+        $this->assertEquals('Concurrent Test Teacher', $teacher->name);
+    }
+
+    /** @test */
+    public function post_redirect_get_pattern_enforced_on_store(): void
+    {
+        $teacherData = [
+            'name' => 'PRG Test Teacher',
+            'email' => 'prg@smkgaruda.sch.id',
+            'nip' => '199001012015011002',
+            'role' => 'guru',
+        ];
+
+        $response = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Should redirect, not render view directly
+        $response->assertRedirect();
+        $response->assertStatus(302);
+        
+        // Should redirect to index route
+        $response->assertRedirect(route('operator.teachers.index'));
+    }
+
+    /** @test */
+    public function post_redirect_get_pattern_enforced_on_update(): void
+    {
+        $teacher = User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'PRG Test Teacher',
+            'email' => 'prg@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '199001012015011002',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $updateData = [
+            'name' => 'PRG Updated Teacher',
+            'email' => 'prg@smkgaruda.sch.id',
+            'nip' => '199001012015011002',
+            'role' => 'guru',
+            'is_active' => 1,
+        ];
+
+        $response = $this->actingAs($this->operator)
+            ->put(route('operator.teachers.update', $teacher->id), $updateData);
+
+        // Should redirect, not render view directly
+        $response->assertRedirect();
+        $response->assertStatus(302);
+    }
+
+    /** @test */
+    public function validation_errors_on_duplicate_email_return_proper_message(): void
+    {
+        // Create first teacher
+        User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Existing Teacher',
+            'email' => 'existing@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $teacherData = [
+            'name' => 'New Teacher',
+            'email' => 'existing@smkgaruda.sch.id', // Duplicate email
+            'nip' => '199001012015011001',
+            'role' => 'guru',
+        ];
+
+        $response = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Should redirect back with validation error
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('email');
+        
+        // Error message should be user-friendly
+        $response->assertSessionHas('errors', function ($errors) {
+            return $errors->first('email') === 'Email ini sudah terdaftar di institusi Anda.';
+        });
+    }
+
+    /** @test */
+    public function validation_errors_on_duplicate_nip_return_proper_message(): void
+    {
+        // Create first teacher
+        User::create([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Existing Teacher',
+            'email' => 'existing@smkgaruda.sch.id',
+            'password' => bcrypt('password'),
+            'role' => 'guru',
+            'nisn' => '198501012010011001',
+            'is_active' => true,
+            'onboarding_completed' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $teacherData = [
+            'name' => 'New Teacher',
+            'email' => 'new@smkgaruda.sch.id',
+            'nip' => '198501012010011001', // Duplicate NIP
+            'role' => 'guru',
+        ];
+
+        $response = $this->actingAs($this->operator)
+            ->post(route('operator.teachers.store'), $teacherData);
+
+        // Should redirect back with validation error
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('nip');
+        
+        // Error message should be user-friendly
+        $response->assertSessionHas('errors', function ($errors) {
+            return $errors->first('nip') === 'NIP/NUPTK ini sudah terdaftar di institusi Anda.';
+        });
+    }
+}

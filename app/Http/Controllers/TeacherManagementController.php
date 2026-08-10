@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Tenant;
+use App\Http\Requests\StoreTeacherRequest;
+use App\Http\Requests\UpdateTeacherRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -42,17 +44,8 @@ class TeacherManagementController extends Controller
         return view('operator.teachers.index', compact('teachers', 'selectedPosition', 'search', 'classes'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTeacherRequest $request)
     {
-        $request->validate([
-            'name' => 'required_without:teachers_file|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'nip' => 'nullable|string|max:50',
-            'role' => 'nullable|string|in:kepala_sekolah,guru_penggerak,guru_mapel,guru_kelas,guru_kejuruan,guru_bk,guru_inklusi,wali_kelas,staff,pustakawan,laboran,it_support,satpam,caraka,operator,guru,siswa,parent',
-            'avatar' => 'nullable|image|max:2048',
-            'teachers_file' => 'nullable|file|mimes:csv,txt|max:2048'
-        ]);
-
         if ($request->has('name') && $request->name) {
             $this->validateAndCreateTeacher($request);
         }
@@ -152,7 +145,13 @@ class TeacherManagementController extends Controller
             if ($isFirstRow) {
                 $isFirstRow = false;
                 $lowerLine = strtolower(str_replace(' ', '', $line));
-                if (str_starts_with($lowerLine, 'nama,nip') || str_starts_with($lowerLine, 'nama;') || str_starts_with($lowerLine, 'name,') || str_starts_with($lowerLine, 'name;')) {
+                // Enhanced header detection for various formats
+                if (str_starts_with($lowerLine, 'nama,nip') || str_starts_with($lowerLine, 'nama;') || 
+                    str_starts_with($lowerLine, 'name,') || str_starts_with($lowerLine, 'name;') ||
+                    str_starts_with($lowerLine, 'namalengkap,nuptk') || str_starts_with($lowerLine, 'namalengkap;nuptk') ||
+                    str_starts_with($lowerLine, 'namalengkap,nuptk,email') || str_starts_with($lowerLine, 'namalengkap;nuptk;email') ||
+                    // Check if it looks like a header by examining column content after splitting
+                    $this->isHeaderRow($line)) {
                     continue;
                 }
             }
@@ -253,21 +252,11 @@ class TeacherManagementController extends Controller
         }
     }
 
-    public function update(Request $request, User $teacher)
+    public function update(UpdateTeacherRequest $request, User $teacher)
     {
         if ($teacher->tenant_id !== Auth::user()->tenant_id || !in_array($teacher->role, User::getTeacherRoles())) {
             abort(403);
         }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['nullable', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($teacher->id)],
-            'nip' => ['nullable', 'string', 'max:50', \Illuminate\Validation\Rule::unique('users', 'nisn')->ignore($teacher->id)],
-            'role' => 'required|string|in:kepala_sekolah,guru_penggerak,guru_mapel,guru_kelas,guru_kejuruan,guru_bk,guru_inklusi,wali_kelas,staff,pustakawan,laboran,it_support,satpam,caraka,operator,guru,siswa,parent',
-            'is_active' => 'required|boolean',
-            'class_id' => 'nullable|exists:school_classes,id',
-            'avatar' => 'nullable|image|max:2048',
-        ]);
 
         $email = $request->email;
         if (!$email && !$teacher->email) {
@@ -394,5 +383,50 @@ class TeacherManagementController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Check if a CSV line is a header row by examining its content.
+     * Headers typically contain non-numeric, descriptive text.
+     */
+    private function isHeaderRow(string $line): bool
+    {
+        $delimiter = strpos($line, ';') !== false ? ';' : ',';
+        $items = str_getcsv($line, $delimiter);
+        
+        // If we have at least 4 columns, check if they look like headers
+        if (count($items) >= 4) {
+            $firstItem = strtolower(trim($items[0]));
+            $secondItem = strtolower(trim($items[1]));
+            $thirdItem = strtolower(trim($items[2]));
+            $fourthItem = strtolower(trim($items[3]));
+            
+            // Common header keywords
+            $headerKeywords = [
+                'nama', 'name', 'namalengkap', 'fullname',
+                'nip', 'nuptk', 'nipnuptk', 'employee',
+                'email', 'e-mail', 'mail',
+                'peran', 'role', 'jabatan', 'position', 'jabatan',
+                'kelas', 'class', 'tingkat', 'grade'
+            ];
+            
+            // Check if any column contains header-like keywords
+            foreach ($items as $item) {
+                $item = strtolower(trim($item));
+                foreach ($headerKeywords as $keyword) {
+                    if (str_contains($item, $keyword)) {
+                        return true;
+                    }
+                }
+            }
+            
+            // Additional check: if first column is "nama" or "name" and second is "nip" or "nuptk"
+            if (in_array($firstItem, ['nama', 'name', 'namalengkap', 'fullname']) &&
+                in_array($secondItem, ['nip', 'nuptk', 'nipnuptk', 'employeeid', 'employee_id'])) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

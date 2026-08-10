@@ -1,39 +1,47 @@
-# Task Plan: Fix Teacher Management Module
+# Double Submission Prevention Implementation Plan
 
-## Analysis Summary
-- Current "Tambah Guru / Staf" modal dropdown only has 3 options: Guru, Operator, Kepala Sekolah
-- Main table filter dropdown has 14 detailed jabatan options
-- Controller only accepts basic roles: operator, kepala_sekolah, guru, siswa, parent
-- Need to add `position` column to store detailed jabatan
-- Need conditional logic: Wali Kelas → role 'wali_kelas', Kepala Sekolah → role 'kepala_sekolah', others → standard role
+## Overview
+Implement layered security to prevent double submission on teacher management forms (and other critical forms).
 
-## Implementation Steps
+## Current State Analysis
+- **Controller**: `TeacherManagementController.php` - Already uses Post-Redirect-Get pattern (redirects after store/update)
+- **View**: `resources/views/operator/teachers/index.blade.php` - Has forms for create, edit, import CSV, delete
+- **Tests**: `tests/Feature/OperatorTeacherManagementTest.php` - Existing tests for teacher management
 
-### 1. Database Migration
-- [x] Create migration to add `position` column to users table
-- [x] Run migration
+## Implementation Checklist
 
-### 2. User Model
-- [x] Add `position` to fillable array in User model
-- [x] Add `getSystemRoleFromPosition` method for conditional role assignment
+### 1. Frontend Prevention (UI/UX) - Alpine.js
+- [ ] Add `x-data` with `isSubmitting` state to create teacher modal form
+- [ ] Add `x-data` with `isSubmitting` state to edit teacher modal form  
+- [ ] Add `x-data` with `isSubmitting` state to CSV import form
+- [ ] Add `x-data` with `isSubmitting` state to delete confirmation form
+- [ ] Disable submit buttons when `isSubmitting` is true
+- [ ] Change button text to loading indicator ("Menyimpan...", "Memproses...", "Menghapus...")
+- [ ] Add visual feedback (spinner, disabled styling)
 
-### 3. Blade View (index.blade.php)
-- [x] Update "Tambah Guru / Staf" modal dropdown with all 14 jabatan options (matching filter dropdown)
-- [x] Update "Edit Guru" modal dropdown with all 14 jabatan options
-- [x] Ensure both modals use the same option values as filter dropdown
+### 2. Backend Prevention (Controller & Validation)
+- [ ] Create FormRequest class for teacher store/update with duplicate check validation
+- [ ] Add unique constraint validation for email/nisn in FormRequest
+- [ ] Add database-level unique index check (if not exists)
+- [ ] Implement idempotency key pattern for critical operations (optional but recommended)
+- [ ] Ensure all store/update methods use redirect (already done)
 
-### 4. Controller (TeacherManagementController.php)
-- [x] Update validation rules to accept all jabatan values
-- [x] Update `validateAndCreateTeacher` method:
-  - Save selected jabatan to `position` column
-  - Set system `role` conditionally using `User::getSystemRoleFromPosition()`
-- [x] Update `update` method with same logic
-- [x] Fix `importFromCsv` method to handle new position field
-- [x] Fix CSV template download to use position values
-- [x] Fix duplicate 'kepala_sekolah' in validation rules
+### 3. Automated Testing (PHP Pest)
+- [ ] Create new test file: `tests/Feature/DoubleSubmissionPreventionTest.php`
+- [ ] Test double submission on teacher create (store) - sequential requests
+- [ ] Test double submission on teacher update - sequential requests
+- [ ] Test double submission on CSV import - sequential requests
+- [ ] Assert only 1 record created in database
+- [ ] Test concurrent/parallel requests simulation
+- [ ] Test that proper redirect response is returned
 
-### 5. Testing
-- [x] Verify dropdown options match between modal and filter
-- [x] Verify role assignment logic works correctly
-- [x] Verify existing data not broken
-- [x] Verify CSV import/export works with position field
+### 4. Additional Forms to Protect
+- [ ] Check other critical forms in the application (Student, Class, etc.)
+- [ ] Apply same pattern to those forms
+
+## Files to Modify/Create
+1. `resources/views/operator/teachers/index.blade.php` - Add Alpine.js submit prevention
+2. `app/Http/Requests/StoreTeacherRequest.php` - New FormRequest with duplicate prevention
+3. `app/Http/Requests/UpdateTeacherRequest.php` - New FormRequest with duplicate prevention
+4. `app/Http/Controllers/TeacherManagementController.php` - Use FormRequests
+5. `tests/Feature/DoubleSubmissionPreventionTest.php` - New test file
