@@ -22,9 +22,9 @@ class TeacherManagementController extends Controller
 
         $search = $request->get('search');
 
-        $query = User::with('homeroomClasses')
-            ->where('tenant_id', $tenantId)
-            ->whereIn('role', ['teacher', 'guru_kelas', 'guru', 'guru_bk', 'guru_inklusi', 'guru_kejuruan', 'wali_kelas', 'headmaster', 'manager_teacher', 'staff', 'pustakawan', 'laboran', 'it_support', 'satpam', 'caraka', 'operator', 'kepala_sekolah', 'guru', 'siswa', 'parent', 'guru_penggerak', 'guru_mapel']);
+         $query = User::with('homeroomClasses')
+             ->where('tenant_id', $tenantId)
+             ->whereIn('role', User::getTeacherRoles());
 
         if (!empty($selectedPosition)) {
             $query->where('position', $selectedPosition);
@@ -91,7 +91,7 @@ class TeacherManagementController extends Controller
 
         $email = $request->email;
         if (!$email) {
-            $identifier = $request->nip ?: Str::random(6);
+            $identifier = $request->nip ?: Str::lower(Str::random(6));
             $email = 'guru.' . $identifier . '@hadirsekolah.id';
         }
 
@@ -260,7 +260,7 @@ class TeacherManagementController extends Controller
 
         $email = $request->email;
         if (!$email && !$teacher->email) {
-            $identifier = $request->nip ?: Str::random(6);
+            $identifier = $request->nip ?: Str::lower(Str::random(6));
             $email = 'guru.' . $identifier . '@hadirsekolah.id';
         } elseif (!$email) {
             $email = $teacher->email;
@@ -341,7 +341,10 @@ class TeacherManagementController extends Controller
         }
 
         $teacher->load('profile');
-        $newPassword = $teacher->getDefaultPassword();
+        
+        // For teachers with dummy emails, always use '12345678' as default password
+        $isDummyEmail = str_starts_with($teacher->email, 'guru.') && str_ends_with($teacher->email, '@hadirsekolah.id');
+        $newPassword = $isDummyEmail ? '12345678' : $teacher->getDefaultPassword();
 
         $teacher->update([
             'password' => Hash::make($newPassword),
