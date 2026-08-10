@@ -38,4 +38,9 @@ class SchoolClass extends Model
     {
         return $query->where('tenant_id', $tenantId);
     }
+
+    public function getFullNameAttribute()
+    {
+        return $this->nama_kelas;
+    }
 }

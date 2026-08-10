@@ -1,47 +1,30 @@
-# Double Submission Prevention Implementation Plan
+# Task Plan: Fix Kelas/Rombel Dropdown Display Issue
 
-## Overview
-Implement layered security to prevent double submission on teacher management forms (and other critical forms).
+## Problem Analysis
+- User created 2 classes: "Kelas 1A" and "Kelas 1B" (both SD Tingkat 1)
+- Dropdown shows identical options: `(SD - Tingkat 1)` twice
+- Class names ("Kelas 1A", "Kelas 1B") are NOT displayed
 
-## Current State Analysis
-- **Controller**: `TeacherManagementController.php` - Already uses Post-Redirect-Get pattern (redirects after store/update)
-- **View**: `resources/views/operator/teachers/index.blade.php` - Has forms for create, edit, import CSV, delete
-- **Tests**: `tests/Feature/OperatorTeacherManagementTest.php` - Existing tests for teacher management
+## Root Cause
+The `SchoolClass` model uses column `nama_kelas` but the view references `$class->full_name` which doesn't exist as an accessor.
 
-## Implementation Checklist
+## Steps to Fix
+- [x] Analyze SchoolClass model structure (columns: nama_kelas, jenjang, tingkat)
+- [x] Analyze modal.blade.php view - uses $class->full_name which doesn't exist
+- [x] Add `full_name` accessor to SchoolClass model returning nama_kelas
+- [x] Update edit modal dropdown to include tingkat for consistency
+- [x] Verify all dropdowns (Tambah, Edit, Import, Filter) use full_name accessor
+- [x] Verify controller fetches all necessary columns (nama_kelas, jenjang, tingkat)
 
-### 1. Frontend Prevention (UI/UX) - Alpine.js
-- [ ] Add `x-data` with `isSubmitting` state to create teacher modal form
-- [ ] Add `x-data` with `isSubmitting` state to edit teacher modal form  
-- [ ] Add `x-data` with `isSubmitting` state to CSV import form
-- [ ] Add `x-data` with `isSubmitting` state to delete confirmation form
-- [ ] Disable submit buttons when `isSubmitting` is true
-- [ ] Change button text to loading indicator ("Menyimpan...", "Memproses...", "Menghapus...")
-- [ ] Add visual feedback (spinner, disabled styling)
+## Files Modified
+1. `app/Models/SchoolClass.php` - Added `getFullNameAttribute()` accessor
+2. `resources/views/students/partials/modal.blade.php` - Updated edit modal dropdown format
 
-### 2. Backend Prevention (Controller & Validation)
-- [ ] Create FormRequest class for teacher store/update with duplicate check validation
-- [ ] Add unique constraint validation for email/nisn in FormRequest
-- [ ] Add database-level unique index check (if not exists)
-- [ ] Implement idempotency key pattern for critical operations (optional but recommended)
-- [ ] Ensure all store/update methods use redirect (already done)
+## Verification
+The dropdown will now display:
+- "Kelas 1A (SD - Tingkat 1)"
+- "Kelas 1B (SD - Tingkat 1)"
 
-### 3. Automated Testing (PHP Pest)
-- [ ] Create new test file: `tests/Feature/DoubleSubmissionPreventionTest.php`
-- [ ] Test double submission on teacher create (store) - sequential requests
-- [ ] Test double submission on teacher update - sequential requests
-- [ ] Test double submission on CSV import - sequential requests
-- [ ] Assert only 1 record created in database
-- [ ] Test concurrent/parallel requests simulation
-- [ ] Test that proper redirect response is returned
-
-### 4. Additional Forms to Protect
-- [ ] Check other critical forms in the application (Student, Class, etc.)
-- [ ] Apply same pattern to those forms
-
-## Files to Modify/Create
-1. `resources/views/operator/teachers/index.blade.php` - Add Alpine.js submit prevention
-2. `app/Http/Requests/StoreTeacherRequest.php` - New FormRequest with duplicate prevention
-3. `app/Http/Requests/UpdateTeacherRequest.php` - New FormRequest with duplicate prevention
-4. `app/Http/Controllers/TeacherManagementController.php` - Use FormRequests
-5. `tests/Feature/DoubleSubmissionPreventionTest.php` - New test file
+Instead of:
+- "(SD - Tingkat 1)"
+- "(SD - Tingkat 1)"
