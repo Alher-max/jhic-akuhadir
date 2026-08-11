@@ -94,8 +94,8 @@
                                 placeholder="Cari nama, email, atau HP..."
                                 class="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3.5 py-2.5 focus:ring-brand-primary focus:border-brand-primary min-w-[200px]">
                             <button type="submit"
-                                class="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 text-xs px-4 py-2.5 rounded-xl font-semibold transition shadow-xs flex items-center gap-1.5">
-                                <i class="fa-solid fa-magnifying-glass"></i> Cari
+                                class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-sm min-w-[100px]">
+                                Ya, Lepas
                             </button>
                         </form>
                         <button type="button" @click="showCreateModal = true"

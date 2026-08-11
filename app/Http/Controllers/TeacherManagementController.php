@@ -30,13 +30,13 @@ class TeacherManagementController extends Controller
             $query->where('position', $selectedPosition);
         }
 
-        if (!empty($search)) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', '%'.$search.'%')
-                  ->orWhere('email', 'like', '%'.$search.'%')
-                  ->orWhere('nisn', 'like', '%'.$search.'%');
-            });
-        }
+         if (!empty($search)) {
+             $query->where(function($q) use ($search) {
+                 $q->where('name', 'ilike', '%'.$search.'%')
+                   ->orWhere('email', 'ilike', '%'.$search.'%')
+                   ->orWhere('nisn', 'ilike', '%'.$search.'%');
+             });
+         }
 
         $teachers = $query->orderBy('name')->paginate(10)->withQueryString();
         $classes = \App\Models\SchoolClass::where('tenant_id', $tenantId)->orderBy('tingkat')->orderBy('nama_kelas')->get();

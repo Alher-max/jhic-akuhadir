@@ -2,7 +2,7 @@
   "name": "HadirYuk - Sistem Presensi Sekolah",
   "short_name": "HadirYuk",
   "description": "Sistem Presensi Terintegrasi HadirYuk",
-  "start_url": "/student/dashboard",
+  "start_url": "/login",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#b91c1c",

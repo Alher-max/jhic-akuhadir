@@ -16,11 +16,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!auth()->check()) {
-            // For PWA/browser requests (non-AJAX), redirect to login instead of 403
-            if (!$request->expectsJson()) {
-                return redirect()->route('login');
-            }
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            return redirect('login');
         }
 
         $user = auth()->user();
@@ -50,11 +46,7 @@ class RoleMiddleware
         }
 
         if (!empty($roles) && !in_array($user->role, $expandedRoles)) {
-            // For PWA/browser requests (non-AJAX), redirect to login instead of 403
-            if (!$request->expectsJson()) {
-                return redirect()->route('login')->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
-            }
-            return response()->json(['message' => 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.'], 403);
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
         }
 
         return $next($request);
