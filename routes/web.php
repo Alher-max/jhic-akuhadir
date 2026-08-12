@@ -105,6 +105,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::post('/dashboard/subjects', [\App\Http\Controllers\ClassScheduleController::class, 'storeSubject'])->name('subjects.store');
         Route::put('/dashboard/subjects/{subject}', [\App\Http\Controllers\ClassScheduleController::class, 'updateSubject'])->name('subjects.update');
         Route::post('/dashboard/subjects/presets', [\App\Http\Controllers\ClassScheduleController::class, 'loadSubjectPresets'])->name('subjects.presets');
+        Route::post('/dashboard/subjects/presets/kemenag', [\App\Http\Controllers\ClassScheduleController::class, 'loadSubjectPresetsKemenag'])->name('subjects.presets.kemenag');
         Route::delete('/dashboard/subjects/presets', [\App\Http\Controllers\ClassScheduleController::class, 'clearSubjectPresets'])->name('subjects.presets.clear');
         Route::post('/dashboard/activities', [\App\Http\Controllers\ClassScheduleController::class, 'storeActivity'])->name('activities.store');
         Route::post('/dashboard/activities/presets', [\App\Http\Controllers\ClassScheduleController::class, 'loadActivityPresets'])->name('activities.presets');
@@ -140,6 +141,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         // Teacher Management
         Route::post('dashboard/teachers/quick-add', [\App\Http\Controllers\TeacherManagementController::class, 'quickStore'])->name('teachers.quick-store');
         Route::get('/operator/teachers/download-template', [\App\Http\Controllers\TeacherManagementController::class, 'downloadTemplate'])->name('operator.teachers.download-template');
+        Route::get('/operator/teachers/export-csv', [\App\Http\Controllers\TeacherManagementController::class, 'exportCsv'])->name('operator.teachers.export-csv');
         Route::get('/operator/teachers', [\App\Http\Controllers\TeacherManagementController::class, 'index'])->name('operator.teachers.index');
         Route::get('/operator/teachers/{teacher}', [\App\Http\Controllers\TeacherManagementController::class, 'show'])->name('operator.teachers.show');
         Route::post('/operator/teachers', [\App\Http\Controllers\TeacherManagementController::class, 'store'])->name('operator.teachers.store');

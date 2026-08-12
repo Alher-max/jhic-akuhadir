@@ -341,16 +341,77 @@ class ClassScheduleController extends Controller
                 [
                     'code' => $preset['code'],
                     'is_preset' => true,
+                    'preset_type' => 'kemendikbud',
                 ]
             );
             if ($subject->wasRecentlyCreated) {
                 $addedCount++;
             } else {
-                $subject->update(['is_preset' => true]);
+                $subject->update(['is_preset' => true, 'preset_type' => 'kemendikbud']);
             }
         }
 
         return redirect()->route('class-schedules.index', ['tab' => 'subjects'])->with('success', "Preset Mata Pelajaran Kurikulum Standar Kemendikbud berhasil dimuat ($addedCount mapel baru ditambahkan).");
+    }
+
+    /**
+     * Memuat preset daftar Mata Pelajaran Kurikulum Kemenag (KMA No. 1503 Tahun 2025).
+     */
+    public function loadSubjectPresetsKemenag()
+    {
+        $user = Auth::user();
+        $tenantId = $user->tenant_id;
+
+        if (!in_array($user->role, ['kepala_sekolah', 'admin_dapodik', 'operator', 'admin'])) {
+            return redirect()->back()->with('error', 'Hanya Operator / Admin Sekolah yang berhak memuat preset Mata Pelajaran.');
+        }
+
+        $presets = [
+            // Mata Pelajaran Umum (Kurikulum Merdeka Madrasah)
+            ['name' => 'Pendidikan Pancasila', 'code' => 'PPKN'],
+            ['name' => 'Bahasa Indonesia', 'code' => 'BIN'],
+            ['name' => 'Matematika', 'code' => 'MTK'],
+            ['name' => 'Ilmu Pengetahuan Alam (IPA)', 'code' => 'IPA'],
+            ['name' => 'Ilmu Pengetahuan Sosial (IPS)', 'code' => 'IPS'],
+            ['name' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan', 'code' => 'PJOK'],
+            ['name' => 'Seni Budaya', 'code' => 'SBD'],
+            ['name' => 'Pendidikan Kewarganegaraan', 'code' => 'PKN'],
+            ['name' => 'Bahasa Inggris', 'code' => 'BIG'],
+            ['name' => 'Informatika', 'code' => 'INF'],
+
+            // Mata Pelajaran Keagamaan Khas Madrasah (KMA 1503/2025)
+            ['name' => 'Al-Qur\'an Hadits', 'code' => 'QH'],
+            ['name' => 'Aqidah Akhlak', 'code' => 'AA'],
+            ['name' => 'Fiqih', 'code' => 'FIQ'],
+            ['name' => 'Sejarah Kebudayaan Islam (SKI)', 'code' => 'SKI'],
+            ['name' => 'Bahasa Arab', 'code' => 'BAR'],
+            ['name' => 'Pendidikan Agama Islam (PAI)', 'code' => 'PAI'],
+            ['name' => 'Tasawuf', 'code' => 'TSW'],
+            ['name' => 'Bahasa Daerah', 'code' => 'BDA'],
+            ['name' => 'Pendidikan Karakter', 'code' => 'PKR'],
+        ];
+
+        $addedCount = 0;
+        foreach ($presets as $preset) {
+            $subject = Subject::firstOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'name' => $preset['name'],
+                ],
+                [
+                    'code' => $preset['code'],
+                    'is_preset' => true,
+                    'preset_type' => 'kemenag',
+                ]
+            );
+            if ($subject->wasRecentlyCreated) {
+                $addedCount++;
+            } else {
+                $subject->update(['is_preset' => true, 'preset_type' => 'kemenag']);
+            }
+        }
+
+        return redirect()->route('class-schedules.index', ['tab' => 'subjects'])->with('success', "Preset Mata Pelajaran Kurikulum Kemenag (KMA No. 1503 Tahun 2025) berhasil dimuat ($addedCount mapel baru ditambahkan).");
     }
 
     /**

@@ -15,6 +15,7 @@ class Subject extends Model
         'code',
         'name',
         'is_preset',
+        'preset_type',
     ];
 
     protected $casts = [

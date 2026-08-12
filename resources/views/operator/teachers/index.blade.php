@@ -13,6 +13,9 @@
                     <p class="text-sm text-gray-600">Tambah, edit, dan atur data guru dan staf di institusi Anda.</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
+                    <a href="{{ route('operator.teachers.export-csv') }}" class="px-4 py-2 bg-white border border-brand-primary text-brand-primary text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </a>
                     <button @click="showImport = !showImport" class="px-4 py-2 bg-white border border-brand-primary text-brand-primary text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-file-csv"></i> Import CSV
                     </button>

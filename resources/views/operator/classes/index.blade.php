@@ -324,7 +324,7 @@
                             <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                                 <p class="text-xs font-semibold text-red-800 mb-1"><i
                                         class="fa-solid fa-circle-exclamation mr-1"></i> Gagal menyimpan kelas. Periksa
-                                    input berikut:</p>
+                                        input berikut:</p>
                                 <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
                                     @foreach($errors->all() as $error)
                                         <li>{{ $error }}</li>
@@ -396,13 +396,50 @@
                             <div>
                                 <label for="wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali Kelas
                                     <span class="text-red-500">*</span></label>
-                                <select name="wali_kelas_id" id="wali_kelas_id" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('wali_kelas_id') border-red-500 @enderror">
-                                    <option value="">-- Pilih Wali Kelas --</option>
-                                    @foreach($teachers as $teacher)
-                                        <option value="{{ $teacher->id }}" {{ old('wali_kelas_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div x-data="{ 
+                                    open: false, 
+                                    search: '', 
+                                    selectedId: '{{ old('wali_kelas_id') }}',
+                                    teachers: [ @foreach($teachers as $teacher) { id: '{{ $teacher->id }}', name: '{{ $teacher->name }}' }, @endforeach ],
+                                    get selectedName() {
+                                        const teacher = this.teachers.find(t => t.id == this.selectedId);
+                                        return teacher ? teacher.name : '-- Pilih Wali Kelas --';
+                                    },
+                                    get filteredTeachers() {
+                                        if (this.search === '') {
+                                            return this.teachers;
+                                        }
+                                        return this.teachers.filter(t => t.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" class="relative mt-1 w-full">
+                                    <!-- Input Trigger / Display -->
+                                    <div @click="open = !open" class="w-full border border-gray-300 rounded-md p-2 bg-white cursor-pointer flex justify-between items-center text-sm">
+                                        <span x-text="selectedName"></span>
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+
+                                    <!-- Hidden Input untuk Form Submit -->
+                                    <input type="hidden" name="wali_kelas_id" x-model="selectedId">
+
+                                    <!-- Dropdown Panel -->
+                                    <div x-show="open" @clickaway="open = false" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                        <!-- Search Input di dalam dropdown -->
+                                        <div class="p-2 sticky top-0 bg-white border-b">
+                                            <input type="text" x-model="search" placeholder="Cari nama guru..." class="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-red-500">
+                                        </div>
+                                        
+                                        <!-- List Item -->
+                                        <template x-for="teacher in filteredTeachers" :key="teacher.id">
+                                            <div @click="selectedId = teacher.id; search = ''; open = false" 
+                                                 class="px-3 py-2 text-sm hover:bg-red-50 cursor-pointer"
+                                                 x-text="teacher.name"></div>
+                                        </template>
+                                        
+                                        <div x-show="filteredTeachers.length === 0" class="px-3 py-2 text-sm text-gray-500">
+                                            Guru tidak ditemukan
+                                        </div>
+                                    </div>
+                                </div>
                                 @error('wali_kelas_id')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -450,7 +487,7 @@
                         <p class="mt-2 text-sm text-brand-text-muted">Perbarui rincian rombongan belajar.</p>
                     </div>
 
-                    <form :action="`{{ url('operator/classes') }}/${editClassForm.id}`" method="POST" class="mt-5">
+                    <form :action="`{{ url('operator/classes) }}/${editClassForm.id}`" method="POST" class="mt-5">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="id" :value="editClassForm.id">
@@ -459,7 +496,7 @@
                             <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                                 <p class="text-xs font-semibold text-red-800 mb-1"><i
                                         class="fa-solid fa-circle-exclamation mr-1"></i> Gagal memperbarui kelas. Periksa
-                                    input berikut:</p>
+                                        input berikut:</p>
                                 <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
                                     @foreach($errors->all() as $error)
                                         <li>{{ $error }}</li>
@@ -527,14 +564,50 @@
                             <div>
                                 <label for="edit_wali_kelas_id" class="block text-sm font-medium text-gray-700">Wali
                                     Kelas <span class="text-red-500">*</span></label>
-                                <select name="wali_kelas_id" id="edit_wali_kelas_id"
-                                    x-model="editClassForm.wali_kelas_id" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary sm:text-sm @error('wali_kelas_id') border-red-500 @enderror">
-                                    <option value="">-- Pilih Wali Kelas --</option>
-                                    @foreach($teachers as $teacher)
-                                        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div x-data="{ 
+                                    open: false, 
+                                    search: '', 
+                                    selectedId: editClassForm.wali_kelas_id,
+                                    teachers: [ @foreach($teachers as $teacher) { id: '{{ $teacher->id }}', name: '{{ $teacher->name }}' }, @endforeach ],
+                                    get selectedName() {
+                                        const teacher = this.teachers.find(t => t.id == this.selectedId);
+                                        return teacher ? teacher.name : '-- Pilih Wali Kelas --';
+                                    },
+                                    get filteredTeachers() {
+                                        if (this.search === '') {
+                                            return this.teachers;
+                                        }
+                                        return this.teachers.filter(t => t.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" class="relative mt-1 w-full">
+                                    <!-- Input Trigger / Display -->
+                                    <div @click="open = !open" class="w-full border border-gray-300 rounded-md p-2 bg-white cursor-pointer flex justify-between items-center text-sm">
+                                        <span x-text="selectedName"></span>
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+
+                                    <!-- Hidden Input untuk Form Submit -->
+                                    <input type="hidden" name="wali_kelas_id" x-model="selectedId">
+
+                                    <!-- Dropdown Panel -->
+                                    <div x-show="open" @clickaway="open = false" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                        <!-- Search Input di dalam dropdown -->
+                                        <div class="p-2 sticky top-0 bg-white border-b">
+                                            <input type="text" x-model="search" placeholder="Cari nama guru..." class="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-red-500">
+                                        </div>
+                                        
+                                        <!-- List Item -->
+                                        <template x-for="teacher in filteredTeachers" :key="teacher.id">
+                                            <div @click="selectedId = teacher.id; search = ''; open = false" 
+                                                 class="px-3 py-2 text-sm hover:bg-red-50 cursor-pointer"
+                                                 x-text="teacher.name"></div>
+                                        </template>
+                                        
+                                        <div x-show="filteredTeachers.length === 0" class="px-3 py-2 text-sm text-gray-500">
+                                            Guru tidak ditemukan
+                                        </div>
+                                    </div>
+                                </div>
                                 @error('wali_kelas_id')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror

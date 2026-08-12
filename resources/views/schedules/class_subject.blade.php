@@ -132,6 +132,18 @@
                                         </form>
                                     </div>
                                     <div class="py-1">
+                                        <form id="form-load-subject-presets-kemenag" action="{{ route('subjects.presets.kemenag') }}"
+                                            method="POST">
+                                            @csrf
+                                            <button type="button"
+                                                @click="confirmAction('form-load-subject-presets-kemenag', 'Muat Preset Mapel Kemenag (KMA 1503)?', 'Muat preset mata pelajaran Kurikulum Kemenag sesuai KMA No. 1503 Tahun 2025 (termasuk Al-Qur\'an Hadits, Aqidah Akhlak, Fiqih, SKI, Bahasa Arab, dll)?', 'info', 'Ya, Muat Preset')"
+                                                class="w-full text-left px-4 py-2.5 text-xs text-green-700 hover:bg-green-50 hover:text-green-800 font-semibold flex items-center gap-2">
+                                                <i class="fa-solid fa-mosque text-green-600"></i> Muat Preset
+                                                Kemenag (KMA 1503)
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="py-1">
                                         <form id="form-clear-subject-presets" action="{{ route('subjects.presets.clear') }}"
                                             method="POST">
                                             @csrf
@@ -179,20 +191,27 @@
                                                 {{ $sub->code ?? '-' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 font-bold text-gray-900 flex items-center gap-2">
-                                            <span>{{ $sub->name }}</span>
-                                            @if($sub->is_preset)
+                                    <td class="px-6 py-4 font-bold text-gray-900 flex items-center gap-2">
+                                        <span>{{ $sub->name }}</span>
+                                        @if($sub->is_preset)
+                                            @if($sub->preset_type === 'kemenag')
+                                                <span
+                                                    class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-green-100 text-green-800 border border-green-200">
+                                                    Preset Kemenag (KMA 1503)
+                                                </span>
+                                            @else
                                                 <span
                                                     class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
                                                     Preset Kemendikbud
                                                 </span>
-                                            @else
-                                                <span
-                                                    class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100">
-                                                    Custom
-                                                </span>
                                             @endif
-                                        </td>
+                                        @else
+                                            <span
+                                                class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100">
+                                                Custom
+                                            </span>
+                                        @endif
+                                    </td>
                                         <td class="px-6 py-4 text-center">
                                             <span
                                                 class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">

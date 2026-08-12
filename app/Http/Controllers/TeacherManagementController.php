@@ -388,6 +388,96 @@ class TeacherManagementController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function exportCsv(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id;
+        $selectedPosition = $request->get('position');
+        $search = $request->get('search');
+
+        $query = User::with('homeroomClasses')
+            ->where('tenant_id', $tenantId)
+            ->whereIn('role', User::getTeacherRoles());
+
+        if (!empty($selectedPosition)) {
+            $query->where('position', $selectedPosition);
+        }
+
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'ilike', '%'.$search.'%')
+                  ->orWhere('email', 'ilike', '%'.$search.'%')
+                  ->orWhere('nisn', 'ilike', '%'.$search.'%');
+            });
+        }
+
+        $teachers = $query->orderBy('name')->get();
+
+        $positionLabels = [
+            'guru_kelas' => 'Guru Kelas',
+            'guru_mapel' => 'Guru Mapel',
+            'guru_bk' => 'Guru BK',
+            'guru_inklusi' => 'Guru Inklusi',
+            'guru_kejuruan' => 'Guru Kejuruan',
+            'wali_kelas' => 'Wali Kelas',
+            'kepala_sekolah' => 'Kepala Sekolah',
+            'guru_penggerak' => 'Guru Penggerak / Koordinator',
+            'staff' => 'Tata Usaha / Staf Admin',
+            'pustakawan' => 'Pustakawan',
+            'laboran' => 'Laboran',
+            'it_support' => 'IT Support / Tim Teknis',
+            'satpam' => 'Petugas Keamanan',
+            'caraka' => 'Petugas Kebersihan',
+        ];
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=data-guru-" . now()->format('Y-m-d') . ".csv",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['Nama Lengkap', 'Surel/Email', 'Peran/Jabatan', 'Kelas yang Diampu', 'Status', 'Status Akun'];
+
+        $callback = function() use($teachers, $columns, $positionLabels) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8 encoding to support special characters in Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            fputcsv($file, $columns);
+            
+            foreach ($teachers as $teacher) {
+                $position = $teacher->position ?? $teacher->role;
+                $positionLabel = $positionLabels[$position] ?? ucfirst(str_replace('_', ' ', $position));
+                
+                $classes = $teacher->homeroomClasses->pluck('nama_kelas')->implode(', ');
+                if (empty($classes)) {
+                    $classes = 'Belum ada';
+                }
+                
+                $status = $teacher->is_active ? 'Aktif' : 'Nonaktif';
+                
+                $accountStatus = $teacher->must_change_password ? 'Kredensial Default' : 'Aktif';
+                
+                $row = [
+                    $teacher->name,
+                    $teacher->email,
+                    $positionLabel,
+                    $classes,
+                    $status,
+                    $accountStatus,
+                ];
+                
+                fputcsv($file, $row);
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     /**
      * Check if a CSV line is a header row by examining its content.
      * Headers typically contain non-numeric, descriptive text.
@@ -396,14 +486,14 @@ class TeacherManagementController extends Controller
     {
         $delimiter = strpos($line, ';') !== false ? ';' : ',';
         $items = str_getcsv($line, $delimiter);
-        
+
         // If we have at least 4 columns, check if they look like headers
         if (count($items) >= 4) {
             $firstItem = strtolower(trim($items[0]));
             $secondItem = strtolower(trim($items[1]));
             $thirdItem = strtolower(trim($items[2]));
             $fourthItem = strtolower(trim($items[3]));
-            
+
             // Common header keywords
             $headerKeywords = [
                 'nama', 'name', 'namalengkap', 'fullname',
@@ -412,7 +502,7 @@ class TeacherManagementController extends Controller
                 'peran', 'role', 'jabatan', 'position', 'jabatan',
                 'kelas', 'class', 'tingkat', 'grade'
             ];
-            
+
             // Check if any column contains header-like keywords
             foreach ($items as $item) {
                 $item = strtolower(trim($item));
@@ -422,14 +512,14 @@ class TeacherManagementController extends Controller
                     }
                 }
             }
-            
+
             // Additional check: if first column is "nama" or "name" and second is "nip" or "nuptk"
             if (in_array($firstItem, ['nama', 'name', 'namalengkap', 'fullname']) &&
                 in_array($secondItem, ['nip', 'nuptk', 'nipnuptk', 'employeeid', 'employee_id'])) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }
