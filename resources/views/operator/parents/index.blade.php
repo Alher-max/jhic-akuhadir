@@ -163,13 +163,19 @@
                                                         {{ $rel }}
                                                     </span>
 
-                                                    <!-- Tombol Lepas Tautan -->
-                                                    <button type="button"
-                                                        @click="openUnlinkModal({{ $parent->id }}, '{{ addslashes($parent->name) }}', {{ $student->id }}, '{{ addslashes($student->name) }}')"
-                                                        class="text-gray-400 hover:text-rose-600 transition ml-0.5"
-                                                        title="Lepas Tautan">
-                                                        <i class="fa-solid fa-circle-xmark text-xs"></i>
-                                                    </button>
+                                                    <!-- Form Hapus Relasi Anak -->
+                                                    <form action="{{ route('operator.parents.unlink-student', ['parent' => $parent->id, 'student' => $student->id]) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Yakin ingin melepas relasi anak ini dari orang tua?');"
+                                                        class="ml-0.5">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-gray-400 hover:text-rose-600 transition p-0.5"
+                                                            title="Lepas Tautan Anak">
+                                                            <i class="fa-solid fa-circle-xmark text-xs"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             @empty
                                                 <span class="text-gray-400 italic text-[11px]">Belum ada anak terhubung</span>
