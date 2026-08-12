@@ -167,9 +167,10 @@ class ReportController extends Controller
         }
         
         if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+            $lowerSearch = '%' . strtolower($search) . '%';
+            $query->where(function($q) use ($lowerSearch) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(email) LIKE ?", [$lowerSearch]);
             });
         }
         

@@ -84,11 +84,12 @@ class SupportTicketController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('subject', 'like', "%{$search}%")
-                  ->orWhere('message', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($uq) use ($search) {
-                      $uq->where('name', 'like', "%{$search}%");
+            $lowerSearch = '%' . strtolower($search) . '%';
+            $query->where(function ($q) use ($lowerSearch) {
+                $q->whereRaw("LOWER(subject) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(message) LIKE ?", [$lowerSearch])
+                  ->orWhereHas('user', function ($uq) use ($lowerSearch) {
+                      $uq->whereRaw("LOWER(name) LIKE ?", [$lowerSearch]);
                   });
             });
         }

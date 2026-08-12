@@ -31,10 +31,11 @@ class TeacherManagementController extends Controller
         }
 
          if (!empty($search)) {
-             $query->where(function($q) use ($search) {
-                 $q->where('name', 'ilike', '%'.$search.'%')
-                   ->orWhere('email', 'ilike', '%'.$search.'%')
-                   ->orWhere('nisn', 'ilike', '%'.$search.'%');
+             $lowerSearch = '%' . strtolower($search) . '%';
+             $query->where(function($q) use ($lowerSearch) {
+                 $q->whereRaw("LOWER(name) LIKE ?", [$lowerSearch])
+                   ->orWhereRaw("LOWER(email) LIKE ?", [$lowerSearch])
+                   ->orWhereRaw("LOWER(nisn) LIKE ?", [$lowerSearch]);
              });
          }
 
@@ -403,10 +404,11 @@ class TeacherManagementController extends Controller
         }
 
         if (!empty($search)) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'ilike', '%'.$search.'%')
-                  ->orWhere('email', 'ilike', '%'.$search.'%')
-                  ->orWhere('nisn', 'ilike', '%'.$search.'%');
+            $lowerSearch = '%' . strtolower($search) . '%';
+            $query->where(function($q) use ($lowerSearch) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(email) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(nisn) LIKE ?", [$lowerSearch]);
             });
         }
 

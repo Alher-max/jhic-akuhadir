@@ -61,12 +61,14 @@ class TenantRegisterController extends Controller
             return response()->json([]);
         }
 
+        $lowerQuery = '%' . strtolower($query) . '%';
+
         $students = User::with('schoolClass')
             ->where('tenant_id', $tenant->id)
             ->where('role', 'student')
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('nisn', 'like', "%{$query}%");
+            ->where(function ($q) use ($lowerQuery) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerQuery])
+                  ->orWhereRaw("LOWER(nisn) LIKE ?", [$lowerQuery]);
             })
             ->take(10)
             ->get();

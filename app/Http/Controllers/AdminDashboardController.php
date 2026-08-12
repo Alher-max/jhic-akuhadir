@@ -218,8 +218,9 @@ class AdminDashboardController extends Controller
 
         if (request()->filled('search')) {
             $search = request('search');
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('users.name', 'like', "%{$search}%");
+            $lowerSearch = '%' . strtolower($search) . '%';
+            $query->whereHas('user', function ($q) use ($lowerSearch) {
+                $q->whereRaw("LOWER(users.name) LIKE ?", [$lowerSearch]);
             });
         }
 

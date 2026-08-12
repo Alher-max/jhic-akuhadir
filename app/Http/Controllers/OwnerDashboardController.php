@@ -30,11 +30,13 @@ class OwnerDashboardController extends Controller
         $query = $request->get('q');
         if (!$query) return response()->json([]);
 
+        $lowerQuery = '%' . strtolower($query) . '%';
+
         $students = User::where('tenant_id', Auth::user()->tenant_id)
             ->where('role', 'student')
-            ->where(function($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('nisn', 'like', "%{$query}%");
+            ->where(function($q) use ($lowerQuery) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerQuery])
+                  ->orWhereRaw("LOWER(nisn) LIKE ?", [$lowerQuery]);
             })
             ->with('schoolClass')
             ->take(10)
@@ -48,11 +50,13 @@ class OwnerDashboardController extends Controller
         $query = $request->get('q');
         if (!$query) return response()->json([]);
 
+        $lowerQuery = '%' . strtolower($query) . '%';
+
         $teachers = User::where('tenant_id', Auth::user()->tenant_id)
             ->whereIn('role', ['teacher', 'wali_kelas', 'operator', 'admin_dapodik'])
-            ->where(function($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('email', 'like', "%{$query}%");
+            ->where(function($q) use ($lowerQuery) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerQuery])
+                  ->orWhereRaw("LOWER(email) LIKE ?", [$lowerQuery]);
             })
             ->take(10)
             ->get();

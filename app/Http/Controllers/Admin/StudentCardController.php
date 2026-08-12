@@ -42,10 +42,11 @@ class StudentCardController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%");
+            $lowerSearch = '%' . strtolower($search) . '%';
+            $query->where(function($q) use ($lowerSearch) {
+                $q->whereRaw("LOWER(name) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(nisn) LIKE ?", [$lowerSearch])
+                  ->orWhereRaw("LOWER(email) LIKE ?", [$lowerSearch]);
             });
         }
 

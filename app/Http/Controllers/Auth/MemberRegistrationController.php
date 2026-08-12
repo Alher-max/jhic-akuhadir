@@ -24,7 +24,9 @@ class MemberRegistrationController extends Controller
             return response()->json([]);
         }
 
-        $tenants = Tenant::where('name', 'LIKE', '%' . $query . '%')
+        $lowerQuery = '%' . strtolower($query) . '%';
+
+        $tenants = Tenant::whereRaw("LOWER(name) LIKE ?", [$lowerQuery])
             ->select('id', 'name', 'code')
             ->limit(10)
             ->get();
