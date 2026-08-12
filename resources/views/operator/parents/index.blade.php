@@ -166,14 +166,14 @@
                                                     <!-- Form Hapus Relasi Anak -->
                                                     <form action="{{ route('operator.parents.unlink-student', ['parent' => $parent->id, 'student' => $student->id]) }}"
                                                         method="POST"
-                                                        onsubmit="return confirm('Yakin ingin melepas relasi anak ini dari orang tua?');"
-                                                        class="ml-0.5">
+                                                        class="inline-block ml-1"
+                                                        onsubmit="return confirm('Yakin ingin melepas relasi anak ini dari orang tua?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
-                                                            class="text-gray-400 hover:text-rose-600 transition p-0.5"
-                                                            title="Lepas Tautan Anak">
-                                                            <i class="fa-solid fa-circle-xmark text-xs"></i>
+                                                            class="text-red-500 hover:text-red-700 font-bold text-base px-1 rounded hover:bg-red-50 transition"
+                                                            title="Lepas Tautan">
+                                                            &times;
                                                         </button>
                                                     </form>
                                                 </div>
