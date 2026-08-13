@@ -190,10 +190,10 @@
                                 <i class="fa-solid fa-link text-brand-primary"></i> Endpoint URL Push Data
                             </label>
                             <div class="relative">
-                                <input type="text" readonly id="endpointUrl" value="{{ url('/api/v1/biometric/push') }}" 
-                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                <input type="text" readonly id="endpointUrl" value="{{ secure_url('/api/v1/biometric/push') }}" 
+                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 pr-28 focus:ring-brand-primary focus:border-brand-primary">
                                 <button type="button" onclick="copyToClipboard('endpointUrl', this)" 
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1">
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1 whitespace-nowrap">
                                     <i class="fa-regular fa-copy"></i> Salin
                                 </button>
                             </div>
@@ -207,9 +207,9 @@
                             </label>
                             <div class="relative">
                                 <input type="text" readonly id="secretKey" value="{{ $settings->biometric_secret_key ?? 'Belum disetel - Klik Generate di bawah' }}" 
-                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 pr-28 focus:ring-brand-primary focus:border-brand-primary">
                                 <button type="button" onclick="copyToClipboard('secretKey', this)" 
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1">
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1 whitespace-nowrap">
                                     <i class="fa-regular fa-copy"></i> Salin
                                 </button>
                             </div>
