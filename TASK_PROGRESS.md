@@ -1,26 +1,35 @@
-# Task Progress: Detach Parent-Child Relation, Session Config, Testing
+# Task Progress: Self-Service & Webhook Integrasi Mesin Biometrik
 
-## Tasks Overview
+## Backend Migration & Models
+- [x] Create migration `biometric_devices` (id, school_id, serial_number, device_name, status ['pending','active','disabled'], ip_address, last_ping_at)
+- [x] Create migration `biometric_user_mappings` (school_id, biometric_pin, student_id, teacher_id)
+- [x] Create migration `biometric_raw_logs` (serial_number, raw_payload, status, error_message)
+- [x] Create migration `add_biometric_secret_key_to_attendance_settings_table`
+- [x] Run all migrations
+- [x] Create model `BiometricDevice`
+- [x] Create model `BiometricUserMapping`
+- [x] Create model `BiometricRawLog`
+- [x] Update `AttendanceSetting` model to include `biometric_secret_key` in fillable
 
-### 1. Implementasi Fitur Lepas Tautan (Detach) Orang Tua & Anak
-- [x] Analyze current OperatorParentController and parents view
-- [x] Add route for detach action in routes/web.php (already exists)
-- [x] Add detach method in OperatorParentController (already exists as unlinkStudent)
-- [x] Update resources/views/operator/parents/index.blade.php to add delete buttons with confirmation (already implemented)
-- [x] Test detach functionality (test exists in OperatorParentManagementTest - passes)
+## Endpoint API Receiver
+- [x] Create `BiometricPushController` for HTTP POST/GET from machines
+- [x] Implement Auto-Discovery: create record with status 'pending' if SN not in DB
+- [x] Update `last_ping_at` and `ip_address` on every request
+- [x] Register route `/api/v1/biometric/push` in routes/api.php
 
-### 2. Konfigurasi Sesi, Keamanan, & PWA
-- [x] Update config/session.php - set 'expire_on_close' to false (already false by default)
-- [x] Update .env - set SESSION_LIFETIME to 120 (already set)
-- [x] Verify "Remember Me" functionality works with remember_token (already implemented in LoginRequest and login view)
+## Frontend UI (`dashboard/attendance-settings?tab=alat`)
+- [ ] Add "Instruksi Setup Mandiri (Self-Service)" section with:
+  - [ ] Endpoint URL (read-only + copy button)
+  - [ ] Secret Key (read-only + copy button)
+- [ ] Update "Perangkat Terdaftar" table:
+  - [ ] Add tab/notification badge "Mesin Baru Ditemukan (Pending Claim)"
+  - [ ] Add "Klaim & Hubungkan" button for pending devices
+  - [ ] Add status indicator: 'Online' (green if ping < 5 min) and 'Offline' (gray)
+- [ ] Add JavaScript for copy-to-clipboard functionality
+- [ ] Add JavaScript for claim device functionality
 
-### 3. Pengujian Program (Testing)
-- [x] Run php artisan test (137 passed, 3 failed)
-- [x] Report any failed tests (3 pre-existing failures unrelated to changes)
-- [ ] Fix any regressions (no regressions detected)
-
-## Progress
-
-- [x] Task 1: Detach feature implementation (already implemented)
-- [x] Task 2: Session & PWA configuration (already configured correctly)
-- [x] Task 3: Run tests and verify (completed - 137 passed, 3 pre-existing failures)
+## Testing & Verification
+- [ ] Test API endpoint with sample payload
+- [ ] Test frontend UI functionality
+- [ ] Verify auto-discovery works correctly
+- [ ] Verify claim functionality works

@@ -21,6 +21,7 @@ class AttendanceSetting extends Model
         'wifi_allowed_ssids',
         'wifi_allowed_macs',
         'rfid_secret_key',
+        'biometric_secret_key',
         'latitude',
         'longitude',
         'radius_meters',

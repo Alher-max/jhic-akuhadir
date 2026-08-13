@@ -163,6 +163,8 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::put('/dashboard/attendance-settings/timezone', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'updateTimezone'])->name('attendance-settings.update-timezone');
         Route::post('/dashboard/attendance-settings/devices', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'storeDevice'])->name('attendance-settings.devices.store');
         Route::delete('/dashboard/attendance-settings/devices/{id}', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'destroyDevice'])->name('attendance-settings.devices.destroy');
+        Route::post('/dashboard/attendance-settings/claim-device', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'claimDevice'])->name('attendance-settings.devices.claim');
+        Route::post('/dashboard/attendance-settings/generate-secret-key', [\App\Http\Controllers\Admin\AttendanceSettingController::class, 'generateSecretKey'])->name('attendance-settings.generate-secret-key');
 
         // Student Cards Management (Kartu Pelajar)
         Route::get('/dashboard/student-cards', [\App\Http\Controllers\Admin\StudentCardController::class, 'index'])->name('student-cards.index');

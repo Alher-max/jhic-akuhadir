@@ -169,6 +169,70 @@
 
             @if($tab === 'alat')
                 <!-- TAB 2: ALAT (KONFIGURASI METODE PRESENSI) -->
+                
+                <!-- SECTION: Self-Service Setup Instructions -->
+                @if($settings->method_biometric)
+                <div class="bg-brand-surface overflow-hidden shadow-sm sm:rounded-xl border border-brand-border p-6 mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-brand-text-main">Instruksi Setup Mandiri (Self-Service)</h3>
+                            <p class="text-sm text-brand-text-muted">Pasang & hubungkan mesin biometrik tanpa bantuan IT. Mesin akan otomatis terdeteksi (Auto-Discovery) saat pertama kali menghubungi server.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Endpoint URL -->
+                        <div class="bg-white border border-brand-border rounded-xl p-5">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-link text-brand-primary"></i> Endpoint URL Push Data
+                            </label>
+                            <div class="relative">
+                                <input type="text" readonly id="endpointUrl" value="{{ url('/api/v1/biometric/push') }}" 
+                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                <button type="button" onclick="copyToClipboard('endpointUrl', this)" 
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-2">Masukkan URL ini ke pengaturan "Server Address / Cloud URL" pada mesin biometrik Anda.</p>
+                        </div>
+
+                        <!-- Secret Key -->
+                        <div class="bg-white border border-brand-border rounded-xl p-5">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-key text-brand-primary"></i> Secret Key (API Token)
+                            </label>
+                            <div class="relative">
+                                <input type="text" readonly id="secretKey" value="{{ $settings->biometric_secret_key ?? 'Belum disetel - Klik Generate di bawah' }}" 
+                                    class="block w-full bg-gray-50 border-gray-300 rounded-md text-xs text-gray-700 font-mono px-3 py-2.5 focus:ring-brand-primary focus:border-brand-primary">
+                                <button type="button" onclick="copyToClipboard('secretKey', this)" 
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-md hover:bg-brand-primary/90 transition flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-2">Masukkan Key ini ke pengaturan "API Key / Secret" pada mesin. <a href="#" class="text-brand-primary hover:underline" onclick="event.preventDefault(); generateSecretKey()">Generate Key Baru</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Langkah Setup -->
+                    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <h4 class="font-bold text-amber-900 flex items-center gap-2 mb-3"><i class="fa-solid fa-list-ol text-amber-600"></i> Langkah Setup Cepat:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-amber-900">
+                            <li>Hidupkan mesin biometrik & sambungkan ke internet (LAN/Wi-Fi).</li>
+                            <li>Masuk ke menu <strong>Network / Cloud / Server Setting</strong> pada mesin.</li>
+                            <li>Set <strong>Protocol: HTTP/HTTPS</strong>, <strong>Method: POST</strong>.</li>
+                            <li>Salin <strong>Endpoint URL</strong> di atas ke field <strong>Server URL / Cloud Address</strong>.</li>
+                            <li>Salin <strong>Secret Key</strong> di atas ke field <strong>API Key / Token / Secret</strong>.</li>
+                            <li>Simpan pengaturan. Mesin akan otomatis mengirim data (push) ke server.</li>
+                            <li>Kembali ke halaman ini, klik tab "Perangkat Terdaftar" → Mesin baru akan muncul dengan badge <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Pending Claim</span> → Klik <strong>"Klaim & Hubungkan"</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+                @endif
+
                 <form action="{{ route('attendance-settings.update') }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -544,6 +608,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-brand-border bg-white">
+                                {{-- Regular Devices (RFID, QR Code, WiFi Router, Manual Biometric) --}}
                                 @forelse($devices as $device)
                                     <tr class="hover:bg-gray-50/50">
                                         <td class="px-6 py-4">
@@ -597,17 +662,111 @@
                                         </td>
                                     </tr>
                                 @empty
+                                    {{-- Will show empty state at the end if no devices at all --}}
+                                @endforelse
+                                
+                                {{-- Auto-Discovered Biometric Devices (Pending Claim) --}}
+                                @if(isset($pendingBiometricDevices) && $pendingBiometricDevices->count() > 0)
+                                    @foreach($pendingBiometricDevices as $device)
+                                        <tr class="hover:bg-amber-50/50 border-t-2 border-amber-200">
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                                    {{ $device->serial_number }}
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 animate-pulse">
+                                                        <i class="fa-solid fa-robot text-xs mr-1"></i> Baru Ditemukan
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-600">
+                                                <span class="inline-flex items-center gap-1.5"><i
+                                                        class="fa-solid fa-fingerprint text-amber-500"></i> Mesin Biometrik (Auto-Discovery)</span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 font-medium">Menunggu Klaim</div>
+                                                <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $device->ip_address ?? 'Tidak diketahui' }}
+                                                </div>
+                                                <div class="text-xs text-gray-400 mt-0.5">SN: {{ $device->serial_number }}</div>
+                                                <div class="text-xs text-gray-400">Terakhir ping: {{ $device->last_ping_at ? $device->last_ping_at->diffForHumans() : 'Belum pernah' }}</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5 animate-pulse"></span>
+                                                    Pending Claim
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right text-sm">
+                                                <form action="{{ route('attendance-settings.devices.claim') }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <input type="hidden" name="serial_number" value="{{ $device->serial_number }}">
+                                                    <input type="text" name="device_name" placeholder="Nama perangkat..." required class="text-xs border border-gray-300 rounded px-2 py-1 w-40 mr-2" style="min-width: 160px;">
+                                                    <button type="submit" class="bg-amber-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-amber-700 transition flex items-center gap-1">
+                                                        <i class="fa-solid fa-hand-pointer"></i> Klaim & Hubungkan
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                
+                                {{-- Claimed Biometric Devices --}}
+                                @if(isset($claimedBiometricDevices) && $claimedBiometricDevices->count() > 0)
+                                    @foreach($claimedBiometricDevices as $device)
+                                        <tr class="hover:bg-gray-50/50">
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm font-bold text-gray-900">{{ $device->device_name ?? $device->serial_number }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-600">
+                                                <span class="inline-flex items-center gap-1.5"><i
+                                                        class="fa-solid fa-fingerprint text-amber-500"></i> Mesin Biometrik (Claimed)</span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 font-medium">{{ $device->location ?? 'Auto-claimed via Self-Service' }}</div>
+                                                <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $device->ip_address ?? '-' }}</div>
+                                                <div class="text-xs text-gray-400 mt-0.5">SN: {{ $device->serial_number }}</div>
+                                                <div class="text-xs text-gray-400">Terakhir ping: {{ $device->last_ping_at ? $device->last_ping_at->diffForHumans() : 'Belum pernah' }}</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                @php
+                                                    $isOnline = $device->last_ping_at && $device->last_ping_at->diffInMinutes(now()) < 5;
+                                                @endphp
+                                                @if($isOnline)
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
+                                                        Online
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></span>
+                                                        Offline
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-right text-sm">
+                                                <form action="{{ route('attendance-settings.devices.destroy', $device->id) }}" method="POST" class="inline" x-data
+                                                    @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Perangkat?', message: 'Hapus perangkat ini?' })">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-rose-600 hover:text-rose-900 font-medium">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                
+                                {{-- Empty State --}}
+                                @if(($devices->isEmpty() ?? true) && (!isset($pendingBiometricDevices) || $pendingBiometricDevices->isEmpty()) && (!isset($claimedBiometricDevices) || $claimedBiometricDevices->isEmpty()))
                                     <tr>
                                         <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                             <div class="flex flex-col items-center justify-center">
                                                 <i class="fa-solid fa-server text-4xl mb-3 text-gray-300"></i>
                                                 <p class="font-medium text-gray-600">Belum ada perangkat terdaftar.</p>
                                                 <p class="text-sm mt-1 text-gray-400">Silakan tambah mesin presensi atau router
-                                                    melalui tombol di atas.</p>
+                                                    melalui tombol di atas. Mesin biometrik baru akan otomatis muncul di sini
+                                                    setelah menghubungi server (Auto-Discovery).</p>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforelse
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -706,6 +865,82 @@
         </div>
 
         <script>
+            // Copy to clipboard function
+            function copyToClipboard(elementId, buttonElement) {
+                const input = document.getElementById(elementId);
+                if (!input) return;
+                
+                input.select();
+                input.setSelectionRange(0, 99999); // For mobile devices
+                
+                try {
+                    document.execCommand('copy');
+                    const originalContent = buttonElement.innerHTML;
+                    buttonElement.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Tersalin!';
+                    buttonElement.classList.add('bg-emerald-600');
+                    buttonElement.classList.remove('bg-brand-primary');
+                    
+                    setTimeout(() => {
+                        buttonElement.innerHTML = originalContent;
+                        buttonElement.classList.remove('bg-emerald-600');
+                        buttonElement.classList.add('bg-brand-primary');
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for modern browsers
+                    navigator.clipboard.writeText(input.value).then(() => {
+                        const originalContent = buttonElement.innerHTML;
+                        buttonElement.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Tersalin!';
+                        buttonElement.classList.add('bg-emerald-600');
+                        buttonElement.classList.remove('bg-brand-primary');
+                        
+                        setTimeout(() => {
+                            buttonElement.innerHTML = originalContent;
+                            buttonElement.classList.remove('bg-emerald-600');
+                            buttonElement.classList.add('bg-brand-primary');
+                        }, 2000);
+                    }).catch(() => {
+                        alert('Gagal menyalin. Silakan salin manual.');
+                    });
+                }
+            }
+
+            // Generate new secret key
+            function generateSecretKey() {
+                if (!confirm('Yakin ingin generate Secret Key baru? Key lama akan tidak bisa digunakan lagi.')) {
+                    return;
+                }
+                
+                const btn = event.target.closest('a') || event.target;
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generate...';
+                btn.classList.add('pointer-events-none', 'opacity-60');
+                
+                fetch('{{ route("attendance-settings.generate-secret-key") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('secretKey').value = data.secret_key;
+                        alert('Secret Key baru berhasil di-generate!');
+                    } else {
+                        alert('Gagal generate key: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(() => {
+                    alert('Terjadi kesalahan saat generate key.');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('pointer-events-none', 'opacity-60');
+                });
+            }
+
             function fetchCurrentGpsLocation(btnElement) {
                 if (window.isSecureContext === false && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
                     alert("Fitur GPS membutuhkan koneksi aman (HTTPS).");

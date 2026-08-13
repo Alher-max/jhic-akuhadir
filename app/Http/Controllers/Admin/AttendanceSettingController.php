@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AttendanceSetting;
 use App\Models\AttendanceDevice;
+use App\Models\BiometricDevice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -16,6 +17,7 @@ class AttendanceSettingController extends Controller
         $tenant = Auth::user()->tenant;
         $tenantId = Auth::user()->tenant_id;
         $tab = $request->query('tab', 'umum');
+        $claimSn = $request->query('claim');
         
         // Dapatkan atau buat default settings jika belum ada
         $settings = AttendanceSetting::firstOrCreate(
@@ -30,12 +32,28 @@ class AttendanceSettingController extends Controller
                 'wifi_allowed_ssids' => [],
                 'wifi_allowed_macs' => [],
                 'rfid_secret_key' => Str::random(32),
+                'biometric_secret_key' => Str::random(32),
             ]
         );
 
-        $devices = AttendanceDevice::where('tenant_id', $tenantId)->get();
+        // Generate biometric_secret_key if not exists
+        if (empty($settings->biometric_secret_key)) {
+            $settings->update(['biometric_secret_key' => Str::random(32)]);
+        }
 
-        return view('attendance-settings.index', compact('settings', 'devices', 'tab', 'tenant'));
+        $devices = AttendanceDevice::where('tenant_id', $tenantId)->get();
+        
+        // Get pending biometric devices for this school (Auto-discovered but not claimed)
+        $pendingBiometricDevices = BiometricDevice::where('school_id', $tenantId)
+            ->where('status', 'pending')
+            ->get();
+        
+        // Get claimed biometric devices for this school
+        $claimedBiometricDevices = BiometricDevice::where('school_id', $tenantId)
+            ->where('status', '!=', 'pending')
+            ->get();
+
+        return view('attendance-settings.index', compact('settings', 'devices', 'tab', 'tenant', 'claimSn', 'pendingBiometricDevices', 'claimedBiometricDevices'));
     }
 
     public function updateTimezone(Request $request)
@@ -153,5 +171,70 @@ class AttendanceSettingController extends Controller
         $device->delete();
 
         return back()->with('success', 'Perangkat berhasil dihapus.');
+    }
+
+    public function claimDevice(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id;
+        
+        $request->validate([
+            'serial_number' => 'required|string|max:255',
+            'device_name' => 'required|string|max:255',
+        ]);
+
+        // Find the pending biometric device
+        $device = BiometricDevice::where('serial_number', $request->serial_number)
+            ->where(function ($query) use ($tenantId) {
+                $query->where('school_id', $tenantId)
+                      ->orWhereNull('school_id');
+            })
+            ->firstOrFail();
+
+        // Check if device is already claimed by another school
+        if ($device->school_id && $device->school_id !== $tenantId) {
+            return back()->with('error', 'Perangkat ini sudah diklaim oleh sekolah lain.');
+        }
+
+        // Update device to claimed status
+        $device->update([
+            'school_id' => $tenantId,
+            'device_name' => $request->device_name,
+            'status' => 'active',
+        ]);
+
+        // Also create an AttendanceDevice record for backward compatibility
+        AttendanceDevice::firstOrCreate(
+            ['tenant_id' => $tenantId, 'device_name' => $request->device_name, 'device_type' => 'biometric'],
+            [
+                'location' => 'Auto-claimed via Self-Service',
+                'ip_address' => $device->ip_address,
+                'status' => 'online',
+            ]
+        );
+
+        return back()->with('success', 'Mesin biometrik berhasil diklaim dan terhubung!');
+    }
+
+    /**
+     * Generate a new secret key for biometric integration
+     */
+    public function generateSecretKey(Request $request)
+    {
+        $tenantId = auth()->user()->tenant_id ?? auth()->user()->id;
+
+        // Generate a secure random key
+        $secretKey = Str::random(64);
+
+        // Save to attendance settings
+        $settings = AttendanceSetting::firstOrCreate(['tenant_id' => $tenantId]);
+        $settings->update([
+            'biometric_secret_key' => $secretKey,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'secret_key' => $secretKey,
+            'message' => 'Secret Key baru berhasil di-generate!'
+        ]);
     }
 }
