@@ -487,7 +487,7 @@
                         <p class="mt-2 text-sm text-brand-text-muted">Perbarui rincian rombongan belajar.</p>
                     </div>
 
-                    <form :action="`{{ url('operator/classes) }}/${editClassForm.id}`" method="POST" class="mt-5">
+                    <form :action="`{{ url('operator/classes') }}/${editClassForm.id}`" method="POST" class="mt-5">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="id" :value="editClassForm.id">
