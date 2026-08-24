@@ -338,10 +338,8 @@ class OperatorParentManagementTest extends TestCase
         $response->assertRedirect(route('operator.parents.index'));
         $response->assertSessionHas('success');
 
-        // Pastikan user terhapus
-        $this->assertDatabaseMissing('users', [
-            'id' => $parent->id,
-        ]);
+        // Pastikan user terhapus (soft deleted)
+        $this->assertSoftDeleted('users', ['id' => $parent->id]);
 
         // Pastikan relasi pivot terhapus
         $this->assertDatabaseMissing('parent_student', [

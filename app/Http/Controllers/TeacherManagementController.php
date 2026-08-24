@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class TeacherManagementController extends Controller
@@ -47,19 +48,26 @@ class TeacherManagementController extends Controller
 
     public function store(StoreTeacherRequest $request)
     {
-        if ($request->has('name') && $request->name) {
-            $this->validateAndCreateTeacher($request);
-        }
+        try {
+            return DB::transaction(function () use ($request) {
+                if ($request->has('name') && $request->name) {
+                    $this->validateAndCreateTeacher($request);
+                }
 
-        if ($request->hasFile('teachers_file')) {
-            try {
-                $this->importFromCsv($request->file('teachers_file'));
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Gagal memproses baris CSV: ' . $e->getMessage());
-            }
-        }
+                if ($request->hasFile('teachers_file')) {
+                    $this->importFromCsv($request->file('teachers_file'));
+                }
 
-        return redirect()->route('operator.teachers.index')->with('success', 'Data Pendidik / Staf berhasil ditambahkan.');
+                return redirect()->route('operator.teachers.index')->with('success', 'Data Pendidik / Staf berhasil ditambahkan.');
+            });
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to store teacher/operator: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            return redirect()->back()->with('error', 'Gagal memproses pendaftaran: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function quickStore(Request $request)
@@ -70,30 +78,50 @@ class TeacherManagementController extends Controller
             'nip' => 'nullable|string|max:50',
         ]);
 
-        $teacher = $this->validateAndCreateTeacher($request);
+        try {
+            $teacher = DB::transaction(function () use ($request) {
+                return $this->validateAndCreateTeacher($request);
+            });
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Pendidik / Guru berhasil ditambahkan.',
-                'teacher' => [
-                    'id' => $teacher->id,
-                    'name' => $teacher->name
-                ]
-            ]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pendidik / Guru berhasil ditambahkan.',
+                    'teacher' => [
+                        'id' => $teacher->id,
+                        'name' => $teacher->name
+                    ]
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Pendidik / Guru berhasil ditambahkan dan dapat dipilih.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->validator->errors()->first(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menambahkan data: ' . $e->getMessage(),
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menambahkan data: ' . $e->getMessage())->withInput();
         }
-
-        return redirect()->back()->with('success', 'Pendidik / Guru berhasil ditambahkan dan dapat dipilih.');
     }
 
     private function validateAndCreateTeacher(Request $request)
     {
         $tenant = Tenant::findOrFail(Auth::user()->tenant_id);
 
-        $email = $request->email;
+        $email = $request->email ? strtolower(trim($request->email)) : null;
         if (!$email) {
             $identifier = $request->nip ?: Str::lower(Str::random(6));
-            $email = 'guru.' . $identifier . '@hadirsekolah.id';
+            $email = 'guru.' . strtolower($identifier) . '@hadirsekolah.id';
         }
 
         $nipOrPhone = $request->nip;
@@ -108,8 +136,45 @@ class TeacherManagementController extends Controller
         // Determine system role based on position for access control
         $systemRole = User::getSystemRoleFromPosition($position);
 
-        $existing = User::where('email', $email)->first();
-        if ($existing) return $existing;
+        // Check if user already exists in users table (including soft-deleted)
+        $existing = User::withTrashed()->where('email', $email)->first();
+        if ($existing) {
+            if ($existing->trashed()) {
+                // Restore trashed user and re-assign / update data
+                $existing->restore();
+
+                $avatarPath = $existing->avatar;
+                if ($request->hasFile('avatar')) {
+                    $avatarPath = $request->file('avatar')->store('avatars/' . $tenant->id, 'public');
+                }
+
+                $existing->update([
+                    'tenant_id' => $tenant->id,
+                    'name' => $request->name,
+                    'avatar' => $avatarPath,
+                    'nisn' => $request->nip,
+                    'password' => $password,
+                    'must_change_password' => true,
+                    'role' => $systemRole,
+                    'position' => $position,
+                    'is_active' => true,
+                    'onboarding_completed' => true,
+                    'email_verified_at' => Carbon::now(),
+                ]);
+
+                return $existing;
+            }
+
+            // If active in same tenant
+            if ($existing->tenant_id === $tenant->id) {
+                return $existing;
+            }
+
+            // If active in another tenant
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Email sudah terdaftar dalam sistem.',
+            ]);
+        }
 
         $avatarPath = null;
         if ($request->hasFile('avatar')) {
@@ -233,21 +298,38 @@ class TeacherManagementController extends Controller
                     $position = $role; // Use the mapped role as position
                     $systemRole = User::getSystemRoleFromPosition($position);
 
-                    User::updateOrCreate(
-                        ['email' => $email],
-                        [
+                    $existingCsvUser = User::withTrashed()->where('email', $email)->first();
+                    if ($existingCsvUser) {
+                        if ($existingCsvUser->trashed()) {
+                            $existingCsvUser->restore();
+                        }
+                        $existingCsvUser->update([
                             'tenant_id' => $tenantId,
                             'name' => $name,
                             'nisn' => $nisnValue,
                             'password' => Hash::make($defaultPassword),
                             'must_change_password' => true,
-                            'role' => $systemRole, // System role for access control
-                            'position' => $position, // Actual position/jabatan
+                            'role' => $systemRole,
+                            'position' => $position,
                             'is_active' => true,
                             'onboarding_completed' => true,
                             'email_verified_at' => Carbon::now(),
-                        ]
-                    );
+                        ]);
+                    } else {
+                        User::create([
+                            'tenant_id' => $tenantId,
+                            'name' => $name,
+                            'email' => $email,
+                            'nisn' => $nisnValue,
+                            'password' => Hash::make($defaultPassword),
+                            'must_change_password' => true,
+                            'role' => $systemRole,
+                            'position' => $position,
+                            'is_active' => true,
+                            'onboarding_completed' => true,
+                            'email_verified_at' => Carbon::now(),
+                        ]);
+                    }
                 }
             }
         }

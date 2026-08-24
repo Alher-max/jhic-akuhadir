@@ -1,0 +1,131 @@
+# Terminal Operations Rules (Windows)
+
+## Terminal Usage Guidelines
+
+### Path Usage
+- **Always use relative paths** for terminal operations
+- Use `cd <directory> && <command>` pattern for navigating directories
+- Never use absolute paths unless absolutely necessary
+- Use quoted relative paths: `cd frontend && npm install`
+- Use `&&` to chain commands and `;` for sequential commands
+
+### Command Examples
+```bash
+# Correct:
+cd frontend && npm install
+cd backend && php artisan migrate
+
+# Incorrect:
+cd C:\Users\Bagus\Documents\HadirYuk\frontend
+npm run build
+cd /var/www/html/app
+```
+
+### Common Terminal Commands
+```bash
+# Navigate and list
+cd . && ls
+cd .. && dir
+
+# Check project structure
+ls -la
+pwd
+
+# Run Laravel commands
+php artisan serve
+php artisan migrate
+
+# Run npm commands
+cd frontend && npm run dev
+cd backend && npm install
+
+# Check environment
+php artisan config:show
+php artisan env
+```
+
+## Code Standards and Structure
+
+### Folder Structure
+```
+app/
+  Controllers/
+  Models/
+  Http/
+  Views/
+config/
+database/
+  migrations/
+public/
+resources/
+  views/
+routes/
+storage/
+tests/
+```
+
+### File Naming Conventions
+- **Models**: CamelCase (e.g., `SchoolClass.php`)
+- **Controllers**: CamelCase (e.g., `StudentManagementController.php`)
+- **Requests**: PascalCase (e.g., `StoreTeacherRequest.php`)
+- **Migrations**: snake_case with timestamp prefix
+- **Views**: snake_case (e.g., `operator/teachers/index.blade.php`)
+- **Routes**: snake_case in routes/web.php
+
+### Architecture Patterns
+- **MVC Architecture**: Models, Views, Controllers
+- **Middleware**: Role-based authentication and tenant isolation
+- **Multi-tenant SaaS**: Subdomain-based tenant separation
+- **API Structure**: routes/api.php for external integrations
+- **Authentication**: Laravel Sanctum for API tokens if needed
+
+## Git Commit Guidelines
+
+### Commit Message Format
+```
+<type>(<scope>): <description>
+
+<body>
+
+<footer>
+```
+
+### Commit Types
+- **feat**: New feature
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes (formatting, etc.)
+- **refactor**: Code refactoring
+- **test**: Adding tests
+- **chore**: Maintenance tasks
+
+### Commit Examples
+```
+feat(SchoolClass): add full_name accessor for better display
+fix(modal): resolve dropdown display issue with class names
+docs(.clinerules): add terminal and coding standards documentation
+refactor(Attendance): optimize biometric device query
+```
+
+### Commit Footer
+- Include references to related issues or PRs
+- Add Co-authored-by: openhands <openhands@all-hands.dev>
+
+## Additional Rules
+
+### Code Quality
+- Use Eloquent ORM for database operations
+- Implement proper error handling and validation
+- Follow Laravel's convention over configuration
+- Write clean, readable, and documented code
+
+### Development Workflow
+- Run `composer install` for dependencies
+- Use `php artisan migrate` for database setup
+- Test changes thoroughly before committing
+- Keep commit messages concise but informative
+
+### Project Management
+- Issues and tasks tracked in TASK_PLAN.md and TASK_PROGRESS.md
+- Feature development follows task-based approach
+- Regular code reviews and testing recommended

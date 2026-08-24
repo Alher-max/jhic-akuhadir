@@ -9,8 +9,10 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class StaffRegistrationController extends Controller
 {
@@ -40,15 +42,39 @@ class StaffRegistrationController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'tenant_id' => $invitation->tenant_id,
-            'name' => $request->name,
-            'email' => $invitation->email,
-            'password' => Hash::make($request->password),
-            'role' => $invitation->role ?: 'operator',
-            'is_active' => true,
-            'onboarding_completed' => true, // Staf tidak perlu onboarding
-        ]);
+        $user = DB::transaction(function () use ($invitation, $request) {
+            // Check if email already exists as a trashed (soft-deleted) user
+            $existingUser = User::withTrashed()->where('email', $invitation->email)->first();
+            if ($existingUser) {
+                if ($existingUser->trashed()) {
+                    // Restore trashed user and re-assign tenant & role
+                    $existingUser->restore();
+                }
+
+                // Update all fields including name and password in a single update call
+                // This avoids issues with separate update()+save() calls not persisting all attributes
+                $existingUser->update([
+                    'tenant_id' => $invitation->tenant_id,
+                    'role' => $invitation->role ?: 'operator',
+                    'is_active' => true,
+                    'onboarding_completed' => true,
+                    'name' => $request->name,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                return $existingUser;
+            }
+
+            return User::create([
+                'tenant_id' => $invitation->tenant_id,
+                'name' => $request->name,
+                'email' => $invitation->email,
+                'password' => Hash::make($request->password),
+                'role' => $invitation->role ?: 'operator',
+                'is_active' => true,
+                'onboarding_completed' => true,
+            ]);
+        });
 
         $invitation->update(['status' => 'accepted']);
 

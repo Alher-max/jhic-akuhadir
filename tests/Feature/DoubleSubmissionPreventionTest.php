@@ -250,9 +250,10 @@ class DoubleSubmissionPreventionTest extends TestCase
         // Second request will return 404 (not found) since teacher was already deleted
         $response2->assertStatus(404);
         
-        // Teacher should be deleted (only once)
-        $this->assertDatabaseCount('users', 1); // Only operator remains
-        $this->assertDatabaseMissing('users', ['id' => $teacher->id]);
+        // Teacher should be soft-deleted (only once) - with SoftDeletes, record still exists
+        // but has deleted_at set, so we check that the teacher is soft-deleted
+        $this->assertSoftDeleted('users', ['id' => $teacher->id]);
+        $this->assertDatabaseMissing('users', ['id' => $teacher->id, 'deleted_at' => null]);
     }
 
     /** @test */

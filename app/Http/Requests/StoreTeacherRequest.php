@@ -29,7 +29,8 @@ class StoreTeacherRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique('users', 'email')->where(function ($query) {
-                    return $query->where('tenant_id', auth()->user()->tenant_id);
+                    return $query->where('tenant_id', auth()->user()->tenant_id)
+                        ->whereNull('deleted_at');
                 }),
             ],
             'nip' => [
@@ -37,7 +38,8 @@ class StoreTeacherRequest extends FormRequest
                 'string',
                 'max:50',
                 Rule::unique('users', 'nisn')->where(function ($query) {
-                    return $query->where('tenant_id', auth()->user()->tenant_id);
+                    return $query->where('tenant_id', auth()->user()->tenant_id)
+                        ->whereNull('deleted_at');
                 }),
             ],
             'role' => 'nullable|string|in:kepala_sekolah,guru_penggerak,guru_mapel,guru_kelas,guru_kejuruan,guru_bk,guru_inklusi,wali_kelas,staff,pustakawan,laboran,it_support,satpam,caraka,operator,guru,siswa,parent',
@@ -92,8 +94,9 @@ class StoreTeacherRequest extends FormRequest
                     ->where('tenant_id', auth()->user()->tenant_id)
                     ->first();
 
+                // Note: Trashed users are allowed so controller can restore and re-assign them
                 if ($existing) {
-                    $validator->errors()->add('email', 'Data guru dengan email ini sudah ada.');
+                    $validator->errors()->add('email', 'Data pengguna dengan email ini sudah aktif terdaftar.');
                 }
 
                 if ($this->nip) {
@@ -102,7 +105,7 @@ class StoreTeacherRequest extends FormRequest
                         ->first();
 
                     if ($existingNip) {
-                        $validator->errors()->add('nip', 'Data guru dengan NIP/NUPTK ini sudah ada.');
+                        $validator->errors()->add('nip', 'Data pengguna dengan NIP/NUPTK ini sudah aktif terdaftar.');
                     }
                 }
             }

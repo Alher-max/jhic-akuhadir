@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class OperatorParentController extends Controller
 {
@@ -16,29 +17,39 @@ class OperatorParentController extends Controller
     {
         $tenantId = Auth::user()->tenant_id;
 
-        $query = User::where('tenant_id', $tenantId)
-            ->where('role', 'parent')
-            ->with(['students.schoolClass']);
+        try {
+            $query = User::where('tenant_id', $tenantId)
+                ->where('role', 'parent')
+                ->with(['students.schoolClass']);
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $lowerSearch = '%' . strtolower($search) . '%';
-            $query->where(function($q) use ($lowerSearch) {
-                $q->whereRaw("LOWER(name) LIKE ?", [$lowerSearch])
-                  ->orWhereRaw("LOWER(email) LIKE ?", [$lowerSearch])
-                  ->orWhereRaw("LOWER(phone) LIKE ?", [$lowerSearch]);
-            });
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $lowerSearch = '%' . strtolower($search) . '%';
+                $query->where(function ($q) use ($lowerSearch) {
+                    $q->whereRaw("LOWER(users.name) LIKE ?", [$lowerSearch])
+                        ->orWhereRaw("LOWER(users.email) LIKE ?", [$lowerSearch])
+                         ->orWhereRaw("LOWER(users.parent_phone) LIKE ?", [$lowerSearch]);
+                });
+            }
+
+            $parents = $query->orderBy('name')->paginate(15)->withQueryString();
+
+            $allStudents = User::where('tenant_id', $tenantId)
+                ->where('role', 'student')
+                ->with('schoolClass')
+                ->orderBy('name')
+                ->get();
+
+            return view('operator.parents.index', compact('parents', 'allStudents'));
+        } catch (\Throwable $e) {
+            Log::error('Operator parent index error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'tenant_id' => $tenantId,
+                'search' => $request->filled('search') ? $request->search : null,
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan pada server saat memuat data orang tua. Silakan coba kembali.');
         }
-
-        $parents = $query->orderBy('name')->paginate(15)->withQueryString();
-
-        $allStudents = User::where('tenant_id', $tenantId)
-            ->where('role', 'student')
-            ->with('schoolClass')
-            ->orderBy('name')
-            ->get();
-
-        return view('operator.parents.index', compact('parents', 'allStudents'));
     }
 
     /**

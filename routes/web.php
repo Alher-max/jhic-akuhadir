@@ -240,7 +240,8 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register/staff/{token}', [\App\Http\Controllers\Auth\StaffRegistrationController::class, 'create'])
         ->name('register.staff');
-    Route::post('/register/staff/{token}', [\App\Http\Controllers\Auth\StaffRegistrationController::class, 'store']);
+    Route::post('/register/staff/{token}', [\App\Http\Controllers\Auth\StaffRegistrationController::class, 'store'])
+        ->name('register.staff.store');
 
     Route::get('/register/member', [\App\Http\Controllers\Auth\MemberRegistrationController::class, 'create'])
         ->name('register.member');

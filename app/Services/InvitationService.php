@@ -18,11 +18,20 @@ class InvitationService
         $tenantId = $tenantId ?? Auth::user()?->tenant_id;
         $email = strtolower(trim($email));
 
-        // 1. Check if email is already registered as an active User in database (`users` table)
-        $existingUser = User::where('email', $email)->first();
-        if ($existingUser && $existingUser->is_active) {
+        // 1. Check if email is already registered as an active (non-trashed) User in database (`users` table)
+        $existingUser = User::withTrashed()->where('email', $email)->first();
+        if ($existingUser && !$existingUser->trashed() && $existingUser->is_active) {
             throw ValidationException::withMessages([
                 'email' => 'Email ini sudah terdaftar sebagai pengguna aktif.',
+            ]);
+        }
+
+        // If the email belongs to a soft-deleted user in another tenant, block to prevent
+        // silent tenant changes via invitation. Same-tenant trashed users will be restored
+        // during registration (see StaffRegistrationController).
+        if ($existingUser && $existingUser->trashed() && $existingUser->tenant_id !== $tenantId) {
+            throw ValidationException::withMessages([
+                'email' => 'Email ini masih terikat pada instansi lain. Hubungi administrator untuk informasi lebih lanjut.',
             ]);
         }
 
