@@ -83,6 +83,12 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
    - Centralized multi-variant config (`config/variants.php`) & helper (`VariantHelper.php`)
    - Modul Sertifikat Digital (`CertificateController`, `Certificate` model, auto numbering `ELCO/YYYY/MM/XXXX`, and public QR verification `/verify-certificate/{token}`)
 
+7. **CI/CD Automation Pipeline via GitHub Actions (12 September 2026)**
+   - Workflow `.github/workflows/deploy.yml` dengan 2 tahapan (Jobs):
+     * `test` (CI): PHP 8.3 environment, dependency caching (Composer & NPM), kompilasi Vite (`npm ci && npm run build`), dan eksekusi test suite PHPUnit.
+     * `deploy` (CD): Remote SSH deployment otomatis ke VPS (`/var/www/thortech/hadiryuk`) via `appleboy/ssh-action@v1.0.3` saat push ke branch `main`, menjalankan pull, dependensi, migrasi, cache optimasi, dan restart `hadiryuk.service`.
+   - Dokumentasi lengkap setup SSH keypair & GitHub Secrets pada `deploy/README-CICD.md`.
+
 ### 🟡 In Progress / Next Active Checklist
 1. **Validasi Modul Sertifikat Digital (Elco Variant)**
    - [ ] Testing alur upload sertifikat manual oleh operator/pengajar

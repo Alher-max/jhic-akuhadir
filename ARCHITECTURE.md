@@ -47,3 +47,19 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
 - **Trusted Proxies**:
   - Laravel mengonfigurasi `$middleware->trustProxies(at: '*')` di `bootstrap/app.php` untuk mempercayai header reverse proxy dari Cloudflare Tunnel (`X-Forwarded-Proto`, `CF-Connecting-IP`, dsb.).
 
+## 6. CI/CD Pipeline Architecture
+- **Alur Deployment Otomatis**:
+  `Push to main -> GitHub Actions (Lint, Test, Build) -> SSH Deploy to VPS -> Restart Service`.
+- **Workflow File**: `.github/workflows/deploy.yml`
+- **Tahapan Pipeline**:
+  1. **Continuous Integration (`test` job)**:
+     - Environment PHP 8.3 & Node 20 pada `ubuntu-latest`.
+     - Caching dependensi Composer & NPM.
+     - Eksekusi build aset frontend (`npm ci && npm run build`).
+     - Eksekusi test suite otomatis (`php artisan test` dengan SQLite in-memory).
+  2. **Continuous Deployment (`deploy` job)**:
+     - Berjalan setelah job `test` sukses pada branch `main`.
+     - Menggunakan action SSH `appleboy/ssh-action@v1.0.3` dengan credentials `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`.
+     - Menjalankan sinkronisasi kode (`git pull origin main`), pembaruan dependensi, migrasi database (`migrate --force`), optimasi cache Laravel, dan restart service `hadiryuk.service`.
+- **Panduan Setup & Konfigurasi**: Lihat `deploy/README-CICD.md`.
+
