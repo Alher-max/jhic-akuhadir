@@ -40,11 +40,16 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
 - **UI Components**: Custom components with Tailwind styling
 
 ### DevOps & Infrastructure
-- **Version Control**: Git with structured commit messages
+- **Server VPS Host**: Debian 12 OS on Jagoan Hosting Nebula (2 vCPU Cores, 2GB RAM, 2GB Swap, 40GB SSD/NVMe)
+- **Deployment Location**: `/var/www/thortech/hadiryuk`
+- **Security & Tunnel**: Cloudflare Zero Trust & Cloudflare Tunnel (`cloudflared` QUIC)
+- **CI/CD Pipeline**: GitHub Actions (`.github/workflows/deploy.yml`)
+- **Process Manager**: Systemd (`hadiryuk.service` pada port `127.0.0.1:8005`)
+- **Version Control**: Git with structured commit messages (Conventional Commits)
 - **Package Management**: Composer (PHP), npm/pnpm (Node.js)
 - **Environment**: .env files with APP_ENV, APP_DEBUG settings
-- **Logging**: Laravel logging system
-- **Queue System**: Redis/RabbitMQ for background jobs
+- **Logging**: Laravel logging system (plus systemd log stream)
+- **Queue System**: Redis/database for background jobs
 
 ## Current Project Status
 
@@ -173,12 +178,12 @@ php artisan test
 ```
 
 ### VPS Deployment Instructions
-1. **Prerequisites**
-   - Ubuntu/Debian server
-   - PHP 8.3+
-   - MySQL 8.0+
-   - Node.js 18+
-   - Nginx/Apache
+1. **Prerequisites & Server Specifications**
+   - **OS & Provider**: Debian 12 (Bookworm) pada VPS Jagoan Hosting Paket Nebula
+   - **Hardware Specs**: 2 vCPU Cores, 2GB RAM, 2GB Swap, 40GB Storage
+   - **Runtime**: PHP 8.3+ (CLI, FPM, extensions), Node.js 20+, MySQL 8.0+
+   - **Networking & Ingress**: Cloudflare Zero Trust & Cloudflare Tunnel (`cloudflared`)
+   - **Process Supervisor**: Linux Systemd (`hadiryuk.service`)
 
 2. **Installation Steps**
    ```bash

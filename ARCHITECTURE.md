@@ -13,6 +13,9 @@ HadirYuk! adalah platform SaaS Presensi Multi-Tenant monolitik yang mendukung 4 
 - **Frontend Engine**: Blade Templates, Tailwind CSS, Alpine.js, Vue 3 via Vite
 - **Web Push**: `minishlink/web-push` dengan VAPID key
 - **Authentication**: Custom Multi-Auth / Breeze RBAC (`headmaster/owner`, `operator/admin`, `teacher`, `student`, `parent`)
+- **Hosting & Server Infrastructure**: Debian 12 (Bookworm) pada VPS Jagoan Hosting Paket Nebula (2 vCPU Cores, 2GB RAM, 2GB Swap, 40GB NVMe/SSD)
+- **Security & Ingress**: Cloudflare Zero Trust, Cloudflare Tunnel (`cloudflared` via QUIC), SSL/TLS Full Strict
+- **CI/CD Pipeline**: GitHub Actions (`.github/workflows/deploy.yml`) dengan remote automated SSH deployment
 
 ## 3. Dynamic Multi-Variant Subsystem
 Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
@@ -35,11 +38,13 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
    - Onboarding wizard, forced password change (`must_change_password`), dan verifikasi OTP.
 
 ## 5. Deployment & Gateway Architecture
-- **Trafik Ingress**:
-  `Client -> Cloudflare Edge (SSL Termination & WAF) -> Cloudflare Tunnel (QUIC) -> 127.0.0.1:8005 (hadiryuk.service) -> Laravel Framework`.
-- **Cloudflare Tunnel**:
+- **Server VPS Host**: Debian 12 (Bookworm) pada VPS Jagoan Hosting Paket Nebula (Spesifikasi: 2 Core vCPU, 2GB RAM, 2GB Swap, 40GB Storage) di path `/var/www/thortech/hadiryuk`.
+- **Trafik Ingress & Security**:
+  `Client -> Cloudflare Edge & Zero Trust (SSL/WAF/Access Policies) -> Cloudflare Tunnel (QUIC) -> 127.0.0.1:8005 (hadiryuk.service) -> Laravel Framework`.
+- **Cloudflare Tunnel & Zero Trust**:
   - Tunnel ID: `bbd420f0-9cdc-4fb9-a174-30b8bdebb051`
   - Ingress routing: `hadiryuk.thortech.shop` dan wildcard `*.hadiryuk.thortech.shop` langsung diarahkan ke `http://127.0.0.1:8005`.
+  - Terintegrasi dengan Cloudflare Zero Trust untuk perimeter keamanan, proteksi endpoint sensitif, dan enkripsi end-to-end tanpa port publik terbuka (No Public Open Ports).
 - **Reverse Proxy Status**:
   - Virtual host Nginx untuk HadirYuk telah **dinonaktifkan sepenuhnya**. Nginx tidak lagi menjadi reverse proxy HadirYuk.
 - **Service Management**:
