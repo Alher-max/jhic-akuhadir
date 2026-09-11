@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'tenant.onboarding' => \App\Http\Middleware\TenantOnboardingMiddleware::class,
             'otp.verified' => \App\Http\Middleware\EnsureOtpIsVerified::class,

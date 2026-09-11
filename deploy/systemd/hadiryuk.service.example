@@ -1,0 +1,20 @@
+[Unit]
+Description=HadirYuk Laravel Application Server (Port 8005)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/hadiryuk
+ExecStart=/usr/bin/php /var/www/hadiryuk/artisan serve --host=127.0.0.1 --port=8005
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/www/hadiryuk/storage/logs/systemd.log
+StandardError=append:/var/www/hadiryuk/storage/logs/systemd-error.log
+
+# Environment variables
+Environment="APP_ENV=production"
+
+[Install]
+WantedBy=multi-user.target

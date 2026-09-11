@@ -1,26 +1,25 @@
 # Project Memory: HadirYuk
 
 ## Project Overview
-HadirYuk is a **multi-tenant SaaS attendance management system** designed for educational institutions. The platform enables schools and educational organizations to manage student and teacher attendance through various methods including manual entry, biometric devices, and real-time monitoring.
+HadirYuk! adalah platform **SaaS Presensi Multi-Tenant monolitik** yang mendukung 4 segmen industri utama melalui pendekatan **Monolithic Multi-Variant dinamis**:
+- **HadirSekolah**: Sekolah & madrasah (Siswa, Guru, Mapel, KBM, NPSN).
+- **HadirElco**: Lembaga kursus & bimbel (Peserta, Tutor, Modul, Sesi, Sertifikat Digital).
+- **HadirUMKM**: Usaha retail & operasional (Karyawan, Shift, Geofencing outlet).
+- **HadirCorporate**: Perusahaan enterprise (Karyawan, Manager, Departemen, Proyek).
+
+## Dynamic Multi-Variant Subsystem
+Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
+- **Configuration**: `config/variants.php` memetakan metadata tiap segmen (nama aplikasi, skema warna HEX, badge CSS, terminologi peran & navigasi).
+- **Helper**: `app/Services/VariantHelper.php` mendeteksi segmen aktif via session, subdomain, atau field `institution_type` tenant.
+- **View Composer**: `app/Providers/AppServiceProvider.php` menyuntikkan `$currentVariant`, `$isElco`, `$isSekolah`, dsb., serta menginjeksikan CSS variables `:root { --brand-primary: ...; }` ke layout utama (`app.blade.php`, `guest.blade.php`).
 
 ## System Vision & Architecture
 
 ### Multi-Tenant SaaS Structure
-- **Subdomain-based tenant separation** (e.g., `school1.hadiryuk.com`, `educenter.hadiryuk.com`)
-- Each tenant has its own isolated database and configuration
-- Headmasters can manage multiple schools from a central dashboard
-- Operators manage individual schools
-- Students, teachers, and parents have role-based access
-
-### Core Architecture
-- **Frontend**: Vue.js 3 with Vite build system, Alpine.js for interactivity
-- **Backend**: Laravel 13.8 Framework with PHP 8.3+
-- **Database**: MySQL/MariaDB with Eloquent ORM
-- **Real-time Features**: WebSocket support, push notifications via web-push
-- **Biometric Integration**: Hardware device API for fingerprint/face recognition
-- **Security**: Role-based middleware, tenant isolation, OTP verification
-
-## Technology Stack
+- **Subdomain & Column-level tenant separation** (e.g., `school1.hadiryuk.com`, `educenter.hadiryuk.com`, via `tenant_id`)
+- Headmasters/Owners can manage their respective institutions from a central dashboard
+- Operators/Managers manage individual schools/branches/outlets
+- Students/Members, teachers/tutors, and parents have role-based access
 
 ### Backend (PHP/Laravel)
 - **Framework**: Laravel 13.8
@@ -50,44 +49,54 @@ HadirYuk is a **multi-tenant SaaS attendance management system** designed for ed
 ## Current Project Status
 
 ### ✅ Completed Features
-1. **Multi-Tenant SaaS Infrastructure**
-   - Subdomain-based tenant routing
+1. **Production Deployment & Cloudflare Tunnel Migration (12 September 2026)**
+   - Migrasi penuh dari Nginx ke **Cloudflare Tunnel** (`cloudflared`) dengan Tunnel ID `bbd420f0-9cdc-4fb9-a174-30b8bdebb051`.
+   - Ingress routing: `hadiryuk.thortech.shop` dan `*.hadiryuk.thortech.shop` langsung ke `127.0.0.1:8005`.
+   - Menjalankan aplikasi via systemd service `hadiryuk.service` pada host port 8005 (template: `deploy/systemd/hadiryuk.service.example`).
+   - Virtual host Nginx untuk HadirYuk telah dinonaktifkan sepenuhnya.
+   - Verifikasi trafik produksi: Respons `HTTP/2 200` pada `https://hadiryuk.thortech.shop` berhasil.
+   - Konfigurasi `$middleware->trustProxies(at: '*')` di `bootstrap/app.php` untuk mempercayai HTTPS headers dari Cloudflare.
+
+2. **Multi-Tenant SaaS Infrastructure**
+   - Subdomain-based tenant routing & column-level `tenant_id` isolation
    - Role-based access control (Headmaster, Operator, Teacher, Student, Parent)
    - Tenant onboarding wizard
 
-2. **Core Management System**
+3. **Core Management System**
    - Student Management (CRUD, import/export, password reset)
    - Teacher Management (CRUD, quick add, export CSV)
    - Class/Room Management (Jadwal Pelajaran KBM)
    - Parent-Student relationship management
 
-3. **Attendance System**
+4. **Attendance System**
    - Manual attendance entry
    - KBM (Kegiatan Belajar Mengajar) attendance tracking
    - Biometric device integration endpoints
    - Real-time clock-in/clock-out functionality
 
-4. **Biometric Device Integration**
+5. **Biometric Device Integration**
    - Database migrations for biometric devices, mappings, and logs
    - Auto-discovery API endpoints (`/api/v1/biometric/push`)
    - Device management in attendance settings
 
-5. **Bug Fixes & Improvements**
-   - Fixed SchoolClass dropdown display issue (full_name accessor)
-   - Fixed teacher dummy emails lowercase migration
+6. **Multi-Variant Architecture & Digital Certificates**
+   - Centralized multi-variant config (`config/variants.php`) & helper (`VariantHelper.php`)
+   - Modul Sertifikat Digital (`CertificateController`, `Certificate` model, auto numbering `ELCO/YYYY/MM/XXXX`, and public QR verification `/verify-certificate/{token}`)
 
-### 🟡 In Progress / Partially Completed
-1. **Biometric Frontend UI**
-   - Self-service setup instructions
-   - Device status monitoring (Online/Offline)
-   - Claim and connect functionality for pending devices
-   - Copy-to-clipboard for endpoints and secret keys
+### 🟡 In Progress / Next Active Checklist
+1. **Validasi Modul Sertifikat Digital (Elco Variant)**
+   - [ ] Testing alur upload sertifikat manual oleh operator/pengajar
+   - [ ] Validasi hak akses download & verifikasi publik via QR token
 
-2. **Testing & Verification**
-   - API endpoint testing with sample payloads
-   - Frontend UI functionality testing
-   - Auto-discovery verification
-   - Claim functionality verification
+2. **Validasi Alur Multi-Varian**
+   - [ ] Verifikasi konsistensi branding & terminologi pada 4 segmen: HadirSekolah, HadirElco, HadirUMKM, HadirCorporate
+   - [ ] Pengujian registrasi tenant dan member untuk tiap varian
+
+3. **Hardware Biometrik Frontend UI**
+   - [ ] Selesaikan instruksi self-service setup pada tab alat
+   - [ ] Tampilkan status indikator Online/Offline mesin (ping < 5 min)
+   - [ ] Fitur klaim & hubungkan untuk pending biometric devices
+
 
 ### 🔴 Pending / Not Started
 1. **Advanced Features**
