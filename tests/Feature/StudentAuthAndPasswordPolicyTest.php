@@ -106,6 +106,32 @@ class StudentAuthAndPasswordPolicyTest extends TestCase
         $this->assertNotNull($student->email_verified_at);
     }
 
+    public function test_student_created_by_operator_can_login_with_nisn_default_password(): void
+    {
+        $response = $this->actingAs($this->operator)
+            ->post(route('students.store'), [
+                'name' => 'Siswa Kredensial Konsisten',
+                'nisn' => '7337679225',
+                'nis' => '546166982',
+                'gender' => 'P',
+                'birth_date' => '2009-04-06',
+                'class_id' => $this->schoolClass->id,
+            ]);
+
+        $response->assertRedirect();
+        $student = User::where('nisn', '7337679225')->firstOrFail();
+        $this->post(route('logout'));
+
+        $login = $this->post(route('login'), [
+            'school_code' => $this->tenant->code,
+            'email' => $student->email,
+            'password' => '7337679225',
+        ]);
+
+        $this->assertAuthenticatedAs($student);
+        $login->assertRedirect(route('student.dashboard', absolute: false));
+    }
+
     /**
      * Test 3: Login akun guru/operator tetap membutuhkan verifikasi OTP jika email belum terverifikasi.
      */

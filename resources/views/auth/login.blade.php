@@ -90,11 +90,11 @@
                         <x-input-error :messages="$errors->get('school_code')" class="mt-2" />
                     </div>
 
-                    <!-- Email -->
+                    <!-- Email / NISN / NIS -->
                     <div class="mb-4">
-                        <x-input-label for="email" :value="__('Email')" />
-                        <x-text-input id="email" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="nama@sekolah.sch.id atau operator@hadiryuk.test" />
-                        <p class="mt-1.5 text-xs text-brand-text-muted">Masukkan alamat email terdaftar akun Anda.</p>
+                        <x-input-label for="email" :value="__('Email / NISN / NIS')" />
+                        <x-text-input id="email" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="email" :value="old('email')" required autocomplete="username" placeholder="Email, NISN, atau NIS" />
+                        <p class="mt-1.5 text-xs text-brand-text-muted">Siswa dapat masuk menggunakan nomor NISN atau NIS.</p>
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 

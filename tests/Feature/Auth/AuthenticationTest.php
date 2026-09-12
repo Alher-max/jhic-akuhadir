@@ -3,7 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -101,6 +103,95 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticatedAs($student);
+    }
+
+    public function test_student_login_normalizes_email_and_resolves_tenant_by_npsn(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Mentari Kita',
+            'code' => 'MENTARI',
+            'npsn' => '45806592',
+            'subdomain' => 'mentari-kita',
+            'slug' => 'mentari-kita',
+            'onboarding_completed' => true,
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'student',
+            'email' => 'indahmayasari883@mentari-kita.hadiryuk.id',
+            'password' => '7337679225',
+            'is_active' => true,
+        ]);
+
+        $response = $this->post('/login', [
+            'school_code' => ' 45806592 ',
+            'email' => ' INDAHMAYASARI883@MENTARI-KITA.HADIRYUK.ID ',
+            'password' => '7337679225',
+        ]);
+
+        $this->assertAuthenticatedAs($student);
+        $response->assertRedirect(route('student.dashboard', absolute: false));
+    }
+
+    public function test_student_can_authenticate_using_nisn_or_nis(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Mentari Kita',
+            'code' => 'MENTARI',
+            'subdomain' => 'mentari-kita',
+            'slug' => 'mentari-kita',
+            'onboarding_completed' => true,
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'student',
+            'nisn' => '7337679225',
+            'nis' => '546166982',
+            'password' => Hash::make('password-siswa'),
+        ]);
+
+        foreach (['7337679225', '546166982'] as $identifier) {
+            $this->post('/login', [
+                'school_code' => $tenant->code,
+                'email' => $identifier,
+                'password' => 'password-siswa',
+            ]);
+
+            $this->assertAuthenticatedAs($student);
+            $this->post('/logout');
+        }
+    }
+
+    public function test_student_legacy_default_password_is_reconciled_to_nisn(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Mentari Kita',
+            'code' => 'MENTARI',
+            'subdomain' => 'mentari-kita',
+            'slug' => 'mentari-kita',
+            'onboarding_completed' => true,
+        ]);
+
+        $student = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'student',
+            'nisn' => '7337679225',
+            'nis' => '546166982',
+            'birth_date' => '2009-04-06',
+            'password' => Hash::make('legacy-password-format'),
+            'is_active' => true,
+        ]);
+
+        $this->post('/login', [
+            'school_code' => $tenant->code,
+            'email' => '7337679225',
+            'password' => '733767922506042009',
+        ]);
+
+        $this->assertAuthenticatedAs($student);
+        $this->assertTrue(Hash::check('7337679225', $student->fresh()->password));
     }
 
     public function test_users_can_logout(): void

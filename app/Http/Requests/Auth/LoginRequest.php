@@ -6,6 +6,7 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -29,13 +30,21 @@ class LoginRequest extends FormRequest
     {
         return [
             'school_code' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'school_code' => trim((string) $this->input('school_code', '')),
+            'email' => Str::lower(trim((string) ($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? ''))),
+        ]);
+    }
+
     /**
-     * Attempt to authenticate the request's credentials (Email-Only Architecture).
+     * Attempt to authenticate the request's credentials.
      *
      * @throws ValidationException
      */
@@ -43,17 +52,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $schoolCode = trim($this->input('school_code', ''));
-        $email = strtolower(trim($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? ''));
+        $schoolCode = trim((string) $this->input('school_code', ''));
+        $identifier = trim((string) $this->input('email', ''));
 
         // Langkah 1: Cari Tenant/Sekolah berdasarkan school_code atau npsn
         $tenant = \App\Models\Tenant::where(function ($q) use ($schoolCode) {
-            $q->where('code', $schoolCode)
-              ->orWhere('code', strtoupper($schoolCode))
-              ->orWhere('code', strtolower($schoolCode));
+            $q->whereRaw('LOWER(TRIM(code)) = ?', [Str::lower($schoolCode)]);
             
             if (\Illuminate\Support\Facades\Schema::hasColumn('tenants', 'npsn')) {
-                $q->orWhere('npsn', $schoolCode);
+                $q->orWhereRaw('LOWER(TRIM(npsn)) = ?', [Str::lower($schoolCode)]);
             }
         })->first();
 
@@ -65,12 +72,45 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // Langkah 2: Email-Only User Lookup (Pure Email Architecture)
+        // Siswa dapat memakai email, NISN, atau NIS; akun lain tetap memakai email.
         $user = \App\Models\User::where('tenant_id', $tenant->id)
-            ->where('email', $email)
+            ->where(function ($query) use ($identifier) {
+                $query->whereRaw('LOWER(TRIM(email)) = ?', [Str::lower($identifier)])
+                    ->orWhereRaw('TRIM(nisn) = ?', [$identifier])
+                    ->orWhereRaw('TRIM(nis) = ?', [$identifier]);
+            })
             ->first();
 
-        if (! $user || ! \Illuminate\Support\Facades\Hash::check($this->input('password'), $user->password)) {
+        $password = (string) $this->input('password');
+        $authenticated = $user && Hash::check($password, $user->password);
+
+        if ($user && ! $authenticated && $user->role === 'student' && ! $user->is_password_changed) {
+            $defaultPasswords = array_filter([
+                $user->nisn,
+                $user->nis,
+            ]);
+
+            if ($user->birth_date) {
+                $birthDate = \Illuminate\Support\Carbon::parse($user->birth_date);
+                $defaultPasswords = array_merge($defaultPasswords, [
+                    $birthDate->format('dmY'),
+                    $birthDate->format('Ymd'),
+                    $user->nisn.$birthDate->format('dmY'),
+                    $user->nisn.$birthDate->format('Ymd'),
+                ]);
+            }
+
+            if (in_array($password, array_unique($defaultPasswords), true)) {
+                $authenticated = true;
+
+                if ($user->nisn) {
+                    $user->password = Hash::make($user->nisn);
+                    $user->save();
+                }
+            }
+        }
+
+        if (! $user || ! $authenticated) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

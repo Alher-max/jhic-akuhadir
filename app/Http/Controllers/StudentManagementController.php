@@ -102,12 +102,8 @@ class StudentManagementController extends Controller
 
         $tenant = Tenant::findOrFail($user->tenant_id);
 
-        // Auto-generate default password format: {NISN}{TANGGAL_LAHIR(DDMMYYYY)}
-        $birthDateFormatted = $request->birth_date ? Carbon::parse($request->birth_date)->format('dmY') : '';
-        $rawPassword = $request->nisn . $birthDateFormatted;
-        if (empty($rawPassword)) {
-            $rawPassword = 'password';
-        }
+        // Keep the initial credential consistent with the reset-password flow: NISN.
+        $rawPassword = (string) $request->nisn ?: '12345678';
         $password = Hash::make($rawPassword);
         
         $masterPhotoPath = null;
@@ -336,11 +332,7 @@ class StudentManagementController extends Controller
                             $domain = $tenant ? ($tenant->subdomain ?? strtolower($tenant->code)) . '.hadiryuk.id' : 'hadirsekolah.id';
                             $emailFinal = $email ?? (strtolower(str_replace([' ', ',', '.'], '', $name)) . rand(100,999) . '@' . $domain);
                             
-                            $birthFormatted = $birthDate ? Carbon::parse($birthDate)->format('dmY') : '';
-                            $defaultPass = ($nisn ?? '') . $birthFormatted;
-                            if (empty($defaultPass)) {
-                                $defaultPass = 'password123';
-                            }
+                            $defaultPass = (string) ($nisn ?: '12345678');
                             $fieldsToSave['tenant_id'] = $tenantId;
                             $fieldsToSave['name'] = $name;
                             $fieldsToSave['email'] = $emailFinal;
