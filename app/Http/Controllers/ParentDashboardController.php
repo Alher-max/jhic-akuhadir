@@ -15,18 +15,37 @@ class ParentDashboardController extends Controller
     public function index()
     {
         $parent = Auth::user();
-        
-        $children = $parent->students()->with(['schoolClass'])->get();
-        
+
+        $children = $parent->students()
+            ->where('users.tenant_id', $parent->tenant_id)
+            ->with(['schoolClass'])
+            ->get()
+            ->merge(
+                $parent->children()
+                    ->where('tenant_id', $parent->tenant_id)
+                    ->with(['schoolClass'])
+                    ->get()
+            )
+            ->unique('id')
+            ->values();
+
         $today = Carbon::today();
+        $startOfWeek = $today->copy()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = $today->copy()->endOfWeek(Carbon::SUNDAY);
         $attendanceService = app(\App\Services\AttendanceService::class);
         $todayDayName = $attendanceService->getDayNameInIndonesian(Carbon::now());
         
         $childrenAttendances = [];
         foreach ($children as $child) {
             $attendance = Attendance::where('user_id', $child->id)
+                ->where('tenant_id', $parent->tenant_id)
                 ->whereDate('date', $today)
                 ->first();
+            $weeklyAttendances = Attendance::where('user_id', $child->id)
+                ->where('tenant_id', $parent->tenant_id)
+                ->whereBetween('date', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
+                ->orderByDesc('date')
+                ->get();
 
             // 1. KBM Schedules hari ini
             $kbmSchedules = collect();
@@ -94,6 +113,7 @@ class ParentDashboardController extends Controller
             $childrenAttendances[] = (object)[
                 'child' => $child,
                 'attendance' => $attendance,
+                'weeklyAttendances' => $weeklyAttendances,
                 'todayAgenda' => $sortedAgenda,
                 'todayDayName' => $todayDayName,
                 'announcements' => \App\Models\Announcement::where('school_class_id', $child->class_id)

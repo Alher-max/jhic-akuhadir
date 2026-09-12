@@ -221,6 +221,21 @@
                             </div>
                         </div>
 
+                        <div class="border-t border-brand-border px-4 py-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[11px] font-bold text-gray-700">Riwayat Minggu Ini</span>
+                                <span class="text-[10px] text-gray-400">{{ $item->weeklyAttendances->count() }} catatan</span>
+                            </div>
+                            @forelse($item->weeklyAttendances as $weeklyAttendance)
+                                <div class="flex items-center justify-between py-1 text-[10px]">
+                                    <span class="text-gray-500">{{ \Carbon\Carbon::parse($weeklyAttendance->date)->translatedFormat('D, d M') }}</span>
+                                    <span class="font-semibold text-gray-700">{{ strtoupper($weeklyAttendance->status) }}</span>
+                                </div>
+                            @empty
+                                <p class="text-[10px] text-gray-400">Belum ada catatan kehadiran minggu ini.</p>
+                            @endforelse
+                        </div>
+
                         <!-- Pengumuman & Agenda -->
                         <div class="border-t border-brand-border">
                             <!-- Announcements Section -->
