@@ -127,9 +127,20 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center max-w-4xl mx-auto">
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100/80 border border-red-200 text-[#B81D24] text-xs sm:text-sm font-semibold mb-6 shadow-sm">
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100/80 border border-red-200 text-[#B81D24] text-xs sm:text-sm font-semibold mb-4 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-[#B81D24]"></span>
                     <span>🚀 Platform Manajemen & Presensi Sekolah No. 1 di Indonesia</span>
+                </div>
+
+                <!-- Competition Badge -->
+                <div class="mb-6 flex justify-center">
+                    <div
+                        class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-950 border border-slate-800 shadow-sm transition-transform hover:scale-105">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-medium text-slate-300">Official Participant / Didukung oleh</span>
+                        <img src="{{ asset('images/New-JH-Asset-Logo_Logotype_Text-White.webp') }}"
+                            alt="Jagoan Hosting" class="h-4 sm:h-5 w-auto object-contain">
+                    </div>
                 </div>
 
                 <h1
