@@ -144,7 +144,7 @@ class ActivityManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($student)
-            ->delete(route('activities.destroy', $activity->id));
+            ->deleteJson(route('activities.destroy', $activity->id));
 
         // Returns 403 Forbidden
         $response->assertStatus(403);

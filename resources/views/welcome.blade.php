@@ -122,23 +122,17 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-52 lg:pb-40 overflow-hidden">
+    <section class="relative pt-24 pb-16 lg:pt-28 lg:pb-24 overflow-hidden">
         <div class="absolute inset-0 bg-grid-pattern opacity-40"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center max-w-4xl mx-auto">
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100/80 border border-red-200 text-[#B81D24] text-xs sm:text-sm font-semibold mb-4 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-[#B81D24]"></span>
-                    <span>🚀 Platform Manajemen & Presensi Sekolah No. 1 di Indonesia</span>
-                </div>
-
                 <!-- Competition Ecosystem Card -->
-                <div class="mb-8 flex justify-center">
+                <div class="mb-6 flex justify-center">
                     <div
-                        class="inline-flex flex-col items-center gap-3 px-5 sm:px-7 py-3.5 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-sm transition-all hover:shadow-md hover:border-slate-300 max-w-full">
+                        class="inline-flex flex-col items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-sm transition-all hover:shadow-md hover:border-slate-300 max-w-full">
                         <div class="flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                            <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500 text-center">
+                            <span class="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-slate-500 text-center">
                                 OFFICIAL PARTICIPANT — JAGOAN HOSTING INNOVATION COMPETITION (JHIC) 2.0
                             </span>
                         </div>
@@ -168,12 +162,12 @@
                 </div>
 
                 <h1
-                    class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-8 text-brand-dark">
+                    class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-5 sm:mb-6 text-brand-dark">
                     Sistem Sekolah <span class="text-[#B81D24]">Lengkap & Canggih</span>. <br>
                     <span class="text-[#B81D24]">Harga Termurah</span> se-Indonesia.
                 </h1>
 
-                <p class="text-lg sm:text-xl text-brand-muted font-medium mb-10 leading-relaxed max-w-3xl mx-auto">
+                <p class="text-lg sm:text-xl text-brand-muted font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
                     Solusi presensi 5 metode, dasbor multi-role (Kepsek, Guru, Orang Tua & Siswa), cetak kartu siswa,
                     hingga notifikasi WhatsApp otomatis tanpa biaya server mahal.
                 </p>
