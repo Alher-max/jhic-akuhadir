@@ -132,14 +132,38 @@
                     <span>🚀 Platform Manajemen & Presensi Sekolah No. 1 di Indonesia</span>
                 </div>
 
-                <!-- Competition Badge -->
-                <div class="mb-6 flex justify-center">
+                <!-- Competition Ecosystem Card -->
+                <div class="mb-8 flex justify-center">
                     <div
-                        class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-950 border border-slate-800 shadow-sm transition-transform hover:scale-105">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-medium text-slate-300">Official Participant / Didukung oleh</span>
-                        <img src="{{ asset('images/New-JH-Asset-Logo_Logotype_Text-White.webp') }}"
-                            alt="Jagoan Hosting" class="h-4 sm:h-5 w-auto object-contain">
+                        class="inline-flex flex-col items-center gap-3 px-5 sm:px-7 py-3.5 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-sm transition-all hover:shadow-md hover:border-slate-300 max-w-full">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                            <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500 text-center">
+                                OFFICIAL PARTICIPANT — JAGOAN HOSTING INNOVATION COMPETITION (JHIC) 2.0
+                            </span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                            <!-- 1. LOGO JHIC 2.0 -->
+                            <img src="{{ asset('images/1. LOGO JHIC 2.0.png') }}"
+                                alt="JHIC 2.0" class="h-6 sm:h-7 w-auto object-contain transition-transform hover:scale-105">
+
+                            <!-- 2. Logo Jagoan Hosting -->
+                            <img src="{{ asset('images/2. Logo Jagoan Hosting.png') }}"
+                                alt="Jagoan Hosting" class="h-5 sm:h-6 w-auto object-contain transition-transform hover:scale-105">
+
+                            <!-- 3. KOMDIGI -->
+                            <img src="{{ asset('images/3. KOMDIGI.png') }}"
+                                alt="KOMDIGI" class="h-6 sm:h-7 w-auto object-contain transition-transform hover:scale-105">
+
+                            <!-- 4. Garuda Spark -->
+                            <img src="{{ asset('images/4. Garuda Spark Full Color.png') }}"
+                                alt="Garuda Spark" class="h-5 sm:h-6 w-auto object-contain transition-transform hover:scale-105">
+
+                            <!-- 5. LOGO NGALUP -->
+                            <img src="{{ asset('images/5. LOGO NGALUP.png') }}"
+                                alt="Ngalup.co" class="h-4 sm:h-5 w-auto object-contain transition-transform hover:scale-105">
+                        </div>
                     </div>
                 </div>
 
