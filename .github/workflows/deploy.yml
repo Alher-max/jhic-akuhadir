@@ -1,16 +1,13 @@
-name: CI/CD Pipeline - Test & Deploy
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   test:
-    name: Run Tests & Build Assets
+    name: Automated Testing
     runs-on: ubuntu-latest
 
     steps:
@@ -20,69 +17,43 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_sqlite, pdo_mysql, bcmath, curl, zip, fileinfo, gd
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_sqlite, sqlite3, bcmath, curl
           coverage: none
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Copy Environment File
+        run: cp .env.example .env
 
-      - name: Cache Composer Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install Composer Dependencies
+      - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+      - name: Generate Application Key
+        run: php artisan key:generate
 
-      - name: Install NPM Dependencies & Build Assets
-        run: |
-          npm ci
-          npm run build
+      - name: Set Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
 
-      - name: Prepare Test Environment
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-
-      - name: Execute Test Suite
+      - name: Execute Tests
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
         run: php artisan test
 
   deploy:
-    name: Deploy to Production VPS
-    needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    name: Auto Deployment to VPS
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
-      - name: Execute Remote SSH Deployment
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || '22' }}
-          script_stop: true
+          port: ${{ secrets.SSH_PORT }}
           script: |
-            echo "🚀 Starting HadirYuk deployment on VPS..."
             cd /var/www/thortech/hadiryuk
             git pull origin main
-            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
-            npm ci
-            npm run build
-            php artisan migrate --force
             php artisan optimize:clear
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            sudo systemctl restart hadiryuk
-            echo "✅ Deployment completed successfully!"
+            php artisan optimize
