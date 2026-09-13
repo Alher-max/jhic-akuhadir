@@ -85,15 +85,15 @@
                         class="text-sm font-semibold hover:text-brand-primary transition-colors">Keunggulan</a>
                     <a href="#faq" class="text-sm font-semibold hover:text-brand-primary transition-colors">FAQ</a>
 
-                    <div class="flex items-center gap-4 pl-4 border-l">
+                    <div class="flex items-center gap-3 pl-4 border-l">
                         @auth
                             <a href="{{ route('dashboard') }}" class="text-sm font-bold text-brand-primary">Dasbor Saya</a>
                         @else
                             <a href="{{ route('login') }}"
                                 class="text-sm font-bold border border-[#EAE2E3] text-[#1A1516] px-5 py-2.5 rounded-full hover:bg-[#F4EFEB] transition-colors">Masuk</a>
-                            <a href="https://wa.me/6281234567890" target="_blank"
-                                class="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-sm hover:bg-emerald-700 hover:scale-105 transition-all flex items-center gap-2">
-                                <i class="fa-brands fa-whatsapp"></i> Konsultasi WA
+                            <a href="/register?role=owner"
+                                class="bg-[#B81D24] text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-sm hover:bg-[#9B181E] hover:scale-105 transition-all">
+                                Daftar Gratis
                             </a>
                         @endauth
                     </div>
@@ -115,9 +115,9 @@
             <a href="{{ route('login') }}"
                 class="block font-bold text-[#1A1516] border border-[#EAE2E3] p-3 rounded-xl text-center hover:bg-[#F4EFEB]">Masuk
                 ke Aplikasi</a>
-            <a href="https://wa.me/6281234567890"
-                class="block bg-emerald-600 text-white text-center py-3 rounded-xl font-bold hover:bg-emerald-700">Konsultasi
-                WhatsApp</a>
+            <a href="/register?role=owner"
+                class="block bg-[#B81D24] text-white text-center py-3 rounded-xl font-bold hover:bg-[#9B181E]">Daftar
+                Sekolah Gratis</a>
         </div>
     </nav>
 
@@ -177,9 +177,10 @@
                         class="w-full sm:w-auto px-8 py-4 bg-[#B81D24] text-white hover:bg-[#9B181E] rounded-xl font-bold text-lg shadow-sm transition-all text-center">
                         Daftarkan Sekolah Sekarang
                     </a>
-                    <a href="https://wa.me/6281234567890" target="_blank"
-                        class="w-full sm:w-auto px-8 py-4 bg-white border border-[#EAE2E3] text-[#1A1516] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3">
-                        <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi via WhatsApp
+                    <a href="#fitur"
+                        class="w-full sm:w-auto px-8 py-4 bg-white border border-[#EAE2E3] text-[#1A1516] hover:bg-[#F4EFEB] hover:border-slate-300 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2">
+                        <span>Pelajari Fitur</span>
+                        <span class="material-symbols-outlined text-xl">arrow_downward</span>
                     </a>
                 </div>
 
@@ -509,8 +510,10 @@
     </footer>
 
     <!-- Floating WA -->
-    <a href="https://wa.me/6281234567890" target="_blank"
-        class="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group">
+    <a href="https://wa.me/6281345557567?text=Halo%20HadirYuk%2C%20saya%20ingin%20konsultasi%20sistem%20presensi%20sekolah"
+        target="_blank" rel="noopener noreferrer"
+        class="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group"
+        aria-label="Konsultasi via WhatsApp">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
         <span
             class="absolute right-20 bg-emerald-600 px-4 py-2 rounded-xl text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
