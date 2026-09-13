@@ -168,7 +168,7 @@
                 </h1>
 
                 <p class="text-lg sm:text-xl text-brand-muted font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
-                    Solusi presensi 5 metode, dasbor multi-role (Kepsek, Guru, Orang Tua & Siswa), cetak kartu siswa,
+                    Solusi presensi 5 metode, dasbor 6 peran terpadu (Operator, Kepala Sekolah, Guru, Wali Kelas, Orang Tua & Siswa), cetak kartu siswa,
                     hingga notifikasi WhatsApp otomatis tanpa biaya server mahal.
                 </p>
 
@@ -283,27 +283,31 @@
                         class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
                         <span class="material-symbols-outlined text-4xl">dashboard</span>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Dasbor Terintegrasi Multi-Role</h3>
+                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Dasbor Terintegrasi 6 Peran</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Kepala Sekolah: Pantau Kehadiran & Laporan Real-time
+                            Operator: Kelola Data Guru, Siswa, Jam & Jadwal Sekolah
                         </li>
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Operator: Kelola Data Guru, Siswa, & Jadwal
+                            Kepala Sekolah: Pantau Kehadiran, Analitik & Laporan Real-time
                         </li>
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Guru/Wali Kelas: Kelola Absensi KBM & Pengumuman
+                            Guru: Input Presensi KBM, Jurnal Mengajar & Agenda Belajar
                         </li>
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Orang Tua: Cek Kehadiran & Agenda Anak via HP
+                            Wali Kelas: Rekap Absensi Kelas, Catatan Sikap & Pengumuman
                         </li>
                         <li class="flex items-start gap-3 font-bold text-brand-dark">
                             <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Siswa: Akses Jadwal, Tugas, & Presensi Mandiri
+                            Orang Tua: Pantau Kehadiran & Agenda Belajar Anak via HP
+                        </li>
+                        <li class="flex items-start gap-3 font-bold text-brand-dark">
+                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
+                            Siswa: Akses Jadwal, Tugas, Kartu Digital & Presensi Mandiri
                         </li>
                     </ul>
                 </div>
