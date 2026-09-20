@@ -26,7 +26,7 @@ class Attendance extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'date:Y-m-d',
         'clock_in' => 'datetime',
         'clock_out' => 'datetime',
         'is_wifi_verified' => 'boolean',

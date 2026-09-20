@@ -46,20 +46,20 @@ class SundayAttendanceTest extends TestCase
         $this->actingAs($student)
             ->post(route('member.clock-in'))
             ->assertSessionHas('success');
-        $this->assertDatabaseHas('attendances', [
-            'user_id' => $student->id,
-            'date' => '2026-09-20',
-            'attendance_type' => 'school',
-        ]);
+        $attendance = Attendance::where('user_id', $student->id)
+            ->where('attendance_type', 'school')
+            ->whereDate('date', '2026-09-20')
+            ->first();
+        $this->assertNotNull($attendance);
+        $this->assertSame('2026-09-20', $attendance->date->format('Y-m-d'));
 
         $this->actingAs($student)
             ->post(route('member.clock-out'))
             ->assertSessionHas('success');
-        $this->assertDatabaseMissing('attendances', [
-            'user_id' => $student->id,
-            'date' => '2026-09-20',
-            'clock_out' => null,
-        ]);
+        $this->assertFalse(Attendance::where('user_id', $student->id)
+            ->whereDate('date', '2026-09-20')
+            ->whereNull('clock_out')
+            ->exists());
     }
 
     public function test_teacher_and_student_can_record_sunday_kbm_attendance(): void
@@ -108,12 +108,13 @@ class SundayAttendanceTest extends TestCase
             ])
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('attendances', [
-            'user_id' => $student->id,
-            'class_schedule_id' => $schedule->id,
-            'date' => '2026-09-20',
-            'attendance_type' => 'class',
-        ]);
+        $attendance = Attendance::where('user_id', $student->id)
+            ->where('class_schedule_id', $schedule->id)
+            ->where('attendance_type', 'class')
+            ->whereDate('date', '2026-09-20')
+            ->first();
+        $this->assertNotNull($attendance);
+        $this->assertSame('2026-09-20', $attendance->date->format('Y-m-d'));
 
         $this->assertDatabaseHas('attendances', [
             'user_id' => $student->id,
@@ -133,10 +134,9 @@ class SundayAttendanceTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('success', false);
 
-        $this->assertDatabaseMissing('attendances', [
-            'user_id' => $student->id,
-            'date' => '2026-09-20',
-        ]);
+        $this->assertFalse(Attendance::where('user_id', $student->id)
+            ->whereDate('date', '2026-09-20')
+            ->exists());
     }
 
     private function createTenant(array $attributes = []): Tenant
