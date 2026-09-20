@@ -18,10 +18,11 @@ class AnnouncementVisibilityTest extends TestCase
         $tenant = Tenant::create(['name' => 'School', 'code' => 'SCH', 'slug' => 'school']);
         $class = SchoolClass::create(['nama_kelas' => 'X', 'jenjang' => 'SMA', 'tingkat' => 10, 'tenant_id' => $tenant->id]);
         $student = User::factory()->create(['role' => 'student', 'class_id' => $class->id, 'tenant_id' => $tenant->id, 'is_active' => true]);
+        $teacher = $this->createTeacher($tenant);
 
-        $announcementAll = Announcement::create(['school_class_id' => $class->id, 'title' => 'All', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => 1]);
-        $announcementStudent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Student', 'description' => 'Desc', 'target_audience' => 'students', 'teacher_id' => 1]);
-        $announcementParent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Parent', 'description' => 'Desc', 'target_audience' => 'parents', 'teacher_id' => 1]);
+        $announcementAll = Announcement::create(['school_class_id' => $class->id, 'title' => 'All', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => $teacher->id]);
+        $announcementStudent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Student', 'description' => 'Desc', 'target_audience' => 'students', 'teacher_id' => $teacher->id]);
+        $announcementParent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Parent', 'description' => 'Desc', 'target_audience' => 'parents', 'teacher_id' => $teacher->id]);
 
         $response = $this->actingAs($student)->get(route('student.dashboard'));
 
@@ -37,11 +38,12 @@ class AnnouncementVisibilityTest extends TestCase
         $class = SchoolClass::create(['nama_kelas' => 'X', 'jenjang' => 'SMA', 'tingkat' => 10, 'tenant_id' => $tenant->id]);
         $student = User::factory()->create(['role' => 'student', 'class_id' => $class->id, 'tenant_id' => $tenant->id, 'is_active' => true]);
         $parent = User::factory()->create(['role' => 'parent', 'tenant_id' => $tenant->id, 'is_active' => true]);
+        $teacher = $this->createTeacher($tenant);
         $parent->students()->attach($student->id, ['relationship' => 'Orang Tua']);
 
-        $announcementAll = Announcement::create(['school_class_id' => $class->id, 'title' => 'All', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => 1]);
-        $announcementStudent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Student', 'description' => 'Desc', 'target_audience' => 'students', 'teacher_id' => 1]);
-        $announcementParent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Parent', 'description' => 'Desc', 'target_audience' => 'parents', 'teacher_id' => 1]);
+        $announcementAll = Announcement::create(['school_class_id' => $class->id, 'title' => 'All', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => $teacher->id]);
+        $announcementStudent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Student', 'description' => 'Desc', 'target_audience' => 'students', 'teacher_id' => $teacher->id]);
+        $announcementParent = Announcement::create(['school_class_id' => $class->id, 'title' => 'Parent', 'description' => 'Desc', 'target_audience' => 'parents', 'teacher_id' => $teacher->id]);
 
         $response = $this->actingAs($parent)->get(route('parent.dashboard'));
 
@@ -58,11 +60,21 @@ class AnnouncementVisibilityTest extends TestCase
         $class2 = SchoolClass::create(['nama_kelas' => 'Y', 'jenjang' => 'SMA', 'tingkat' => 11, 'tenant_id' => $tenant->id]);
         
         $student = User::factory()->create(['role' => 'student', 'class_id' => $class1->id, 'tenant_id' => $tenant->id, 'is_active' => true]);
+        $teacher = $this->createTeacher($tenant);
         
-        $announcementClass2 = Announcement::create(['school_class_id' => $class2->id, 'title' => 'Class2', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => 1]);
+        $announcementClass2 = Announcement::create(['school_class_id' => $class2->id, 'title' => 'Class2', 'description' => 'Desc', 'target_audience' => 'both', 'teacher_id' => $teacher->id]);
 
         $response = $this->actingAs($student)->get(route('student.dashboard'));
         $response->assertStatus(200);
         $response->assertDontSee('Class2');
+    }
+
+    private function createTeacher(Tenant $tenant): User
+    {
+        return User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'role' => 'teacher',
+            'is_active' => true,
+        ]);
     }
 }
