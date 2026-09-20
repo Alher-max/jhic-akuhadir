@@ -28,6 +28,8 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
    - Geofencing (radius lat/long & accuracy checking).
    - WiFi/IP Whitelist validation.
    - KBM/Session-based schedules.
+   - Fleksibilitas 7 hari: presensi datang, pulang, dan sesi KBM dapat berjalan pada hari Minggu jika Minggu
+     diaktifkan pada `working_days`/jam operasional tenant atau memiliki jadwal KBM maupun aktivitas resmi.
    - Selfie + Master Photo face verification.
    - Biometric Hardware Push Webhook (`/api/v1/biometric/push`) dengan auto-discovery Serial Number.
 2. **Digital Certificate (Elco Variant)**:
@@ -67,4 +69,3 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
      - Menggunakan action SSH `appleboy/ssh-action@v1.0.3` dengan credentials `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`.
      - Menjalankan sinkronisasi kode (`git pull origin main`), pembaruan dependensi, migrasi database (`migrate --force`), optimasi cache Laravel, dan restart service `hadiryuk.service`.
 - **Panduan Setup & Konfigurasi**: Lihat `deploy/README-CICD.md`.
-

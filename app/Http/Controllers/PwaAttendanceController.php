@@ -96,6 +96,13 @@ class PwaAttendanceController extends Controller
         
         $attendanceService = app(\App\Services\AttendanceService::class);
         $tenant = $user->tenant;
+        if ($tenant && !app(\App\Services\AttendanceService::class)
+            ->isAttendanceDayAllowed($tenant, $user, now('Asia/Jakarta'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Presensi hari Minggu belum diaktifkan dan tidak ada jadwal resmi.',
+            ], 422);
+        }
         $isSessionBased = $tenant && $attendanceService->isSessionBasedMode($tenant);
 
         $classScheduleId = null;

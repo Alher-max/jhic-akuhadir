@@ -13,7 +13,7 @@ class Tenant extends Model
         'name', 'institution_type', 'business_category', 'timezone', 'slug', 'code', 'npsn', 'status',
         'subdomain', 'description', 'logo_path', 'banner_path',
         'onboarding_step', 'onboarding_completed', 'attendance_method',
-        'attendance_mode', 'session_late_tolerance_minutes',
+        'attendance_mode', 'working_days', 'session_late_tolerance_minutes',
         'device_token', 'wifi_bssid', 'gps_lat', 'gps_lng', 'gps_radius'
     ];
 
@@ -30,6 +30,14 @@ class Tenant extends Model
     public function isSessionBasedMode(): bool
     {
         return ($this->attendance_mode ?? 'daily_arrival') === 'session_based';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'working_days' => 'array',
+            'onboarding_completed' => 'boolean',
+        ];
     }
 
     public function getBannerImageAttribute(): ?string

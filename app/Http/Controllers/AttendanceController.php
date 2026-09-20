@@ -27,6 +27,10 @@ class AttendanceController extends Controller
         $today = $now->format('Y-m-d');
 
         $tenant = $user->tenant;
+        $attendanceService = app(\App\Services\AttendanceService::class);
+        if ($tenant && !$attendanceService->isAttendanceDayAllowed($tenant, $user, $now)) {
+            return redirect()->back()->with('error', 'Presensi hari Minggu belum diaktifkan dan tidak ada jadwal resmi.');
+        }
         if ($tenant && $tenant->attendance_method === 'gps') {
             $lat = $request->input('latitude');
             $lng = $request->input('longitude');
@@ -77,7 +81,6 @@ class AttendanceController extends Controller
             }
         }
 
-        $attendanceService = app(\App\Services\AttendanceService::class);
         $tenant = $user->tenant;
         $isSessionBased = $tenant && $attendanceService->isSessionBasedMode($tenant);
 

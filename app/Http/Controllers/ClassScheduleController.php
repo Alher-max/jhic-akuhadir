@@ -67,7 +67,7 @@ class ClassScheduleController extends Controller
         }
 
         // Kelompokkan jadwal berdasarkan hari
-        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         $groupedSchedules = [];
         foreach ($days as $day) {
             $groupedSchedules[$day] = $schedules->where('day_name', $day)->values();
@@ -112,7 +112,7 @@ class ClassScheduleController extends Controller
             'class_id' => 'required|exists:school_classes,id',
             'subject_id' => 'required|exists:subjects,id',
             'teacher_id' => 'required|exists:users,id',
-            'day_name' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'day_name' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'period_number' => 'required|integer|min:1',
             'start_time' => 'required',
             'end_time' => ['required', function ($attribute, $value, $fail) use ($request) {

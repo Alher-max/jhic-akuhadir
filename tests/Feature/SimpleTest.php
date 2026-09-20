@@ -6,8 +6,7 @@ use Tests\TestCase;
 
 class SimpleTest extends TestCase
 {
-    /** @test */
-    public function it_works(): void
+    public function test_basic_feature(): void
     {
         $this->assertTrue(true);
     }

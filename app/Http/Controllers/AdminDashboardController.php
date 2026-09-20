@@ -505,6 +505,10 @@ class AdminDashboardController extends Controller
         $teacherName = Auth::user()->name;
 
         $schedule = \App\Models\ClassSchedule::where('tenant_id', $tenantId)->findOrFail($request->schedule_id);
+        $attendanceService = app(\App\Services\AttendanceService::class);
+        if (! $attendanceService->isAttendanceDayAllowed(Auth::user()->tenant, Auth::user(), \Carbon\Carbon::now())) {
+            return redirect()->back()->with('error', 'Presensi hari Minggu belum diaktifkan dan tidak ada jadwal resmi.');
+        }
 
         $savedCount = 0;
         foreach ($request->attendances as $item) {

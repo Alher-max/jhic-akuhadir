@@ -101,6 +101,13 @@ class AttendanceScheduleController extends Controller
             }
         }
 
+        $workingDays = AttendanceSchedule::where('tenant_id', $tenantId)
+            ->where('is_active', true)
+            ->pluck('day_name')
+            ->values()
+            ->all();
+        $tenant?->update(['working_days' => $workingDays]);
+
         return redirect()->back()->with('success', 'Pengaturan jam & mode presensi operator berhasil disimpan.');
     }
 }

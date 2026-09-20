@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Attendance;
-use App\Models\AttendanceSchedule;
 use App\Models\ClassSchedule;
+use App\Models\ActivitySchedule;
+use App\Models\AttendanceSchedule;
+use App\Models\Schedule;
 use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
@@ -69,6 +71,59 @@ class AttendanceService
             7 => 'Minggu',
         ];
         return $days[(int)$date->format('N')] ?? 'Senin';
+    }
+
+    /**
+     * Minggu hanya dapat digunakan bila diaktifkan sebagai hari kerja atau
+     * memiliki jadwal resmi yang dapat menjadi dasar presensi.
+     */
+    public function isAttendanceDayAllowed(Tenant $tenant, User $user, Carbon $date): bool
+    {
+        if ((int) $date->format('N') !== 7) {
+            return true;
+        }
+
+        $dayName = $this->getDayNameInIndonesian($date);
+        $workingDays = collect($tenant->working_days ?? [])
+            ->map(fn ($day) => is_numeric($day) ? (int) $day : mb_strtolower((string) $day))
+            ->contains(fn ($day) => $day === 7 || $day === 'minggu');
+
+        if ($workingDays || AttendanceSchedule::where('tenant_id', $tenant->id)
+            ->where('day_name', $dayName)
+            ->where('is_active', true)
+            ->exists()) {
+            return true;
+        }
+
+        if (ClassSchedule::where('tenant_id', $tenant->id)
+            ->where('day_name', $dayName)
+            ->where(function ($query) use ($user) {
+                $query->where('teacher_id', $user->id)
+                    ->orWhere('class_id', $user->class_id);
+            })
+            ->exists()) {
+            return true;
+        }
+
+        if (Schedule::where('tenant_id', $tenant->id)
+            ->where('type', 'routine')
+            ->where('day_of_week', 7)
+            ->whereHas('users', fn ($query) => $query->where('users.id', $user->id))
+            ->exists()) {
+            return true;
+        }
+
+        return ActivitySchedule::where('tenant_id', $tenant->id)
+            ->where('day_name', $dayName)
+            ->where(function ($query) use ($user) {
+                $query->where('target_scope', 'all')
+                    ->orWhere(function ($query) use ($user) {
+                        $query->where('target_scope', 'class')
+                            ->whereJsonContains('target_class_ids', $user->class_id);
+                    })
+                    ->orWhereHas('members', fn ($query) => $query->where('users.id', $user->id));
+            })
+            ->exists();
     }
 
     /**
