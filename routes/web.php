@@ -69,6 +69,7 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Operator Dashboard Route (Strict Role: operator)
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':operator', 'tenant.onboarding'])->group(function () {
         Route::get('/operator/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('operator.dashboard');
+        Route::view('/operator/attendance/scanner', 'operator.scanner')->name('operator.attendance.scanner');
         Route::redirect('/manager/dashboard', '/operator/dashboard');
         Route::post('/operator/dashboard/banner', [\App\Http\Controllers\AdminDashboardController::class, 'updateBanner'])->name('operator.dashboard.banner');
     });

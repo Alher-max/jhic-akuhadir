@@ -398,18 +398,20 @@
                                     </div>
 
                                     <!-- 3. QR Code Scanner -->
-                                    <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">
+                                    <a href="{{ route('operator.attendance.scanner') }}" target="_blank" rel="noopener"
+                                        class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition group"
+                                        title="Buka pemindai presensi">
                                         <div class="flex items-center gap-2">
                                             <div class="w-2 h-2 rounded-full {{ ($sysQrcodeActive ?? false) ? 'bg-emerald-500 shadow-xs' : 'bg-gray-300' }}"></div>
                                             <span class="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
                                                 <i class="fa-solid fa-qrcode text-xs {{ ($sysQrcodeActive ?? false) ? 'text-emerald-600' : 'text-gray-400' }}"></i>
-                                                QR Code Scanner
+                                                Buka Halaman Scanner <i class="fa-solid fa-up-right-from-square text-[9px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
                                             </span>
                                         </div>
                                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border {{ ($sysQrcodeActive ?? false) ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-100 border-gray-200' }}">
                                             {{ ($sysQrcodeActive ?? false) ? 'Aktif' : 'Nonaktif' }}
                                         </span>
-                                    </div>
+                                    </a>
 
                                     <!-- 4. Mesin Biometrik -->
                                     <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 transition">

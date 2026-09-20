@@ -22,9 +22,13 @@ class Attendance extends Model
         'notes',
         'ip_address',
         'is_wifi_verified',
+        'recorded_by_user_id',
     ];
 
     protected $casts = [
+        'date' => 'date',
+        'clock_in' => 'datetime',
+        'clock_out' => 'datetime',
         'is_wifi_verified' => 'boolean',
         'face_match_score' => 'float',
     ];
@@ -37,6 +41,11 @@ class Attendance extends Model
     public function classSchedule()
     {
         return $this->belongsTo(\App\Models\ClassSchedule::class, 'class_schedule_id');
+    }
+
+    public function recordedBy()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'recorded_by_user_id');
     }
 
     public function isSchoolLevel(): bool
