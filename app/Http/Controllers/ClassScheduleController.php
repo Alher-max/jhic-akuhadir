@@ -58,7 +58,7 @@ class ClassScheduleController extends Controller
 
         $schedules = collect();
         if ($selectedClass) {
-            $schedules = ClassSchedule::with(['subject', 'teacher'])
+            $schedules = ClassSchedule::with(['subject', 'teacher', 'schoolClass'])
                 ->where('tenant_id', $tenantId)
                 ->where('class_id', $selectedClass->id)
                 ->orderBy('period_number', 'asc')

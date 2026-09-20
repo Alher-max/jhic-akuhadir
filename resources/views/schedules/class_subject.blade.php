@@ -366,15 +366,15 @@
 
                                         <div>
                                             <h5 class="font-bold text-gray-900 text-sm">
-                                                {{ $schedule->subject->name }}
-                                                @if($schedule->subject->code)
+                                                {{ $schedule->subject?->name ?? '-' }}
+                                                @if($schedule->subject?->code)
                                                     <span
-                                                        class="text-xs font-mono text-gray-400 font-normal">({{ $schedule->subject->code }})</span>
+                                                        class="text-xs font-mono text-gray-400 font-normal">({{ $schedule->subject?->code }})</span>
                                                 @endif
                                             </h5>
                                             <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                                                 <i class="fa-solid fa-user-tie text-gray-400 w-3.5"></i>
-                                                {{ $schedule->teacher ? $schedule->teacher->name : 'Guru Pengampu Belum Set' }}
+                                                {{ $schedule->teacher?->name ?? 'Guru Pengampu Belum Set' }}
                                             </p>
                                         </div>
                                     </div>
