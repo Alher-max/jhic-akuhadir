@@ -257,7 +257,16 @@
                                                     <h5 class="font-bold text-xs text-blue-700">{{ $announcement->title }}</h5>
                                                     <p class="text-[10px] text-blue-600/80 mt-0.5">{{ $announcement->description }}</p>
                                                     <span
-                                                        class="text-[9px] text-blue-400 mt-1 block">{{ $announcement->created_at->diffForHumans() }}</span>
+                                                        class="text-[9px] text-blue-400 mt-1 block">{{ $announcement->created_at?->diffForHumans() ?? '-' }}</span>
+                                                    @if($announcement->attachment_path)
+                                                        <div class="mt-1">
+                                                            <a href="{{ Storage::url($announcement->attachment_path) }}" target="_blank"
+                                                                class="inline-flex items-center gap-1 text-[10px] text-blue-700 font-semibold hover:underline">
+                                                                <span class="material-symbols-outlined text-xs">attachment</span>
+                                                                <span>Lihat Lampiran</span>
+                                                            </a>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             @endforeach
                                         </div>

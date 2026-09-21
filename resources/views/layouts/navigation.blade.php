@@ -29,7 +29,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('operator.dashboard') || request()->routeIs('teacher.dashboard') || request()->routeIs('homeroom.dashboard')">
                         {{ __('Dasbor') }}
                     </x-nav-link>
-                    @if($roleLower === 'wali_kelas')
+                    @if($roleLower === 'wali_kelas' || (auth()->user()?->homeroomClasses && auth()->user()->homeroomClasses->isNotEmpty()))
                         <x-nav-link :href="route('teacher.announcements.index')"
                             :active="request()->routeIs('teacher.announcements.index')">
                             {{ __('Pengumuman Kelas') }}
@@ -57,7 +57,7 @@
                                 <span class="font-semibold text-gray-800 text-xs">{{ Auth::user()->name }}</span>
                                 <span class="text-[10px] text-gray-500 font-semibold">
                                     @if(Auth::user()->homeroomClass()->exists())
-                                        Wali Kelas {{ Auth::user()->homeroomClass->name }}
+                                        Wali Kelas {{ Auth::user()->homeroomClass?->nama_kelas ?? Auth::user()->homeroomClass?->name ?? '' }}
                                     @elseif(in_array($roleLower, ['guru', 'guru_mapel', 'wali_kelas']))
                                         Guru Pengajar
                                     @else

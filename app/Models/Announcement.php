@@ -17,6 +17,16 @@ class Announcement extends Model
         'description',
         'attachment_path',
         'target_audience',
+        'expired_at',
+    ];
+
+    protected $casts = [
+        'school_class_id' => 'integer',
+        'teacher_id' => 'integer',
+        'target_audience' => 'string',
+        'expired_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function schoolClass(): BelongsTo
@@ -32,5 +42,12 @@ class Announcement extends Model
     public function dismissals()
     {
         return $this->hasMany(AnnouncementDismissal::class);
+    }
+
+    public function scopeForTenant($query, $tenantId)
+    {
+        return $query->whereHas('schoolClass', function ($q) use ($tenantId) {
+            $q->where('tenant_id', $tenantId);
+        });
     }
 }

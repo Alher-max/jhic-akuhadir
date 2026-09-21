@@ -117,6 +117,9 @@ class ParentDashboardController extends Controller
                 'todayAgenda' => $sortedAgenda,
                 'todayDayName' => $todayDayName,
                 'announcements' => \App\Models\Announcement::where('school_class_id', $child->class_id)
+                    ->whereHas('schoolClass', function ($q) use ($parent) {
+                        $q->where('tenant_id', $parent->tenant_id);
+                    })
                     ->whereIn('target_audience', ['parents', 'both'])
                     ->where(function ($query) {
                         $query->where('created_at', '>=', now()->subDays(7))

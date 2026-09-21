@@ -24,7 +24,11 @@ class HomeroomAnnouncementController extends Controller
         $teacher = Auth::user();
         $homeroomClass = $teacher->homeroomClasses->first();
         
-        $announcements = Announcement::where('school_class_id', $homeroomClass->id)
+        $announcements = Announcement::with(['schoolClass', 'teacher'])
+            ->where('school_class_id', $homeroomClass?->id)
+            ->whereHas('schoolClass', function ($q) use ($teacher) {
+                $q->where('tenant_id', $teacher->tenant_id);
+            })
             ->latest()
             ->get();
 
@@ -38,14 +42,17 @@ class HomeroomAnnouncementController extends Controller
             'description' => 'required|string',
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'target_audience' => 'required|in:students,parents,both',
+            'expired_at' => 'nullable|date',
         ]);
 
-        $homeroomClass = Auth::user()->homeroomClasses->first();
+        $teacher = Auth::user();
+        $homeroomClass = $teacher->homeroomClasses->first();
         abort_if(!$homeroomClass, 403, 'Anda belum ditugaskan sebagai Wali Kelas.');
+        abort_if($homeroomClass->tenant_id !== $teacher->tenant_id, 403, 'Akses tidak sah untuk kelas ini.');
 
-        $data = $request->only(['title', 'description', 'target_audience']);
+        $data = $request->only(['title', 'description', 'target_audience', 'expired_at']);
         $data['school_class_id'] = $homeroomClass->id;
-        $data['teacher_id'] = Auth::id();
+        $data['teacher_id'] = $teacher->id;
 
         if ($request->hasFile('attachment')) {
             $path = $request->file('attachment')->store('announcements', 'public');
@@ -76,11 +83,11 @@ class HomeroomAnnouncementController extends Controller
                 $pushService->sendToMany(
                     $audience->unique('id'),
                     "Pengumuman Baru: " . $announcement->title,
-                    "Pesan dari Wali Kelas: " . auth()->user()->name,
+                    "Pesan dari Wali Kelas: " . $teacher->name,
                     route('dashboard')
                 );
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Failed to send PWA Push Notification: " . $e->getMessage());
         }
 
@@ -89,8 +96,15 @@ class HomeroomAnnouncementController extends Controller
 
     public function destroy($id)
     {
-        $announcement = Announcement::findOrFail($id);
-        abort_if(!auth()->user()->homeroomClasses->contains('id', $announcement->school_class_id), 403, 'Anda tidak memiliki akses.');
+        $announcement = Announcement::with('schoolClass')->findOrFail($id);
+        $teacher = auth()->user();
+
+        abort_if(
+            !$teacher->homeroomClasses->contains('id', $announcement->school_class_id) ||
+            $announcement->schoolClass?->tenant_id !== $teacher->tenant_id,
+            403,
+            'Anda tidak memiliki akses.'
+        );
 
         if ($announcement->attachment_path) {
             Storage::disk('public')->delete($announcement->attachment_path);

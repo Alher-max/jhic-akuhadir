@@ -12,7 +12,7 @@
                     class="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-sm text-red-800">
                     <i class="fa-solid fa-school-flag text-red-600"></i>
                     <span>Pengumuman ini akan dikirim otomatis ke kelas binaan Anda: <strong
-                            class="font-semibold text-red-600">{{ $homeroomClass->nama_kelas ?? $homeroomClass->name ?? '-' }}</strong></span>
+                            class="font-semibold text-red-600">{{ $homeroomClass?->nama_kelas ?? $homeroomClass?->name ?? '-' }}</strong></span>
                 </div>
                 <form action="{{ route('teacher.announcements.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -56,23 +56,48 @@
                         <tr class="bg-gray-50 border-b">
                             <th class="p-4 font-bold text-gray-700">Judul</th>
                             <th class="p-4 font-bold text-gray-700">Target</th>
+                            <th class="p-4 font-bold text-gray-700">Tanggal</th>
+                            <th class="p-4 font-bold text-gray-700">Lampiran</th>
                             <th class="p-4 font-bold text-gray-700">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($announcements as $announcement)
-                            <tr class="border-b">
-                                <td class="p-4">{{ $announcement->title }}</td>
-                                <td class="p-4 capitalize">{{ $announcement->target_audience }}</td>
+                        @forelse($announcements as $announcement)
+                            <tr class="border-b hover:bg-gray-50/50">
+                                <td class="p-4 font-medium text-gray-900">{{ $announcement->title }}</td>
+                                <td class="p-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $announcement->target_audience === 'students' ? 'bg-blue-100 text-blue-800' : ($announcement->target_audience === 'parents' ? 'bg-amber-100 text-amber-800' : 'bg-purple-100 text-purple-800') }}">
+                                        {{ $announcement->target_audience === 'students' ? 'Siswa' : ($announcement->target_audience === 'parents' ? 'Orang Tua' : 'Semua (Siswa & Ortu)') }}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-xs text-gray-500">
+                                    {{ $announcement->created_at?->format('d M Y H:i') ?? '-' }}
+                                </td>
+                                <td class="p-4 text-sm">
+                                    @if($announcement->attachment_path)
+                                        <a href="{{ Storage::url($announcement->attachment_path) }}" target="_blank"
+                                            class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-semibold underline">
+                                            <i class="fa-solid fa-paperclip"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="p-4">
                                     <form action="{{ route('teacher.announcements.destroy', $announcement->id) }}"
                                         method="POST" onsubmit="return confirm('Hapus pengumuman ini?')">
                                         @csrf @method('DELETE')
-                                        <button class="text-red-600 hover:text-red-800 font-bold">Hapus</button>
+                                        <button class="text-red-600 hover:text-red-800 font-bold text-xs">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="p-6 text-center text-sm text-gray-500">
+                                    Belum ada pengumuman yang dibuat untuk kelas ini.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

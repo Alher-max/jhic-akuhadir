@@ -17,7 +17,17 @@ trait BelongsToTenant
 
         static::addGlobalScope('tenant', function (Builder $builder) {
             if (auth()->hasUser() && auth()->user()->tenant_id) {
-                $builder->where($builder->getQuery()->from . '.tenant_id', auth()->user()->tenant_id);
+                $from = $builder->getQuery()->from;
+                if (stripos($from, ' as ') !== false) {
+                    $segments = preg_split('/\s+as\s+/i', $from);
+                    $tableName = trim(end($segments));
+                } elseif (strpos($from, ' ') !== false) {
+                    $segments = explode(' ', $from);
+                    $tableName = trim(end($segments));
+                } else {
+                    $tableName = $from;
+                }
+                $builder->where($tableName . '.tenant_id', auth()->user()->tenant_id);
             }
         });
     }

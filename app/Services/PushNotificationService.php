@@ -70,20 +70,24 @@ class PushNotificationService
     protected function flush()
     {
         $results = [];
-        foreach ($this->webPush->flushReports() as $report) {
-            $endpoint = $report->getEndpoint();
-            if (!$report->isSuccess()) {
-                Log::error("Push Notification failed for endpoint: {$endpoint}. Error: {$report->getReason()}");
-                
-                // Optional: Delete expired subscriptions
-                if ($report->isSubscriptionExpired()) {
-                    PushSubscription::where('endpoint', $endpoint)->delete();
+        try {
+            foreach ($this->webPush->flush() as $report) {
+                $endpoint = $report->getEndpoint();
+                if (!$report->isSuccess()) {
+                    Log::error("Push Notification failed for endpoint: {$endpoint}. Error: {$report->getReason()}");
+                    
+                    // Optional: Delete expired subscriptions
+                    if ($report->isSubscriptionExpired()) {
+                        PushSubscription::where('endpoint', $endpoint)->delete();
+                    }
                 }
+                $results[] = [
+                    'endpoint' => $endpoint,
+                    'success' => $report->isSuccess()
+                ];
             }
-            $results[] = [
-                'endpoint' => $endpoint,
-                'success' => $report->isSuccess()
-            ];
+        } catch (\Throwable $e) {
+            Log::error("PushNotificationService flush failed: " . $e->getMessage());
         }
         return $results;
     }

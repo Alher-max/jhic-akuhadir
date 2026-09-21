@@ -280,7 +280,16 @@
                                 <h4 class="font-bold text-sm text-brand-primary pr-6">{{ $announcement->title }}</h4>
                                 <p class="text-xs text-gray-600 mt-1">{{ $announcement->description }}</p>
                                 <span
-                                    class="text-[10px] text-gray-400 mt-2 block">{{ $announcement->created_at->diffForHumans() }}</span>
+                                    class="text-[10px] text-gray-400 mt-2 block">{{ $announcement->created_at?->diffForHumans() ?? '-' }}</span>
+                                @if($announcement->attachment_path)
+                                    <div class="mt-2">
+                                        <a href="{{ Storage::url($announcement->attachment_path) }}" target="_blank"
+                                            class="inline-flex items-center gap-1 text-xs text-brand-primary font-semibold hover:underline">
+                                            <span class="material-symbols-outlined text-sm">attachment</span>
+                                            <span>Lihat Lampiran</span>
+                                        </a>
+                                    </div>
+                                @endif
 
                                 <button @click="
                                                                                                     fetch('{{ route('student.announcements.dismiss', $announcement->id) }}', {

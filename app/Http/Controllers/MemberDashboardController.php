@@ -22,6 +22,9 @@ class MemberDashboardController extends Controller
         $user->load(['schoolClass.waliKelas', 'tenant']);
 
         $announcements = \App\Models\Announcement::where('school_class_id', $user->class_id)
+            ->whereHas('schoolClass', function ($q) use ($user) {
+                $q->where('tenant_id', $user->tenant_id);
+            })
             ->whereIn('target_audience', ['students', 'both'])
             ->where(function ($query) {
                 $query->where('created_at', '>=', now()->subDays(7))
@@ -40,6 +43,9 @@ class MemberDashboardController extends Controller
             ->get();
 
         $archivedAnnouncements = \App\Models\Announcement::where('school_class_id', $user->class_id)
+            ->whereHas('schoolClass', function ($q) use ($user) {
+                $q->where('tenant_id', $user->tenant_id);
+            })
             ->whereIn('target_audience', ['students', 'both'])
             ->whereIn('id', function($query) use ($user) {
                 $query->select('announcement_id')

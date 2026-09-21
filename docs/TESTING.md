@@ -131,3 +131,30 @@ Saat mengintegrasikan Capacitor JS:
    - Tutup aplikasi dari *recent apps* (kill process) lalu buka kembali.
    - Siswa harus tetap dalam keadaan terautentikasi (*logged in*) tanpa diminta login ulang, mengonfirmasi cookie sesi web disimpan dengan baik oleh WebView.
 
+---
+
+## 6. Matriks Pengujian & Isolasi Multi-Tenant Pengumuman (Teacher & Student Announcements)
+
+### 6.1 Arsitektur & Penegakan Multi-Tenancy
+Pengumuman wali kelas (`announcements`) mengikat pada kelas binaan guru (`school_classes`) dan tenant sekolah (`tenants`):
+- **Model Eloquent**:
+  - `Announcement` menggunakan `$casts` eksplisit: `school_class_id` & `teacher_id` (integer), `expired_at`, `created_at`, `updated_at` (datetime).
+  - Kolom `expired_at` terdaftar pada `$fillable`.
+  - Scope `scopeForTenant($tenantId)` menjamin query selalu memfilter melalui relasi `schoolClass.tenant_id`.
+- **Global Scope Multi-Tenancy (`BelongsToTenant`)**:
+  - Penanganan nama tabel dengan alias (`users as laravel_reserved_0` pada query `whereHas`) diperbaiki agar menghasilkan kolom yang valid (`laravel_reserved_0.tenant_id = ?`) tanpa memicu syntax error `near "as": syntax error` pada SQLite dan PostgreSQL.
+- **Penanganan Push Notifikasi WebPush**:
+  - Method flush notifikasi menggunakan `$this->webPush->flush()` dengan penanganan error `\Throwable` agar kegagalan transmisi push tidak memicu HTTP 500 pada request pengguna.
+- **Blade Null-Safety**:
+  - Seluruh pemanggilan properti relasi dinamis (`homeroomClass?->nama_kelas`, `$announcement->created_at?->diffForHumans()`) menggunakan operator null-safe (`?->`) dan fallback value.
+
+### 6.2 Matriks Pengujian Kritis Pengumuman
+
+| Skenario Uji | Kondisi / Input | Ekspektasi Hasil | Berkas Uji Terkait |
+| :--- | :--- | :--- | :--- |
+| **Pembuatan Pengumuman Siswa** | Guru wali kelas membuat pengumuman dengan target `students` | Redirect sukses, data tersimpan di DB dengan `target_audience = 'students'` | `tests/Feature/TeacherAnnouncementTest.php` |
+| **Akses Riwayat Pengumuman** | Guru membuka `GET /teacher/announcements` setelah membuat pengumuman | Status 200 OK, riwayat tampil lengkap (judul, target, lampiran, tanggal) tanpa 500 error | `tests/Feature/TeacherAnnouncementTest.php` |
+| **Konsumsi Dashboard Siswa** | Siswa satu sekolah & satu kelas membuka `GET /student/dashboard` | Pengumuman tampil pada kartu "Pengumuman Kelas" dengan deskripsi dan lampiran | `tests/Feature/TeacherAnnouncementTest.php` |
+| **Isolasi Lintas Tenant** | Siswa dari sekolah/tenant lain membuka `GET /student/dashboard` | Pengumuman sekolah lain **TIDAK** tampil (strict tenant isolation) | `tests/Feature/TeacherAnnouncementTest.php` |
+| **Hapus Pengumuman Sendiri** | Guru wali kelas menghapus pengumuman binaannya | Pengumuman dan file lampiran terhapus dari storage dan DB | `tests/Feature/TeacherAnnouncementTest.php` |
+| **Proteksi Hapus Lintas Tenant** | Guru dari tenant lain mencoba menghapus via `DELETE /teacher/announcements/{id}` | HTTP 403 Forbidden, pengumuman tidak terhapus | `tests/Feature/TeacherAnnouncementTest.php` |
