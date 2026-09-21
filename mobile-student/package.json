@@ -1,0 +1,19 @@
+{
+  "name": "hadiryuk-mobile-student",
+  "version": "1.0.0",
+  "description": "HadirYuk Student Android App via Capacitor JS",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "cap": "cap"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

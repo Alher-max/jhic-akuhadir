@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Traits\BelongsToTenant;
+use Carbon\Carbon;
 
 class Attendance extends Model
 {
@@ -15,6 +17,7 @@ class Attendance extends Model
         'class_schedule_id',
         'date',
         'clock_in',
+        'clock_in_time',
         'clock_out',
         'status',
         'photo_path',
@@ -56,5 +59,13 @@ class Attendance extends Model
     public function isClassLevel(): bool
     {
         return $this->attendance_type === 'class' || !is_null($this->class_schedule_id);
+    }
+
+    protected function clockInTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->clock_in ? Carbon::parse($this->clock_in)->format('H:i:s') : null,
+            set: fn ($value) => ['clock_in' => $value ? Carbon::parse($value) : null],
+        );
     }
 }
