@@ -38,6 +38,12 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
 3. **Role & Tenant Management**:
    - Tenant isolation via global scope & middleware.
    - Onboarding wizard, forced password change (`must_change_password`), dan verifikasi OTP.
+4. **Support Ticket & Helpdesk Subsystem**:
+   - Menangani pelaporan kendala/bantuan dari berbagai role pengguna (`student`, `teacher`, `parent`) ke Operator Sekolah (`operator`).
+   - Alur status tiket: `pending` (mengantre) -> `processing` (sedang ditangani) -> `resolved` (selesai) dengan catatan/solusi operator (`operator_response`).
+   - Isolasi ketat multi-tenant (`tenant_id`) pada controller & model untuk mencegah cross-tenant data leakage.
+   - Menggunakan query ANSI SQL standar (`CASE ... WHEN ... THEN ... ELSE ... END` untuk pengurutan prioritas status) guna memastikan kompatibilitas penuh antar database engine (MySQL, PostgreSQL, SQLite) tanpa fungsi spesifik vendor seperti `FIELD()`.
+   - Null-safety pada view Blade (`?->`) untuk menangani pengguna yang terhapus atau profil tidak lengkap secara graceful tanpa memicu HTTP 500.
 
 ## 5. Deployment & Gateway Architecture
 - **Server VPS Host**: Debian 12 (Bookworm) pada VPS Jagoan Hosting Paket Nebula (Spesifikasi: 2 Core vCPU, 2GB RAM, 2GB Swap, 40GB Storage) di path `/var/www/thortech/hadiryuk`.

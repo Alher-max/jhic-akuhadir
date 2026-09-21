@@ -94,7 +94,7 @@ class SupportTicketController extends Controller
             });
         }
 
-        $tickets = $query->orderByRaw("FIELD(status, 'pending', 'processing', 'resolved') ASC")
+        $tickets = $query->orderByRaw("CASE status WHEN 'pending' THEN 1 WHEN 'processing' THEN 2 WHEN 'resolved' THEN 3 ELSE 4 END ASC")
             ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();

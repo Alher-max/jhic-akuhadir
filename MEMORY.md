@@ -94,6 +94,12 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
      * `deploy` (CD): Remote SSH deployment otomatis ke VPS (`/var/www/thortech/hadiryuk`) via `appleboy/ssh-action@v1.0.3` saat push ke branch `main`, menjalankan pull, dependensi, migrasi, cache optimasi, dan restart `hadiryuk.service`.
    - Dokumentasi lengkap setup SSH keypair & GitHub Secrets pada `deploy/README-CICD.md`.
 
+8. **Modul Support Ticket & Helpdesk (Operator)**
+   - Perbaikan HTTP 500 pada rute `GET /operator/support-tickets` di produksi: migrasi dari fungsi MySQL-spesifik `FIELD()` ke standar ANSI SQL `CASE WHEN ... THEN ... ELSE ... END` untuk kompatibilitas universal (MySQL, PostgreSQL, SQLite).
+   - Penguatan null-safety (`?->`) pada view Blade operator (`index.blade.php`, `show.blade.php`) untuk menangani user yang terhapus/tidak lengkap tanpa runtime error.
+   - Penegakan isolasi ketat multi-tenancy (`tenant_id`) untuk mencegah kebocoran data antar tenant (cross-tenant leakage).
+   - Penambahan automated feature test suite lengkap di `tests/Feature/OperatorSupportTicketTest.php` (empty state, multi-role reporter, null-safety, multi-tenancy isolation, filter & update status/tanggapan).
+
 ### 🟡 In Progress / Next Active Checklist
 1. **Validasi Modul Sertifikat Digital (Elco Variant)**
    - [ ] Testing alur upload sertifikat manual oleh operator/pengajar
@@ -113,7 +119,6 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
 1. **Advanced Features**
    - Comprehensive reporting system
    - Leave request management
-   - Support ticket system
    - Student card management
 
 2. **Frontend Components**

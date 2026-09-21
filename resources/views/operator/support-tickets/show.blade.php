@@ -27,9 +27,9 @@
                         </div>
                         <h3 class="text-lg font-bold text-gray-900">{{ $ticket->subject }}</h3>
                         <p class="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                            <span><i class="fa-solid fa-user text-gray-400"></i> {{ $ticket->user->name ?? 'Pengguna' }} ({{ ucfirst($ticket->user->role ?? '-') }})</span>
+                            <span><i class="fa-solid fa-user text-gray-400"></i> {{ $ticket->user?->name ?? 'Pengguna' }} ({{ ucfirst($ticket->user?->role ?? '-') }})</span>
                             •
-                            <span><i class="fa-solid fa-clock text-gray-400"></i> {{ $ticket->created_at->format('d M Y, H:i') }} WIB</span>
+                            <span><i class="fa-solid fa-clock text-gray-400"></i> {{ $ticket->created_at?->format('d M Y, H:i') ?? '-' }} WIB</span>
                         </p>
                     </div>
 

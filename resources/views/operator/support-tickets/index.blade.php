@@ -86,9 +86,9 @@
                             @forelse($tickets as $ticket)
                                 <tr class="hover:bg-gray-50/80 transition">
                                     <td class="p-3">
-                                        <span class="font-bold text-gray-900 block">{{ $ticket->user->name ?? 'User Terhapus' }}</span>
+                                        <span class="font-bold text-gray-900 block">{{ $ticket->user?->name ?? 'User Terhapus' }}</span>
                                         <span class="text-[10px] text-gray-400 capitalize">
-                                            Role: {{ $ticket->user->role ?? '-' }} | {{ $ticket->user->email ?? '' }}
+                                            Role: {{ $ticket->user?->role ?? '-' }} | {{ $ticket->user?->email ?? '' }}
                                         </span>
                                     </td>
                                     <td class="p-3 max-w-xs">
@@ -98,7 +98,7 @@
                                         <span class="font-bold text-gray-900 block truncate mt-1">{{ $ticket->subject }}</span>
                                     </td>
                                     <td class="p-3 whitespace-nowrap">
-                                        <span class="text-gray-800">{{ $ticket->created_at->format('d M Y, H:i') }}</span>
+                                        <span class="text-gray-800">{{ $ticket->created_at?->format('d M Y, H:i') ?? '-' }}</span>
                                     </td>
                                     <td class="p-3 whitespace-nowrap">
                                         @if($ticket->status === 'pending')
