@@ -20,6 +20,7 @@ class StudentClockInButtonLogicTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Carbon::setTestNow('2026-09-22 09:00:00', 'Asia/Jakarta');
 
         $this->tenant = Tenant::create([
             'name' => 'SMA Negeri 1 Yogyakarta',
@@ -36,6 +37,12 @@ class StudentClockInButtonLogicTest extends TestCase
             'onboarding_completed' => true,
             'email_verified_at' => now(),
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
     }
 
     /**

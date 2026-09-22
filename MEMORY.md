@@ -186,7 +186,7 @@ php artisan test
 1. **Prerequisites & Server Specifications**
    - **OS & Provider**: Debian 12 (Bookworm) pada VPS Jagoan Hosting Paket Nebula
    - **Hardware Specs**: 2 vCPU Cores, 2GB RAM, 2GB Swap, 40GB Storage
-   - **Runtime**: PHP 8.3+ (CLI, FPM, extensions), Node.js 20+, MySQL 8.0+
+   - **Runtime**: PHP 8.4 target (PHP 8.3+ tetap kompatibel; CLI/FPM/extensions), Node.js 20+, MySQL 8.0+
    - **Networking & Ingress**: Cloudflare Zero Trust & Cloudflare Tunnel (`cloudflared`)
    - **Process Supervisor**: Linux Systemd (`hadiryuk.service`)
 

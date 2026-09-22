@@ -8,7 +8,7 @@ HadirYuk! adalah platform SaaS Presensi Multi-Tenant monolitik yang mendukung 4 
 - **HadirCorporate**: Perusahaan enterprise (Karyawan, Manager, Departemen, Proyek).
 
 ## 2. Tech Stack
-- **Backend Framework**: Laravel 11/13.x (PHP 8.3+)
+- **Backend Framework**: Laravel 11/13.x (PHP 8.3+, tested and targeted for PHP 8.4)
 - **Database**: MySQL / MariaDB (Multi-tenant via `tenant_id` column-level isolation & subdomain resolution)
 - **Frontend Engine**: Blade Templates, Tailwind CSS, Alpine.js, Vue 3 via Vite
 - **Web Push**: `minishlink/web-push` dengan VAPID key
@@ -66,7 +66,7 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
 - **Workflow File**: `.github/workflows/deploy.yml`
 - **Tahapan Pipeline**:
   1. **Continuous Integration (`test` job)**:
-     - Environment PHP 8.3 & Node 20 pada `ubuntu-latest`.
+     - Environment PHP 8.3 & Node 20 pada `ubuntu-latest`; kompatibilitas PHP 8.4 telah divalidasi dan menjadi target runtime berikutnya.
      - Caching dependensi Composer & NPM.
      - Eksekusi build aset frontend (`npm ci && npm run build`).
      - Eksekusi test suite otomatis (`php artisan test` dengan SQLite in-memory).
