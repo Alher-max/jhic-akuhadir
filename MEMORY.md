@@ -100,6 +100,10 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
    - Penegakan isolasi ketat multi-tenancy (`tenant_id`) untuk mencegah kebocoran data antar tenant (cross-tenant leakage).
    - Penambahan automated feature test suite lengkap di `tests/Feature/OperatorSupportTicketTest.php` (empty state, multi-role reporter, null-safety, multi-tenancy isolation, filter & update status/tanggapan).
 
+9. **Aplikasi Mobile Capacitor Mandiri: Siswa & Orang Tua**
+   - **HadirYuk Siswa (`mobile-student/`)**: App ID `com.thortech.hadiryuk.student`, wrapper Android Capacitor JS untuk rute `/pwa/clock-in` dengan izin kamera dan GPS geofencing.
+   - **HadirYuk Orang Tua (`mobile-parent/`)**: App ID `shop.thortech.hadiryuk.parent`, wrapper Android Capacitor JS terisolasi untuk rute `/parent/dashboard` dengan fallback loader, izin jaringan aman (`usesCleartextTraffic="false"`), hardware back button handling di `MainActivity.java`, branding resmi HadirYuk (61 aset ikon & splash ter-generate), dan build Gradle CLI via JDK 21 LTS (`app-debug.apk` ~4.2 MB).
+
 ### 🟡 In Progress / Next Active Checklist
 1. **Validasi Modul Sertifikat Digital (Elco Variant)**
    - [ ] Testing alur upload sertifikat manual oleh operator/pengajar

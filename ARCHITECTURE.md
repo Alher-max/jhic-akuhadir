@@ -75,3 +75,16 @@ Sistem menghindari replikasi file views dengan pendekatan konfigurasi terpusat:
      - Menggunakan action SSH `appleboy/ssh-action@v1.0.3` dengan credentials `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`.
      - Menjalankan sinkronisasi kode (`git pull origin main`), pembaruan dependensi, migrasi database (`migrate --force`), optimasi cache Laravel, dan restart service `hadiryuk.service`.
 - **Panduan Setup & Konfigurasi**: Lihat `deploy/README-CICD.md`.
+
+## 7. Mobile Applications (Capacitor JS)
+HadirYuk menyediakan aplikasi mobile Android native berbasis wrapper Capacitor JS mandiri yang terisolasi dari root Laravel Vite:
+1. **HadirYuk Siswa (`mobile-student/`)**:
+   - **App ID**: `com.thortech.hadiryuk.student`
+   - **Target URL**: `https://hadiryuk.thortech.shop/pwa/clock-in`
+   - **Fitur Utama**: Presensi selfie mandiri, GPS geofencing, integrasi kamera native, dan hardware back button handling.
+2. **HadirYuk Orang Tua (`mobile-parent/`)**:
+   - **App ID**: `shop.thortech.hadiryuk.parent`
+   - **Target URL**: `https://hadiryuk.thortech.shop/parent/dashboard`
+   - **Fitur Utama**: Pemantauan presensi dan riwayat kehadiran anak secara real-time, izin jaringan aman (`usesCleartextTraffic="false"`), branding resmi HadirYuk, dan navigasi WebView dengan hardware back button handling.
+   - **Build Toolchain**: CLI-only build via Gradle Wrapper (`gradlew.bat assembleDebug`) memanfaatkan JDK 21 LTS (`.jdks/jbr-21.0.11`) dan Android SDK tanpa dependensi GUI Android Studio.
+
