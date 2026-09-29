@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Deploy to Production VPS
 
 on:
   push:
@@ -6,64 +6,33 @@ on:
       - main
 
 jobs:
-  test:
-    name: Automated Testing
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_sqlite, sqlite3, bcmath, curl
-          coverage: none
-
-      - name: Copy Environment File
-        run: cp .env.example .env
-
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
-
-      - name: Generate Application Key
-        run: php artisan key:generate
-
-      - name: Set Directory Permissions
-        run: chmod -R 777 storage bootstrap/cache
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build Frontend Assets
-        run: |
-          npm ci || npm install
-          npm run build
-
-      - name: Execute Tests
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ':memory:'
-        run: php artisan test
-
   deploy:
-    name: Auto Deployment to VPS
+    name: Deploy Laravel Application
     runs-on: ubuntu-latest
-    needs: test
-
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Execute Remote Deployment via SSH
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
           script: |
-            cd /var/www/thortech/hadiryuk
-            git pull origin main
-            php artisan optimize:clear
-            php artisan optimize
+            cd /home/akuhadir/app
+
+            # Tarik perubahan terbaru dari GitHub
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Autoload & migrasi jika ada pembaruan tabel
+            composer dump-autoload --optimize --no-interaction
+            php artisan migrate --force
+
+            # Hak akses berkas Webuzo
+            chown -R akuhadir:akuhadir /home/akuhadir/app
+
+            # Refresh cache aplikasi
+            php artisan view:clear
+            php artisan route:cache
+            php artisan config:cache
