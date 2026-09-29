@@ -7,16 +7,13 @@ use App\Models\User;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Support\Facades\DB;
 
 class AttendanceSeeder extends Seeder
 {
     public function run()
     {
         // 1. Bersihkan tabel attendance lama agar tidak terjadi duplikasi data yang menumpuk
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Attendance::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Attendance::query()->delete();
 
         // Ambil ID tenant dari user pertama
         $tenantId = 1; 

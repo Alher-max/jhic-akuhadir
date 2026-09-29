@@ -43,6 +43,19 @@ return [
     'wa' => [
         'driver' => env('WA_DRIVER', 'fonnte'),
         'api_key' => env('WA_API_KEY', ''),
+        'token' => env('WA_TOKEN', ''),
+        'gateway_url' => env('WA_GATEWAY_URL', ''),
+    ],
+
+    'whatsapp' => [
+        'api_key' => env('WHATSAPP_API_KEY', ''),
+    ],
+
+    'wifi' => [
+        'allowed_ips' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) (env('SCHOOL_WIFI_IPS') ?: env('WIFI_ALLOWED_IPS', '')))
+        ))),
     ],
 
 ];

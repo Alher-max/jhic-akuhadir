@@ -20,10 +20,8 @@ class ScheduleSeeder extends Seeder
     public function run()
     {
         // Bersihkan jadwal lama
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('schedule_user')->truncate();
-        DB::table('schedules')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('schedule_user')->delete();
+        Schedule::query()->delete();
 
         // Ambil tenant pertama (asumsi tenant default sudah ada)
         $tenant = Tenant::first();

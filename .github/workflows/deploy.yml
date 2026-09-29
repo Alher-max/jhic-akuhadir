@@ -6,10 +6,52 @@ on:
       - main
 
 jobs:
+  build-assets:
+    name: Build Vite Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install frontend dependencies and build assets
+        run: |
+          npm ci
+          npm run build
+          tar -czf vite-build.tar.gz -C public build
+
+      - name: Upload Vite build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-build
+          path: vite-build.tar.gz
+          if-no-files-found: error
+
   deploy:
     name: Deploy Laravel Application
     runs-on: ubuntu-latest
+    needs: build-assets
     steps:
+      - name: Download Vite build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vite-build
+
+      - name: Copy Vite build to production server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: vite-build.tar.gz
+          target: /tmp/
+
       - name: Execute Remote Deployment via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -24,6 +66,10 @@ jobs:
             # Tarik perubahan terbaru dari GitHub
             git fetch origin main
             git reset --hard origin/main
+
+            # Pasang aset yang sudah dibangun dan diverifikasi di GitHub Actions
+            tar -xzf /tmp/vite-build.tar.gz -C /home/akuhadir/app/public
+            rm -f /tmp/vite-build.tar.gz
 
             # Autoload & migrasi jika ada pembaruan tabel
             composer dump-autoload --optimize --no-interaction

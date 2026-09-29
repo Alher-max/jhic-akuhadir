@@ -165,10 +165,7 @@ class PwaAttendanceController extends Controller
             ->toArray();
         $allowedIps = array_merge($allowedIps, $deviceIps);
 
-        $envIps = env('SCHOOL_WIFI_IPS') ?: env('WIFI_ALLOWED_IPS') ?: config('services.wifi.allowed_ips');
-        if ($envIps) {
-            $allowedIps = array_merge($allowedIps, is_array($envIps) ? $envIps : array_map('trim', explode(',', $envIps)));
-        }
+        $allowedIps = array_merge($allowedIps, config('services.wifi.allowed_ips', []));
 
         if (!empty($allowedIps) && in_array($clientIp, $allowedIps)) {
             $isWifiVerified = true;

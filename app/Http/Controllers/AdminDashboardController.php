@@ -92,9 +92,8 @@ class AdminDashboardController extends Controller
         
         $waConfigKey = config('services.wa.api_key') 
             ?: config('services.whatsapp.api_key') 
-            ?: env('WA_API_KEY') 
-            ?: env('WA_TOKEN') 
-            ?: env('WA_GATEWAY_URL');
+            ?: config('services.wa.token')
+            ?: config('services.wa.gateway_url');
         $sysWaReady = !empty($waConfigKey);
 
         // --- WALI KELAS SPECIFIC STATS & FILTER PREP ---

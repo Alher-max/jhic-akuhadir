@@ -17,7 +17,7 @@ Route::redirect('/kepsek/dashboard', '/headmaster/dashboard', 301);
 Route::redirect('/kepsek', '/headmaster/dashboard', 301);
 
 // Subdomain Routes (Tenant Landing Pages)
-Route::domain('{subdomain}.' . env('APP_DOMAIN', 'localhost'))->middleware(['tenant.subdomain'])->group(function () {
+Route::domain('{subdomain}.'.config('app.domain', 'localhost'))->middleware(['tenant.subdomain'])->group(function () {
     Route::get('/', function () {
         return view('tenant.landing', ['tenant' => app('tenant')]);
     })->name('tenant.landing');
