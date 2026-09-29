@@ -86,14 +86,14 @@
                     <!-- Kode Sekolah / NPSN -->
                     <div class="mb-4">
                         <x-input-label for="school_code" :value="__('Kode Sekolah / NPSN')" />
-                        <x-text-input id="school_code" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="school_code" :value="old('school_code')" required autofocus placeholder="Contoh: 20102026" />
+                        <x-text-input id="school_code" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="school_code" :value="old('school_code', request('school_code'))" required autofocus placeholder="Contoh: 20102026" />
                         <x-input-error :messages="$errors->get('school_code')" class="mt-2" />
                     </div>
 
                     <!-- Email / NISN / NIS -->
                     <div class="mb-4">
                         <x-input-label for="email" :value="__('Email / NISN / NIS')" />
-                        <x-text-input id="email" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="email" :value="old('email')" required autocomplete="username" placeholder="Email, NISN, atau NIS" />
+                        <x-text-input id="email" class="block mt-1 w-full border-brand-border focus:border-brand-primary" type="text" name="email" :value="old('email', request('email'))" required autocomplete="username" placeholder="Email, NISN, atau NIS" />
                         <p class="mt-1.5 text-xs text-brand-text-muted">Siswa dapat masuk menggunakan nomor NISN atau NIS.</p>
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>

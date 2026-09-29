@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\SchoolClass;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Tenant;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'sma-negeri-2-yogyakarta',
                 'onboarding_completed' => true,
                 'institution_type' => 'education',
-                'business_category' => 'education'
+                'business_category' => 'education',
             ];
             if (Schema::hasColumn('tenants', 'npsn')) {
                 $tenantData['npsn'] = '20261001';
@@ -54,12 +54,12 @@ class DatabaseSeeder extends Seeder
             // ATURAN MUTLAK: Setiap Kelas Wajib Memiliki Wali Kelas
             $unassignedClasses = SchoolClass::whereNull('wali_kelas_id')->get();
             foreach ($unassignedClasses as $class) {
-                $teacherEmail = 'guru.' . Str::slug($class->nama_kelas ?: ('class-' . $class->id)) . '@hadirsekolah.id';
+                $teacherEmail = 'guru.'.Str::slug($class->nama_kelas ?: ('class-'.$class->id)).'@hadirsekolah.id';
                 $teacher = User::firstOrCreate(
                     ['email' => $teacherEmail],
                     [
                         'tenant_id' => $class->tenant_id,
-                        'name' => 'Wali Kelas ' . ($class->nama_kelas ?: 'Utama'),
+                        'name' => 'Wali Kelas '.($class->nama_kelas ?: 'Utama'),
                         'password' => Hash::make('password123'),
                         'role' => 'teacher',
                         'is_active' => true,
@@ -70,5 +70,7 @@ class DatabaseSeeder extends Seeder
                 $class->save();
             }
         }
+
+        $this->call(DemoAccountsSeeder::class);
     }
 }

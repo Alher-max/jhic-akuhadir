@@ -233,6 +233,89 @@
         </div>
     </section>
 
+    @php
+        $demoAccounts = [
+            ['role' => 'Operator / Admin Sekolah', 'email' => 'operator.demo@hadiryuk.id', 'icon' => 'admin_panel_settings'],
+            ['role' => 'Kepala Sekolah', 'email' => 'kepala.demo@hadiryuk.id', 'icon' => 'school'],
+            ['role' => 'Guru', 'email' => 'guru.demo@hadiryuk.id', 'icon' => 'person'],
+            ['role' => 'Wali Kelas', 'email' => 'walikelas.demo@hadiryuk.id', 'icon' => 'groups'],
+            ['role' => 'Orang Tua', 'email' => 'orangtua.demo@hadiryuk.id', 'icon' => 'family_restroom'],
+            ['role' => 'Siswa', 'email' => 'siswa.demo@hadiryuk.id', 'icon' => 'backpack'],
+        ];
+    @endphp
+
+    <!-- Demo Accounts -->
+    <section id="akun-demo" class="py-20 bg-[#FBF8F6] border-y border-[#EAE2E3]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#EAE2E3] text-xs font-bold uppercase tracking-wider text-[#B81D24] mb-4">
+                    <span class="material-symbols-outlined text-base">visibility</span>
+                    Demo interaktif
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1A1516] mb-4">
+                    Coba Akun Demo (Dewan Juri &amp; Pengunjung)
+                </h2>
+                <p class="text-brand-muted font-medium leading-relaxed">
+                    Jelajahi pengalaman HadirYuk dari enam peran berbeda. Klik salin untuk menyalin kredensial lengkap,
+                    atau masuk untuk mengisi kode sekolah dan email secara otomatis.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                @foreach ($demoAccounts as $account)
+                    <article x-data="{ copied: false }"
+                        class="bg-white border border-[#EAE2E3] rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-[#D9C8C8] transition-all">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-11 h-11 rounded-xl bg-[#FDF1F0] text-[#B81D24] flex items-center justify-center">
+                                <span class="material-symbols-outlined">{{ $account['icon'] }}</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-brand-muted">Akun demo</p>
+                                <h3 class="font-bold text-[#1A1516]">{{ $account['role'] }}</h3>
+                            </div>
+                        </div>
+
+                        <dl class="space-y-3 text-sm">
+                            <div>
+                                <dt class="text-xs font-semibold text-brand-muted mb-1">Email</dt>
+                                <dd class="font-semibold text-[#1A1516] break-all">{{ $account['email'] }}</dd>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <dt class="text-xs font-semibold text-brand-muted mb-1">Kode sekolah</dt>
+                                    <dd class="font-mono font-semibold text-[#1A1516]">JHIC2026</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-xs font-semibold text-brand-muted mb-1">Password</dt>
+                                    <dd class="font-mono font-semibold text-[#1A1516]">password123</dd>
+                                </div>
+                            </div>
+                        </dl>
+
+                        <div class="grid grid-cols-2 gap-3 mt-6">
+                            <button type="button"
+                                data-credentials="{{ "Kode sekolah: JHIC2026\nEmail: {$account['email']}\nPassword: password123" }}"
+                                @click="if (navigator.clipboard?.writeText) { navigator.clipboard.writeText($el.dataset.credentials).then(() => { copied = true; setTimeout(() => copied = false, 2000); }).catch(() => window.prompt('Salin kredensial demo:', $el.dataset.credentials)); } else { window.prompt('Salin kredensial demo:', $el.dataset.credentials); }"
+                                class="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-[#EAE2E3] text-sm font-bold text-[#1A1516] hover:bg-[#F8F5F3] transition-colors">
+                                <span class="material-symbols-outlined text-lg" x-text="copied ? 'check' : 'content_copy'">content_copy</span>
+                                <span x-text="copied ? 'Tersalin' : 'Salin Kredensial'">Salin Kredensial</span>
+                            </button>
+                            <a href="{{ route('login', ['school_code' => 'JHIC2026', 'email' => $account['email']]) }}"
+                                class="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#B81D24] text-sm font-bold text-white hover:bg-[#9B181E] transition-colors">
+                                Masuk
+                                <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                            </a>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+
+            <p class="mt-6 text-center text-xs text-brand-muted">
+                Data demo ditujukan untuk eksplorasi fitur; perubahan pada akun dapat terlihat oleh pengguna demo lainnya.
+            </p>
+        </div>
+    </section>
+
     <!-- Fitur Utama -->
     <section id="fitur" class="py-24 bg-brand-bg relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
