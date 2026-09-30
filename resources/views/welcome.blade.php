@@ -377,6 +377,60 @@
         </div>
     </section>
 
+    <section id="apk-download" class="py-20 bg-white border-b border-[#EAE2E3]">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-3xl text-center mb-10">
+                <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
+                    <span class="material-symbols-outlined text-base">android</span>
+                    Android Native / PWA Client (~4.3 MB)
+                </span>
+                <h2 class="mt-5 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1A1516]">
+                    Uji Aplikasi Mobile (Android APK)
+                </h2>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <div class="mb-4 flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                            <span class="material-symbols-outlined text-3xl">smartphone</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Siswa</p>
+                            <h3 class="text-xl font-bold text-[#1A1516]">Download APK Siswa</h3>
+                        </div>
+                    </div>
+                    <p class="mb-5 text-sm text-slate-600">Versi APK siswa untuk presensi dan aktivitas harian dengan ukuran sekitar 4.3 MB.</p>
+                    <a href="{{ route('apk.download', ['role' => 'siswa']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700">
+                        <span class="material-symbols-outlined">download</span>
+                        Download APK Siswa
+                    </a>
+                </div>
+
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <div class="mb-4 flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                            <span class="material-symbols-outlined text-3xl">family_restroom</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Orang Tua</p>
+                            <h3 class="text-xl font-bold text-[#1A1516]">Download APK Orang Tua</h3>
+                        </div>
+                    </div>
+                    <p class="mb-5 text-sm text-slate-600">Versi APK Orang Tua untuk memantau aktivitas dan status kehadiran anak dengan ukuran sekitar 4.3 MB.</p>
+                    <a href="{{ route('apk.download', ['role' => 'orangtua']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-amber-600">
+                        <span class="material-symbols-outlined">download</span>
+                        Download APK Orang Tua
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                Jika muncul konfirmasi <strong>File might be harmful</strong>, pilih <strong>Tetap Download</strong>, lalu aktifkan izin <strong>Install unknown apps / Sumber tidak dikenal</strong> saat membuka berkas.
+            </div>
+        </div>
+    </section>
+
     <!-- Fitur Utama -->
     <section id="fitur" class="py-24 bg-brand-bg relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

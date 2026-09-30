@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeroomAnnouncementController;
 use App\Http\Controllers\DemoLoginController;
+use App\Http\Controllers\ApkDownloadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,6 +13,9 @@ Route::get('/', function () {
 Route::post('/demo-login', [DemoLoginController::class, 'store'])
     ->middleware('throttle:30,1')
     ->name('demo.login');
+
+Route::get('/download/apk/{role}', ApkDownloadController::class)
+    ->name('apk.download');
 
 Route::view('/offline', 'errors.offline');
 
