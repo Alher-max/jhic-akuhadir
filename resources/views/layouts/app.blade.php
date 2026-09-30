@@ -101,6 +101,9 @@
     <div class="min-h-screen bg-gray-100 flex flex-col justify-between">
         <div class="flex-1">
             @include('layouts.navigation')
+            @if (config('app.env') !== 'local')
+                @include('partials.pwa-prompt')
+            @endif
 
             <!-- Global Alert & Notification Banner (Centralized for all roles) -->
             @if(session('success') || session('error') || session('warning') || session('info') || $errors->any())
@@ -168,7 +171,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="pb-32 md:pb-16">
+            <main class="pb-20 md:pb-10">
                 {{ $slot }}
             </main>
         </div>
@@ -195,8 +198,6 @@
                 }
             }
         </script>
-    @else
-        @include('partials.pwa-prompt')
     @endif
     <x-confirm-modal />
     @auth

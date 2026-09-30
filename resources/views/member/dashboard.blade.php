@@ -165,6 +165,8 @@
         data-today-iso="{{ $todayDayOfWeek ?? \Carbon\Carbon::now()->dayOfWeekIso }}"
         data-end-time="{{ $lastEndTime }}">
 
+        @include('partials.pwa-prompt')
+
         <!-- Minimalist Topbar -->
         <header class="bg-brand-primary text-white p-5 rounded-b-3xl shadow-sm relative z-10">
             <div class="flex justify-between items-start">
@@ -216,7 +218,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 px-5 pt-8 pb-32 md:pb-16 flex flex-col gap-6 -mt-6">
+        <main class="flex-1 px-5 pt-8 pb-20 md:pb-10 flex flex-col gap-6 -mt-6">
 
             <!-- PWA Push Notification Prompt -->
             <div x-data="{
@@ -1022,7 +1024,6 @@
         </main>
     </div>
 
-    @include('partials.pwa-prompt')
 @include('partials.demo-role-switcher')
 </body>
 

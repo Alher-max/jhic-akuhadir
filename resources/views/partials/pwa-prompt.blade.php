@@ -12,22 +12,18 @@
     </button>
 </div>
 
-<!-- PWA Install Banner (Bottom Floating) -->
-<div id="pwa-install-banner" style="display: none;" class="fixed bottom-20 md:bottom-20 left-4 right-4 md:max-w-md md:mx-auto z-50 bg-white border border-brand-border p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-        <img src="{{ asset('images/logo.png') }}" alt="HadirYuk" class="w-10 h-10 rounded-xl object-contain shrink-0 bg-brand-primary/10 p-1">
-        <div>
-            <p class="text-xs font-bold text-gray-900">Install Aplikasi HadirYuk</p>
-            <p class="text-[11px] text-gray-500">Akses presensi lebih cepat & praktis!</p>
-        </div>
+<!-- PWA Install Banner (Sticky Top Bar) -->
+<div id="pwa-install-banner" style="display: none;" class="sticky top-0 z-40 bg-gradient-to-r from-rose-50 to-orange-50 border-b border-rose-200 px-4 py-2 flex items-center justify-between gap-3 text-xs text-gray-800 shadow-sm">
+    <div class="flex min-w-0 items-center gap-2">
+        <img src="{{ asset('images/logo.png') }}" alt="" class="w-7 h-7 rounded-lg object-contain shrink-0 bg-white p-0.5">
+        <p class="font-medium leading-snug">Pasang HadirYuk di layar utama untuk akses instan &amp; offline</p>
     </div>
-    <div class="flex items-center gap-2">
-        <button id="pwa-install-close" aria-label="Tutup banner instalasi" class="text-gray-400 hover:text-gray-600 text-xs px-2 py-1.5 font-medium">
-            <span class="md:hidden" aria-hidden="true">×</span>
-            <span class="hidden md:inline">Nanti</span>
-        </button>
-        <button id="pwa-install-btn" class="bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-sm whitespace-nowrap">
+    <div class="flex shrink-0 items-center gap-1.5">
+        <button id="pwa-install-btn" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap">
             Install
+        </button>
+        <button id="pwa-install-close" aria-label="Tutup banner instalasi" class="text-gray-500 hover:text-gray-800 text-base leading-none p-1.5 rounded-md transition-colors">
+            <span aria-hidden="true">✕</span>
         </button>
     </div>
 </div>
