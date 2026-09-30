@@ -60,10 +60,19 @@
             background-image: radial-gradient(#EAE2E3 1px, transparent 1px);
             background-size: 30px 30px;
         }
+
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 
-<body class="bg-brand-bg text-brand-dark antialiased font-sans selection:bg-brand-primary selection:text-white">
+<body class="bg-brand-bg text-brand-dark antialiased font-sans selection:bg-brand-primary selection:text-white pb-24 md:pb-12">
 
     <!-- Navbar -->
     <nav x-data="{ mobileMenuOpen: false, scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
@@ -250,9 +259,10 @@
                     Jelajahi pengalaman HadirYuk dari enam peran berbeda. Klik salin untuk menyalin kredensial lengkap,
                     atau masuk untuk mengisi kode sekolah dan email secara otomatis.
                 </p>
+                <p class="mt-4 text-xs font-semibold text-slate-500 md:hidden">← Geser untuk peran lain →</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div class="flex md:grid md:grid-cols-2 lg:grid-cols-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
                 @foreach ($demoAccounts as $email => $account)
                     <article
                         x-data="{
@@ -291,13 +301,13 @@
                                 }, 2000);
                             }
                         }"
-                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl
+                        class="min-w-[85vw] sm:min-w-[340px] snap-center md:min-w-0 rounded-2xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl
                             @if($account['accent'] === 'slate') hover:border-slate-300
                             @elseif($account['accent'] === 'indigo') hover:border-indigo-300
                             @elseif($account['accent'] === 'emerald') hover:border-emerald-300
                             @elseif($account['accent'] === 'amber') hover:border-amber-300
                             @else hover:border-rose-300 @endif">
-                        <div class="flex items-center gap-3 mb-5">
+                        <div class="flex items-center gap-3 mb-3 md:mb-5">
                             <div @class([
                                 'flex h-11 w-11 items-center justify-center rounded-xl',
                                 'bg-slate-100 text-slate-800' => $account['accent'] === 'slate',
@@ -314,7 +324,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-5 flex flex-wrap gap-1.5">
+                        <div class="mb-3 md:mb-5 flex flex-wrap gap-1.5">
                             @foreach ($account['features'] as $feature)
                                 <span @class([
                                     'rounded-full px-2.5 py-1 text-[11px] font-semibold',
@@ -327,28 +337,28 @@
                             @endforeach
                         </div>
 
-                        <dl class="space-y-3 text-sm">
-                            <div>
-                                <dt class="text-xs font-semibold text-brand-muted mb-1">Email</dt>
-                                <dd class="font-semibold text-[#1A1516] break-all">{{ $email }}</dd>
+                        <dl class="rounded-lg bg-gray-50/80 p-2.5 text-xs">
+                            <div class="mb-2">
+                                <dt class="font-semibold text-brand-muted">Email</dt>
+                                <dd class="break-all font-semibold text-[#1A1516]">{{ $email }}</dd>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <dt class="text-xs font-semibold text-brand-muted mb-1">Kode sekolah</dt>
-                                    <dd><code class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-xs">{{ config('demo.school_code') }}</code></dd>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="min-w-0">
+                                    <dt class="font-semibold text-brand-muted">Kode sekolah</dt>
+                                    <dd class="mt-0.5"><code class="break-all rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs">{{ config('demo.school_code') }}</code></dd>
                                 </div>
-                                <div>
-                                    <dt class="text-xs font-semibold text-brand-muted mb-1">Password</dt>
-                                    <dd><code class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-xs">{{ config('demo.password') }}</code></dd>
+                                <div class="min-w-0">
+                                    <dt class="font-semibold text-brand-muted">Password</dt>
+                                    <dd class="mt-0.5"><code class="break-all rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs">{{ config('demo.password') }}</code></dd>
                                 </div>
                             </div>
                         </dl>
 
-                        <div class="grid grid-cols-2 gap-3 mt-6">
+                        <div class="grid grid-cols-2 gap-2 md:gap-3 mt-4 md:mt-6">
                             <button type="button"
                                 data-credentials="{{ "Kode sekolah: ".config('demo.school_code')."\nEmail: {$email}\nPassword: ".config('demo.password') }}"
                                 @click="copyCredentials($el.dataset.credentials)"
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50">
+                                class="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 md:px-3 py-2.5 text-xs md:text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50">
                                 <span class="material-symbols-outlined text-lg" x-text="copied ? 'check' : 'content_copy'">content_copy</span>
                                 <span aria-live="polite" x-text="copied ? '✓ Tersalin!' : (copyError ? 'Gagal menyalin' : 'Salin Kredensial')">Salin Kredensial</span>
                             </button>
@@ -356,7 +366,7 @@
                                 @csrf
                                 <input type="hidden" name="email" value="{{ $email }}">
                                 <button type="submit" @class([
-                                    'inline-flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-white transition-colors',
+                                    'inline-flex min-h-[40px] w-full items-center justify-center gap-2 rounded-xl px-2 md:px-3 py-2.5 text-xs md:text-sm font-bold text-white transition-colors',
                                     'bg-slate-800 hover:bg-slate-900' => $account['accent'] === 'slate',
                                     'bg-indigo-600 hover:bg-indigo-700' => $account['accent'] === 'indigo',
                                     'bg-emerald-600 hover:bg-emerald-700' => $account['accent'] === 'emerald',
@@ -401,7 +411,7 @@
                         </div>
                     </div>
                     <p class="mb-5 text-sm text-slate-600">Versi APK siswa untuk presensi dan aktivitas harian dengan ukuran sekitar 4.3 MB.</p>
-                    <a href="{{ route('apk.download', ['role' => 'siswa']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700">
+                    <a href="{{ route('apk.download', ['role' => 'siswa']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-rose-700">
                         <span class="material-symbols-outlined">download</span>
                         Download APK Siswa
                     </a>
@@ -418,7 +428,7 @@
                         </div>
                     </div>
                     <p class="mb-5 text-sm text-slate-600">Versi APK Orang Tua untuk memantau aktivitas dan status kehadiran anak dengan ukuran sekitar 4.3 MB.</p>
-                    <a href="{{ route('apk.download', ['role' => 'orangtua']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-amber-600">
+                    <a href="{{ route('apk.download', ['role' => 'orangtua']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-slate-900">
                         <span class="material-symbols-outlined">download</span>
                         Download APK Orang Tua
                     </a>
@@ -714,7 +724,7 @@
     <!-- Floating WA -->
     <a href="https://wa.me/6281345557567?text=Halo%20HadirYuk%2C%20saya%20ingin%20konsultasi%20sistem%20presensi%20sekolah"
         target="_blank" rel="noopener noreferrer"
-        class="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group"
+        class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[60] bg-emerald-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group"
         aria-label="Konsultasi via WhatsApp">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
         <span
