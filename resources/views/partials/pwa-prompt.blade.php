@@ -13,7 +13,7 @@
 </div>
 
 <!-- PWA Install Banner (Bottom Floating) -->
-<div id="pwa-install-banner" style="display: none;" class="fixed bottom-4 left-4 right-4 md:max-w-md md:mx-auto z-50 bg-white border border-brand-border p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3">
+<div id="pwa-install-banner" style="display: none;" class="fixed bottom-20 md:bottom-20 left-4 right-4 md:max-w-md md:mx-auto z-50 bg-white border border-brand-border p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3">
     <div class="flex items-center gap-3">
         <img src="{{ asset('images/logo.png') }}" alt="HadirYuk" class="w-10 h-10 rounded-xl object-contain shrink-0 bg-brand-primary/10 p-1">
         <div>
@@ -22,8 +22,9 @@
         </div>
     </div>
     <div class="flex items-center gap-2">
-        <button id="pwa-install-close" class="text-gray-400 hover:text-gray-600 text-xs px-2 py-1.5 font-medium">
-            Nanti
+        <button id="pwa-install-close" aria-label="Tutup banner instalasi" class="text-gray-400 hover:text-gray-600 text-xs px-2 py-1.5 font-medium">
+            <span class="md:hidden" aria-hidden="true">×</span>
+            <span class="hidden md:inline">Nanti</span>
         </button>
         <button id="pwa-install-btn" class="bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-sm whitespace-nowrap">
             Install
@@ -40,7 +41,7 @@
         e.preventDefault();
         deferredPrompt = e;
         const installBanner = document.getElementById('pwa-install-banner');
-        if (installBanner && !localStorage.getItem('pwa_install_dismissed')) {
+        if (installBanner && !sessionStorage.getItem('pwa_install_dismissed')) {
             installBanner.style.display = 'flex';
         }
     });
@@ -59,7 +60,7 @@
     document.getElementById('pwa-install-close')?.addEventListener('click', () => {
         const installBanner = document.getElementById('pwa-install-banner');
         if (installBanner) installBanner.style.display = 'none';
-        localStorage.setItem('pwa_install_dismissed', '1');
+        sessionStorage.setItem('pwa_install_dismissed', '1');
     });
 
     // 2. Service Worker Registration & Auto-Update

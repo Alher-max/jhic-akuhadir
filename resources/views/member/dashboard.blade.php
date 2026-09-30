@@ -216,7 +216,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 px-5 pt-8 pb-10 flex flex-col gap-6 -mt-6">
+        <main class="flex-1 px-5 pt-8 pb-32 md:pb-16 flex flex-col gap-6 -mt-6">
 
             <!-- PWA Push Notification Prompt -->
             <div x-data="{
