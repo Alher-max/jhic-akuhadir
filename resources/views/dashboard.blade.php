@@ -249,7 +249,7 @@
                             
                             <!-- METRIK SISWA -->
                             <div class="bg-white rounded-2xl shadow-sm border border-brand-border p-5">
-                                <div class="flex justify-between items-center mb-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-4">
                                     <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-users text-brand-primary"></i> Live Snapshot Siswa</h3>
                                     <span class="text-xs text-gray-500">Total: {{ $totalSiswa }} Terdaftar</span>
                                 </div>
@@ -275,7 +275,7 @@
 
                             <!-- METRIK GURU -->
                             <div class="bg-white rounded-2xl shadow-sm border border-brand-border p-5">
-                                <div class="flex justify-between items-center mb-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-4">
                                     <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-brand-primary"></i> Kehadiran Pendidik & Tenaga Kependidikan</h3>
                                     <span class="text-xs text-gray-500">Total: {{ $totalGuruStaff }} Guru/Staf</span>
                                 </div>
@@ -473,7 +473,7 @@
                 </div>
                 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="min-w-[600px] w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                                 <th class="px-6 py-4 font-medium">Nama Anggota</th>
@@ -489,7 +489,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors group">
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $attendance->user->name ?? 'Unknown' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $attendance->user->schoolClass->nama_kelas ?? '-' }}</td>
-                                    <td class="px-6 py-4 text-gray-500 text-sm">{{ $attendance->user->email ?? '-' }}</td>
+                                    <td class="max-w-[150px] truncate px-6 py-4 text-gray-500 text-sm" title="{{ $attendance->user->email ?? '-' }}">{{ $attendance->user->email ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         @if($attendance->clock_in)
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">

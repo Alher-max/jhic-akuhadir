@@ -171,8 +171,10 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="pb-20 md:pb-10">
-                {{ $slot }}
+            <main class="pb-36 md:pb-16">
+                <div class="mb-6">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
 

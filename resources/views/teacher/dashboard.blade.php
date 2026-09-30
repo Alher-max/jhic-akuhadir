@@ -226,7 +226,7 @@
 
                 <!-- Table Schedule -->
                 <div class="overflow-x-auto border border-gray-200 rounded-xl">
-                    <table class="w-full text-left text-xs">
+                    <table class="min-w-[650px] w-full text-left text-xs">
                         <thead
                             class="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
                             <tr>
@@ -414,7 +414,7 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="min-w-[650px] w-full text-left border-collapse">
                         <thead>
                             <tr
                                 class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
@@ -811,8 +811,8 @@
                         <div class="max-h-[60vh] overflow-y-auto pr-1">
                             <template
                                 x-if="activeKbmSchedule && activeKbmSchedule.students && activeKbmSchedule.students.length > 0">
-                                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                                    <table class="w-full text-left border-collapse">
+                                <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-sm">
+                                    <table class="min-w-[600px] w-full text-left border-collapse">
                                         <thead>
                                             <tr
                                                 class="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-200">

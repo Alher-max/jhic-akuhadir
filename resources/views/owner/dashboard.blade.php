@@ -176,7 +176,10 @@
                         <!-- Guru -->
                         <div>
                             <div class="flex justify-between items-end mb-2">
-                                <h4 class="font-semibold text-slate-700">Status Kehadiran Guru (Total: {{ $totalGuru }})</h4>
+                                <h4 class="flex flex-col gap-1 font-semibold text-slate-700 sm:flex-row sm:items-center sm:gap-2">
+                                    <span>Status Kehadiran Guru</span>
+                                    <span class="text-xs font-medium text-slate-500">Total: {{ $totalGuru }} Guru</span>
+                                </h4>
                             </div>
                             <div class="grid grid-cols-3 gap-3">
                                 <div class="bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-center">
@@ -354,7 +357,7 @@
                 </div>
                 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="min-w-[600px] w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
                                 <th class="px-6 py-4 font-bold border-b border-slate-100">Nama Siswa</th>
@@ -418,7 +421,7 @@
 
                 <!-- TABLE DAFTAR OPERATOR & UNDANGAN -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-slate-600">
+                    <table class="min-w-[700px] w-full text-sm text-left text-slate-600">
                         <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th scope="col" class="px-6 py-3 font-bold">Nama / Email Operator</th>
@@ -439,7 +442,7 @@
                                             </div>
                                             <div>
                                                 <div class="font-bold text-slate-900">{{ $op->name }}</div>
-                                                <div class="text-xs text-slate-500 font-normal">{{ $op->email }}</div>
+                                                <div class="max-w-[180px] truncate text-xs text-slate-500 font-normal" title="{{ $op->email }}">{{ $op->email }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -505,7 +508,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                                             </div>
                                             <div>
-                                                <div class="font-bold text-slate-800">{{ $inv->email }}</div>
+                                                <div class="max-w-[180px] truncate font-bold text-slate-800" title="{{ $inv->email }}">{{ $inv->email }}</div>
                                                 <div class="text-xs text-amber-600 font-medium">Undangan Terkirim</div>
                                             </div>
                                         </div>
