@@ -12,7 +12,7 @@ class ApkDownloadTest extends TestCase
 
         $response->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.android.package-archive')
-            ->assertDownload('HadirYuk-Siswa-v1.2.apk');
+            ->assertDownload('akuhadir-siswa.apk');
     }
 
     public function test_parent_apk_download_returns_android_package_archive_response(): void
@@ -21,7 +21,7 @@ class ApkDownloadTest extends TestCase
 
         $response->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.android.package-archive')
-            ->assertDownload('HadirYuk-OrangTua-v1.1.apk');
+            ->assertDownload('akuhadir-ortu.apk');
     }
 
     public function test_invalid_apk_role_returns_not_found(): void

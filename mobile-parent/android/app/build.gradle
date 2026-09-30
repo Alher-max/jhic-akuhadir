@@ -4,7 +4,7 @@ android {
     namespace = "shop.thortech.hadiryuk.parent"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "shop.thortech.hadiryuk.parent"
+        applicationId "id.my.akuhadir.ortu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

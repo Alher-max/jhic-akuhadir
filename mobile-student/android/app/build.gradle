@@ -4,7 +4,7 @@ android {
     namespace = "com.thortech.hadiryuk.student"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.thortech.hadiryuk.student"
+        applicationId "id.my.akuhadir.siswa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

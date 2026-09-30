@@ -10,12 +10,14 @@ class ApkDownloadController extends Controller
 {
     private const APK_MAP = [
         'siswa' => [
-            'path' => 'hadiryuk-siswa-1-2.apk',
-            'filename' => 'HadirYuk-Siswa-v1.2.apk',
+            'relative_path' => 'apk/akuhadir-siswa.apk',
+            'fallback_path' => 'akuhadir-siswa.apk',
+            'filename' => 'akuhadir-siswa.apk',
         ],
         'orangtua' => [
-            'path' => 'hadiryuk-ortu-1-1.apk',
-            'filename' => 'HadirYuk-OrangTua-v1.1.apk',
+            'relative_path' => 'apk/akuhadir-ortu.apk',
+            'fallback_path' => 'akuhadir-ortu.apk',
+            'filename' => 'akuhadir-ortu.apk',
         ],
     ];
 
@@ -26,9 +28,24 @@ class ApkDownloadController extends Controller
         }
 
         $file = self::APK_MAP[$role];
-        $fullPath = public_path($file['path']);
+        $filesystem = new Filesystem();
 
-        if (! (new Filesystem())->exists($fullPath)) {
+        $candidates = [
+            storage_path('app/public/' . $file['relative_path']),
+            public_path('storage/' . $file['relative_path']),
+            public_path($file['relative_path']),
+            public_path($file['fallback_path']),
+        ];
+
+        $fullPath = null;
+        foreach ($candidates as $candidate) {
+            if ($filesystem->exists($candidate)) {
+                $fullPath = $candidate;
+                break;
+            }
+        }
+
+        if (! $fullPath) {
             abort(404, 'File APK yang Anda cari belum tersedia saat ini.');
         }
 

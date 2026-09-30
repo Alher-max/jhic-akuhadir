@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">HadirYuk Orang Tua</string>
-    <string name="title_activity_main">HadirYuk Orang Tua</string>
-    <string name="package_name">shop.thortech.hadiryuk.parent</string>
-    <string name="custom_url_scheme">shop.thortech.hadiryuk.parent</string>
+    <string name="app_name">AkuHadir Orang Tua</string>
+    <string name="title_activity_main">AkuHadir Orang Tua</string>
+    <string name="package_name">id.my.akuhadir.ortu</string>
+    <string name="custom_url_scheme">id.my.akuhadir.ortu</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">HadirYuk Siswa</string>
-    <string name="title_activity_main">HadirYuk Siswa</string>
-    <string name="package_name">com.thortech.hadiryuk.student</string>
-    <string name="custom_url_scheme">com.thortech.hadiryuk.student</string>
+    <string name="app_name">AkuHadir Siswa</string>
+    <string name="title_activity_main">AkuHadir Siswa</string>
+    <string name="package_name">id.my.akuhadir.siswa</string>
+    <string name="custom_url_scheme">id.my.akuhadir.siswa</string>
 </resources>

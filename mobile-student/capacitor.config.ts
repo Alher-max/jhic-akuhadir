@@ -1,13 +1,13 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.thortech.hadiryuk.student',
-  appName: 'HadirYuk Siswa',
+  appId: 'id.my.akuhadir.siswa',
+  appName: 'AkuHadir Siswa',
   webDir: 'dist',
   server: {
-    url: 'https://hadiryuk.thortech.shop/pwa/clock-in',
+    url: 'https://akuhadir.my.id',
     cleartext: false,
-    allowNavigation: ['hadiryuk.thortech.shop', '*.thortech.shop'],
+    allowNavigation: ['akuhadir.my.id', '*.akuhadir.my.id'],
   },
   android: {
     backgroundColor: '#ffffff',
