@@ -1,0 +1,62 @@
+<?php
+
+return [
+    'school_code' => 'JHIC2026',
+    'password' => 'password123',
+    'accounts' => [
+        'operator.demo@hadiryuk.id' => [
+            'role' => 'operator',
+            'label' => 'Operator / Admin Sekolah',
+            'switcher_label' => 'Admin',
+            'icon' => 'admin_panel_settings',
+            'dashboard' => 'operator.dashboard',
+            'features' => ['Kelola Sekolah', 'Presensi', 'Laporan'],
+            'accent' => 'slate',
+        ],
+        'kepala.demo@hadiryuk.id' => [
+            'role' => 'headmaster',
+            'label' => 'Kepala Sekolah',
+            'switcher_label' => 'Kepala Sekolah',
+            'icon' => 'school',
+            'dashboard' => 'headmaster.dashboard',
+            'features' => ['Ringkasan', 'Analitik', 'Performa Guru'],
+            'accent' => 'indigo',
+        ],
+        'guru.demo@hadiryuk.id' => [
+            'role' => 'teacher',
+            'label' => 'Guru',
+            'switcher_label' => 'Guru',
+            'icon' => 'person',
+            'dashboard' => 'teacher.dashboard',
+            'features' => ['Presensi KBM', 'Jadwal', 'Pengumuman'],
+            'accent' => 'emerald',
+        ],
+        'walikelas.demo@hadiryuk.id' => [
+            'role' => 'wali_kelas',
+            'label' => 'Wali Kelas',
+            'switcher_label' => 'Wali Kelas',
+            'icon' => 'groups',
+            'dashboard' => 'homeroom.dashboard',
+            'features' => ['Data Kelas', 'Presensi', 'Pengumuman'],
+            'accent' => 'emerald',
+        ],
+        'orangtua.demo@hadiryuk.id' => [
+            'role' => 'parent',
+            'label' => 'Orang Tua',
+            'switcher_label' => 'Orang Tua',
+            'icon' => 'family_restroom',
+            'dashboard' => 'parent.dashboard',
+            'features' => ['Pantau Anak', 'Riwayat', 'Notifikasi'],
+            'accent' => 'amber',
+        ],
+        'siswa.demo@hadiryuk.id' => [
+            'role' => 'student',
+            'label' => 'Siswa',
+            'switcher_label' => 'Siswa',
+            'icon' => 'backpack',
+            'dashboard' => 'student.dashboard',
+            'features' => ['Presensi GPS', 'Riwayat', 'Izin'],
+            'accent' => 'rose',
+        ],
+    ],
+];

@@ -458,6 +458,7 @@
     </div>
 
     @include('partials.pwa-prompt')
+@include('partials.demo-role-switcher')
 </body>
 
 </html>

@@ -76,4 +76,64 @@ class DemoAccountsTest extends TestCase
             $this->post('/logout');
         }
     }
+
+    public function test_demo_login_authenticates_only_allowlisted_accounts_and_redirects_by_role(): void
+    {
+        $this->seed(DemoAccountsSeeder::class);
+
+        $dashboards = [
+            'operator.demo@hadiryuk.id' => 'operator.dashboard',
+            'kepala.demo@hadiryuk.id' => 'headmaster.dashboard',
+            'guru.demo@hadiryuk.id' => 'teacher.dashboard',
+            'walikelas.demo@hadiryuk.id' => 'homeroom.dashboard',
+            'orangtua.demo@hadiryuk.id' => 'parent.dashboard',
+            'siswa.demo@hadiryuk.id' => 'student.dashboard',
+        ];
+
+        foreach ($dashboards as $email => $dashboard) {
+            $this->post(route('demo.login'), ['email' => $email])
+                ->assertRedirect(route($dashboard));
+
+            $this->assertAuthenticatedAs(User::where('email', $email)->firstOrFail());
+
+            if ($email === 'operator.demo@hadiryuk.id') {
+                $this->get(route('operator.dashboard'))
+                    ->assertOk()
+                    ->assertSee('Beralih peran demo')
+                    ->assertSee('Keluar Demo');
+            }
+
+            if ($email === 'orangtua.demo@hadiryuk.id' || $email === 'siswa.demo@hadiryuk.id') {
+                $this->get(route($dashboard))
+                    ->assertOk()
+                    ->assertSee('Beralih peran demo');
+            }
+        }
+
+        $this->post(route('logout'));
+        $this->assertGuest();
+        $this->post(route('demo.login'), ['email' => 'other@example.com'])
+            ->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
+    public function test_demo_login_rejects_allowlisted_email_with_an_unexpected_role_or_disabled_account(): void
+    {
+        $this->seed(DemoAccountsSeeder::class);
+        $user = User::where('email', 'operator.demo@hadiryuk.id')->firstOrFail();
+        $user->role = 'student';
+        $user->save();
+
+        $this->post(route('demo.login'), ['email' => $user->email])
+            ->assertNotFound();
+        $this->assertGuest();
+
+        $user->role = 'operator';
+        $user->is_active = false;
+        $user->save();
+
+        $this->post(route('demo.login'), ['email' => $user->email])
+            ->assertNotFound();
+        $this->assertGuest();
+    }
 }

@@ -199,6 +199,9 @@
         @include('partials.pwa-prompt')
     @endif
     <x-confirm-modal />
+    @auth
+        @include('partials.demo-role-switcher')
+    @endauth
 </body>
 
 </html>
