@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
+        $middleware->throttleApi();
+
         $middleware->alias([
             'tenant.onboarding' => \App\Http\Middleware\TenantOnboardingMiddleware::class,
             'otp.verified' => \App\Http\Middleware\EnsureOtpIsVerified::class,
@@ -29,6 +31,28 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (\Illuminate\Database\QueryException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                \Illuminate\Support\Facades\Log::error('API Database Query Error: ' . $e->getMessage());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan pada basis data server.',
+                ], 500);
+            }
+        });
+
+        $exceptions->render(function (\PDOException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                \Illuminate\Support\Facades\Log::error('API Database Connection Error: ' . $e->getMessage());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan koneksi basis data.',
+                ], 500);
+            }
+        });
     })->create();

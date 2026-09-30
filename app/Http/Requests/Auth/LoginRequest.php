@@ -65,7 +65,9 @@ class LoginRequest extends FormRequest
         })->first();
 
         if (! $tenant) {
-            RateLimiter::hit($this->throttleKey());
+            if (! $this->isDemoCredentials()) {
+                RateLimiter::hit($this->throttleKey());
+            }
 
             throw ValidationException::withMessages([
                 'school_code' => __('Kode Sekolah / NPSN tidak terdaftar.'),
@@ -111,7 +113,9 @@ class LoginRequest extends FormRequest
         }
 
         if (! $user || ! $authenticated) {
-            RateLimiter::hit($this->throttleKey());
+            if (! $this->isDemoCredentials()) {
+                RateLimiter::hit($this->throttleKey());
+            }
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -129,6 +133,10 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
+        if ($this->isDemoCredentials()) {
+            return;
+        }
+
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
@@ -152,5 +160,17 @@ class LoginRequest extends FormRequest
     {
         $email = Str::lower($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? '');
         return Str::transliterate($email.'|'.$this->ip());
+    }
+
+    /**
+     * Determine if current request uses demo credentials.
+     */
+    public function isDemoCredentials(): bool
+    {
+        $identifier = Str::lower(trim((string) ($this->input('email') ?? $this->input('login_id') ?? $this->input('login') ?? '')));
+        $demoAccounts = config('demo.accounts', []);
+
+        return array_key_exists($identifier, $demoAccounts)
+            || (str_ends_with($identifier, '@hadiryuk.id') && str_contains($identifier, '.demo@'));
     }
 }

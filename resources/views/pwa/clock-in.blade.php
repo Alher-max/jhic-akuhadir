@@ -295,7 +295,7 @@
         }
 
         const HAS_MASTER = {{ isset($masterPhotoUrl) && $masterPhotoUrl ? 'true' : 'false' }};
-        const MASTER_PHOTO_URL = "{!! $masterPhotoUrl ?? '' !!}";
+        const MASTER_PHOTO_URL = @js($masterPhotoUrl ?? '');
 
         let faceApiLoaded = false;
         let masterDescriptor = null;

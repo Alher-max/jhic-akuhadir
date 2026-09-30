@@ -11,7 +11,6 @@ Route::get('/', function () {
 });
 
 Route::post('/demo-login', [DemoLoginController::class, 'store'])
-    ->middleware('throttle:30,1')
     ->name('demo.login');
 
 Route::get('/download/apk/{role}', ApkDownloadController::class)
