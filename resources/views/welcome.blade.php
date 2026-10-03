@@ -181,11 +181,11 @@
 
                 <h1
                     class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-5 sm:mb-6 text-brand-dark">
-                    Sistem Sekolah <span class="text-[#B81D24]">Lengkap & Canggih</span>. <br>
-                    <span class="text-[#B81D24]">Harga Termurah</span> <span class="whitespace-nowrap">se-Indonesia.</span>
+                    Sistem Sekolah <span class="text-[#B81D24]">Lengkap &amp; Canggih</span>. <br>
+                    <span class="text-[#B81D24]">Harga Termurah</span> <span class="inline-block whitespace-nowrap">se&#8209;Indonesia.</span>
                 </h1>
 
-                <p class="text-lg sm:text-xl text-brand-muted font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
+                <p class="text-lg sm:text-xl text-slate-700 font-normal sm:font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
                     Satu sistem untuk seluruh operasional sekolah: Presensi 5 metode, Modul Rapor Resmi (Kurikulum Merdeka, SMK &amp; Madrasah), integrasi ekspor Dapodik/e-Rapor, hingga notifikasi WhatsApp otomatis ke orang tua tanpa biaya server mahal.
                 </p>
 
@@ -463,8 +463,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Kartu 1: Presensi Fleksibel Multi-Mode -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">sensors</span>
                         </div>
@@ -500,8 +500,8 @@
                 </div>
 
                 <!-- Kartu 2: Dasbor Terpadu 6 Peran -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">dashboard</span>
                         </div>
@@ -541,8 +541,8 @@
                 </div>
 
                 <!-- Kartu 3 (Baru): Modul Rapor Kurikulum Merdeka & K13 -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">assignment_turned_in</span>
                         </div>
@@ -576,8 +576,8 @@
                 </div>
 
                 <!-- Kartu 4 (Baru): Kokurikuler P5/P5RA & Vokasi SMK -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">engineering</span>
                         </div>
@@ -611,8 +611,8 @@
                 </div>
 
                 <!-- Kartu 5 (Baru): Auto-Pull Presensi & Ekspor Siap Setor -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">cloud_sync</span>
                         </div>
@@ -644,8 +644,8 @@
                 </div>
 
                 <!-- Kartu 6: Notifikasi WhatsApp & Hemat Sumber Daya -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                    <div class="flex-1">
                         <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
                             <span class="material-symbols-outlined text-3xl font-bold">send_and_archive</span>
                         </div>
@@ -701,43 +701,43 @@
                     <tbody class="divide-y font-bold text-sm sm:text-base">
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Metode Absensi</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Terbatas (Hanya 1-2)</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">5 Metode (Lengkap!)</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Terbatas (Hanya 1-2)</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>5 Metode (Lengkap!)</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Modul Rapor</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Harus sewa aplikasi e-rapor terpisah &amp; rawan server down</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Terintegrasi penuh dengan absensi &amp; Zero Server Load</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Harus sewa aplikasi e-rapor terpisah &amp; rawan server down</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Terintegrasi penuh dengan absensi &amp; Zero Server Load</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Administrasi Nilai</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Ketik narasi manual &amp; hitung absensi manual</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Smart Narasi otomatis &amp; Auto-Pull presensi HadirYuk</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Ketik narasi manual &amp; hitung absensi manual</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Smart Narasi otomatis &amp; Auto-Pull presensi HadirYuk</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Integrasi Data</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Ketik ulang ke aplikasi dinas</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Ekspor 1-klik kompatibel e-Rapor SP, RDM, &amp; Dapodik</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Ketik ulang ke aplikasi dinas</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Ekspor 1-klik kompatibel e-Rapor SP, RDM, &amp; Dapodik</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Biaya Server</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Mahal (Jutaan/Bulan)</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Sangat Murah &amp; Efisien</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Mahal (Jutaan/Bulan)</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Sangat Murah &amp; Efisien</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Akses Orang Tua</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Seringkali Tidak Ada</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Dasbor Khusus Ortu</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Seringkali Tidak Ada</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Dasbor Khusus Ortu</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Notifikasi WA</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Bayar Per Pesan / Mahal</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Tersedia &amp; Terjangkau</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Bayar Per Pesan / Mahal</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Tersedia &amp; Terjangkau</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Kecepatan Tap RFID</td>
-                            <td class="p-6 sm:p-8 font-medium text-slate-600">Butuh PC &amp; Operator</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Stand-alone IoT (Tap &amp; Go!)</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600"><span class="text-rose-500 font-bold mr-2">✗</span>Butuh PC &amp; Operator</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic"><span class="text-emerald-600 font-bold mr-2">✓</span>Stand-alone IoT (Tap &amp; Go!)</td>
                         </tr>
                     </tbody>
                 </table>

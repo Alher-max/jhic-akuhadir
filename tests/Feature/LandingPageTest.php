@@ -26,7 +26,7 @@ class LandingPageTest extends TestCase
         $response->assertStatus(200)
             ->assertSee('Satu sistem untuk seluruh operasional sekolah: Presensi 5 metode, Modul Rapor Resmi (Kurikulum Merdeka, SMK &amp; Madrasah), integrasi ekspor Dapodik/e-Rapor, hingga notifikasi WhatsApp otomatis ke orang tua tanpa biaya server mahal.', false)
             ->assertSee('Harga Termurah')
-            ->assertSee('<span class="whitespace-nowrap">se-Indonesia.</span>', false)
+            ->assertSee('<span class="inline-block whitespace-nowrap">se&#8209;Indonesia.</span>', false)
             ->assertSee('Investasi sistem sekolah paling efisien se-Indonesia.')
             ->assertSee('Presensi 5 Metode')
             ->assertSee('RFID, QR, Geofencing GPS, Face AI, &amp; Manual.', false)
@@ -93,7 +93,9 @@ class LandingPageTest extends TestCase
             ->assertSee('Smart Narasi otomatis &amp; Auto-Pull presensi HadirYuk', false)
             ->assertSee('Integrasi Data')
             ->assertSee('Ketik ulang ke aplikasi dinas')
-            ->assertSee('Ekspor 1-klik kompatibel e-Rapor SP, RDM, &amp; Dapodik', false);
+            ->assertSee('Ekspor 1-klik kompatibel e-Rapor SP, RDM, &amp; Dapodik', false)
+            ->assertSee('✓')
+            ->assertSee('✗');
     }
 
     /**
