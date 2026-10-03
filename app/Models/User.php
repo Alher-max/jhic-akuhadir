@@ -221,4 +221,12 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
 
         return $hasTitle ? $name : "Bapak/Ibu " . $name;
     }
+
+    /**
+     * Accessor untuk nomor telepon utama pengguna.
+     */
+    public function getPhoneAttribute(): ?string
+    {
+        return $this->parent_phone ?: ($this->profile?->phone_number ?: null);
+    }
 }

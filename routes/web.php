@@ -83,21 +83,85 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     });
 
     // Teacher Dashboard Route (Strict Role: teacher)
-    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher,operator,headmaster', 'tenant.onboarding'])->group(function () {
         Route::get('/teacher/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('teacher.dashboard');
         Route::post('/teacher/manual-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeManualAttendance'])->name('teacher.manual-attendance');
         Route::post('/teacher/kbm-attendance', [\App\Http\Controllers\AdminDashboardController::class, 'storeKbmAttendance'])->name('teacher.kbm-attendance');
         Route::post('/teacher/students/{id}/reset-photo', [\App\Http\Controllers\AdminDashboardController::class, 'resetStudentPhoto'])->name('teacher.students.reset-photo');
+
+        // Modul Rapor: Buku Nilai Guru Mapel (Sprint 2)
+        Route::get('/teacher/gradebook', [\App\Http\Controllers\Teacher\GradebookController::class, 'index'])->name('teacher.gradebook.index');
+        Route::get('/teacher/gradebook/{class}/{subject}', [\App\Http\Controllers\Teacher\GradebookController::class, 'show'])->name('teacher.gradebook.show');
+        Route::post('/teacher/gradebook', [\App\Http\Controllers\Teacher\GradebookController::class, 'store'])->name('teacher.gradebook.store');
+        Route::get('/teacher/gradebook/{class}/{subject}/export-erapor', [\App\Http\Controllers\ReportExportController::class, 'exportERapor'])->name('teacher.gradebook.export-erapor');
+        Route::get('/teacher/gradebook/{class}/{subject}/export-rdm', [\App\Http\Controllers\ReportExportController::class, 'exportRDM'])->name('teacher.gradebook.export-rdm');
+
+        // Aliases for Gradebook
+        Route::get('/gradebook', [\App\Http\Controllers\Teacher\GradebookController::class, 'index'])->name('gradebook.index');
+        Route::get('/gradebook/{class}/{subject}', [\App\Http\Controllers\Teacher\GradebookController::class, 'show'])->name('gradebook.show');
+        Route::post('/gradebook', [\App\Http\Controllers\Teacher\GradebookController::class, 'store'])->name('gradebook.store');
+        Route::get('/gradebook/{class}/{subject}/export-erapor', [\App\Http\Controllers\ReportExportController::class, 'exportERapor'])->name('gradebook.export-erapor');
+        Route::get('/gradebook/{class}/{subject}/export-rdm', [\App\Http\Controllers\ReportExportController::class, 'exportRDM'])->name('gradebook.export-rdm');
+
+        // Modul Rapor: Tujuan Pembelajaran (TP)
+        Route::get('/teacher/learning-objectives', [\App\Http\Controllers\Teacher\LearningObjectiveController::class, 'index'])->name('teacher.learning-objectives.index');
+        Route::post('/teacher/learning-objectives', [\App\Http\Controllers\Teacher\LearningObjectiveController::class, 'store'])->name('teacher.learning-objectives.store');
+        Route::delete('/teacher/learning-objectives/{learningObjective}', [\App\Http\Controllers\Teacher\LearningObjectiveController::class, 'destroy'])->name('teacher.learning-objectives.destroy');
     });
 
-    // Homeroom Dashboard Route (Strict Role: homeroom teacher / wali kelas)
-    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher', 'tenant.onboarding'])->group(function () {
+    // Homeroom Dashboard Route (Strict Role: homeroom teacher / wali kelas, with operator/headmaster supervision)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':teacher,operator,headmaster', 'tenant.onboarding'])->group(function () {
         Route::get('/homeroom/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'homeroomIndex'])->name('homeroom.dashboard');
         
         // Homeroom Announcements (Protected)
         Route::get('/teacher/announcements', [HomeroomAnnouncementController::class, 'index'])->name('teacher.announcements.index');
         Route::post('/teacher/announcements', [HomeroomAnnouncementController::class, 'store'])->name('teacher.announcements.store');
         Route::delete('/teacher/announcements/{announcement}', [HomeroomAnnouncementController::class, 'destroy'])->name('teacher.announcements.destroy');
+
+        // Modul Rapor: Dasbor Wali Kelas, Leger, Presensi, & Ekstrakurikuler (Sprint 3)
+        Route::get('/homeroom/reports', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'index'])->name('homeroom.reports.index');
+        Route::get('/homeroom/reports/{class}/leger', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'leger'])->name('homeroom.reports.leger');
+        Route::get('/homeroom/reports/{class}/attendance', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'attendance'])->name('homeroom.reports.attendance');
+        Route::get('/homeroom/reports/{class}/notes', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'notes'])->name('homeroom.reports.notes');
+        Route::get('/homeroom/reports/{class}/extracurricular', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'extracurricular'])->name('homeroom.reports.extracurricular');
+        Route::post('/homeroom/reports/{class}/sync-attendance', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'syncAttendance'])->name('homeroom.reports.sync-attendance');
+        Route::post('/homeroom/reports/{class}/batch-update', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'batchUpdate'])->name('homeroom.reports.batch-update');
+        Route::post('/homeroom/reports/extracurricular', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'storeExtracurricular'])->name('homeroom.reports.extracurricular.store');
+        Route::delete('/homeroom/reports/extracurricular/{extracurricularGrade}', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'destroyExtracurricular'])->name('homeroom.reports.extracurricular.destroy');
+
+        // Modul Rapor: Publikasi & Cetak Resmi A4 (Sprint 4)
+        Route::post('/homeroom/reports/{class}/publish', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'publishClassReports'])->name('homeroom.reports.publish');
+        Route::post('/homeroom/reports/{class}/lock', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'lockClassReports'])->name('homeroom.reports.lock');
+        Route::get('/homeroom/reports/{class}/print/{student}', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'printSingle'])->name('homeroom.reports.print.single');
+        Route::get('/homeroom/reports/{class}/print-batch', [\App\Http\Controllers\Homeroom\HomeroomReportController::class, 'printBatch'])->name('homeroom.reports.print.batch');
+
+        // Modul Rapor: Ekspor Leger Nilai & Rekap Dapodik (Sprint 5)
+        Route::get('/homeroom/reports/{class}/export-leger', [\App\Http\Controllers\ReportExportController::class, 'exportLeger'])->name('homeroom.reports.export-leger');
+
+        // Modul Kokurikuler: Projek Penguatan Profil Pelajar Pancasila (P5) & P5RA (Sprint 6)
+        Route::get('/p5/projects', [\App\Http\Controllers\P5\P5ProjectController::class, 'indexAll'])->name('p5.projects.index.all');
+        Route::get('/p5/classes/{class}/projects', [\App\Http\Controllers\P5\P5ProjectController::class, 'index'])->name('p5.projects.index');
+        Route::get('/p5/classes/{class}/projects/create', [\App\Http\Controllers\P5\P5ProjectController::class, 'create'])->name('p5.projects.create');
+        Route::post('/p5/classes/{class}/projects', [\App\Http\Controllers\P5\P5ProjectController::class, 'store'])->name('p5.projects.store');
+        Route::get('/p5/projects/{project}', [\App\Http\Controllers\P5\P5ProjectController::class, 'show'])->name('p5.projects.show');
+        Route::delete('/p5/projects/{project}', [\App\Http\Controllers\P5\P5ProjectController::class, 'destroy'])->name('p5.projects.destroy');
+
+        Route::get('/p5/projects/{project}/matrix', [\App\Http\Controllers\P5\P5AssessmentController::class, 'matrix'])->name('p5.assessments.matrix');
+        Route::post('/p5/projects/{project}/matrix', [\App\Http\Controllers\P5\P5AssessmentController::class, 'batchStore'])->name('p5.assessments.batch-store');
+
+        Route::get('/p5/projects/{project}/print-batch', [\App\Http\Controllers\P5\P5ReportPrintController::class, 'printBatch'])->name('p5.reports.print-batch');
+
+        // Modul Vokasi SMK: PKL, Presensi Industri, & UKK (Sprint 7)
+        Route::get('/vocational/classes/{class}/internships', [\App\Http\Controllers\Vocational\InternshipController::class, 'index'])->name('vocational.internships.index');
+        Route::get('/vocational/classes/{class}/internships/create', [\App\Http\Controllers\Vocational\InternshipController::class, 'create'])->name('vocational.internships.create');
+        Route::post('/vocational/classes/{class}/internships', [\App\Http\Controllers\Vocational\InternshipController::class, 'store'])->name('vocational.internships.store');
+        Route::delete('/vocational/internships/{placement}', [\App\Http\Controllers\Vocational\InternshipController::class, 'destroy'])->name('vocational.internships.destroy');
+
+        Route::get('/vocational/internships/{placement}/assessment', [\App\Http\Controllers\Vocational\InternshipAssessmentController::class, 'show'])->name('vocational.internships.assessment.show');
+        Route::post('/vocational/internships/{placement}/assessment', [\App\Http\Controllers\Vocational\InternshipAssessmentController::class, 'store'])->name('vocational.internships.assessment.store');
+
+        Route::get('/vocational/classes/{class}/ukk', [\App\Http\Controllers\Vocational\VocationalCompetencyController::class, 'index'])->name('vocational.ukk.index');
+        Route::post('/vocational/classes/{class}/ukk', [\App\Http\Controllers\Vocational\VocationalCompetencyController::class, 'batchStore'])->name('vocational.ukk.batch-store');
     });
 
     // Admin & Wali Kelas Routes (Operational Management)
@@ -187,6 +251,20 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         Route::put('/operator/support-tickets/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'operatorUpdate'])->name('operator.support-tickets.update');
     });
 
+    // Master Data Rapor: Tahun Ajaran & Semester (Operator & Kepala Sekolah)
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,operator', 'tenant.onboarding'])->group(function () {
+        Route::patch('/admin/academic-years/{academic_year}/activate', [\App\Http\Controllers\Admin\AcademicYearController::class, 'activate'])
+            ->name('admin.academic-years.activate');
+        Route::resource('/admin/academic-years', \App\Http\Controllers\Admin\AcademicYearController::class, [
+            'as' => 'admin',
+        ]);
+
+        // Aliases for convenience without 'admin.' prefix
+        Route::patch('/academic-years/{academic_year}/activate', [\App\Http\Controllers\Admin\AcademicYearController::class, 'activate'])
+            ->name('academic-years.activate');
+        Route::resource('/academic-years', \App\Http\Controllers\Admin\AcademicYearController::class);
+    });
+
     // Wali Kelas & Kepala Sekolah Routes (Leave Management & Reports)
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':headmaster,teacher', 'tenant.onboarding'])->group(function () {
         Route::get('/dashboard/leaves', [\App\Http\Controllers\Admin\AdminLeaveController::class, 'index'])->name('admin.leaves.index');
@@ -216,6 +294,10 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
         
         Route::get('/member/leaves/create', [\App\Http\Controllers\LeaveRequestController::class, 'create'])->name('member.leaves.create');
         Route::post('/member/leaves', [\App\Http\Controllers\LeaveRequestController::class, 'store'])->name('member.leaves.store');
+
+        // Modul Rapor Digital Siswa (Sprint 4)
+        Route::get('/student/report-card', [\App\Http\Controllers\Student\StudentReportCardController::class, 'studentIndex'])->name('student.report-card');
+        Route::get('/student/report-card/print', [\App\Http\Controllers\Student\StudentReportCardController::class, 'studentPrint'])->name('student.report-card.print');
     });
 
     // Dismiss Announcements
@@ -225,6 +307,10 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
     // Parent Routes
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':parent'])->group(function () {
         Route::get('/parent/dashboard', [\App\Http\Controllers\ParentDashboardController::class, 'index'])->name('parent.dashboard');
+
+        // Modul Rapor Digital Anak (Sprint 4)
+        Route::get('/parent/report-card', [\App\Http\Controllers\Student\StudentReportCardController::class, 'parentIndex'])->name('parent.report-card');
+        Route::get('/parent/report-card/print', [\App\Http\Controllers\Student\StudentReportCardController::class, 'parentPrint'])->name('parent.report-card.print');
     });
 
     // Common Auth Routes
@@ -240,6 +326,13 @@ Route::middleware(['auth', 'otp.verified'])->group(function () {
 
     Route::get('/onboarding', [\App\Http\Controllers\OnboardingController::class, 'index'])->name('onboarding');
     Route::post('/onboarding', [\App\Http\Controllers\OnboardingController::class, 'store']);
+
+    // Cetak Lembar Rapor P5 Mandiri Siswa / Anak
+    Route::get('/p5/projects/{project}/print/{student}', [\App\Http\Controllers\P5\P5ReportPrintController::class, 'printSingle'])->name('p5.reports.print-single');
+
+    // Cetak Lembar Rapor PKL & Transkrip UKK Vokasi SMK
+    Route::get('/vocational/internships/{placement}/print', [\App\Http\Controllers\Vocational\InternshipAssessmentController::class, 'printSingle'])->name('vocational.internships.print');
+    Route::get('/vocational/classes/{class}/ukk/print/{student}', [\App\Http\Controllers\Vocational\VocationalCompetencyController::class, 'printSingle'])->name('vocational.ukk.print');
 });
 
 Route::middleware('guest')->group(function () {
@@ -279,5 +372,15 @@ Route::middleware('guest')->group(function () {
         return redirect()->route('dashboard')->with('success', 'Kata sandi berhasil diperbarui.');
     })->name('password.change.store');
 });
+
+// Verifikasi Publik Keaslian Dokumen Rapor Digital (Scan QR Code Bebas Autentikasi)
+Route::get('/verify-report/{hash}', [\App\Http\Controllers\ReportVerificationController::class, 'verify'])
+    ->name('report.verify');
+
+// Pusat Panduan & Tutorial Modul Rapor HadirYuk (Akses Publik / Guest Friendly)
+Route::get('/panduan/rapor', [\App\Http\Controllers\PublicGuideController::class, 'rapor'])
+    ->name('panduan.rapor');
+Route::get('/guide/rapor', [\App\Http\Controllers\PublicGuideController::class, 'rapor'])
+    ->name('guide.rapor');
 
 require __DIR__.'/auth.php';

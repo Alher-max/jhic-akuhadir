@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\P5;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreP5ProjectRequest extends FormRequest
+{
+    /**
+     * Tentukan apakah pengguna berhak mengirim request ini.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Aturan validasi pembuatan Projek P5/P5RA.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function rules(): array
+    {
+        return [
+            'theme' => ['required', 'string', 'max:100'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'coordinator_id' => ['nullable', 'integer', 'exists:users,id'],
+            'targets' => ['required', 'array', 'min:1'],
+            'targets.*.target_type' => ['required', 'string', 'in:pancasila,rahmatan_lil_alamin'],
+            'targets.*.dimension' => ['required', 'string', 'max:100'],
+            'targets.*.element' => ['nullable', 'string', 'max:150'],
+            'targets.*.sub_element' => ['required', 'string', 'max:255'],
+            'targets.*.target_description' => ['nullable', 'string'],
+        ];
+    }
+
+    /**
+     * Pesan kustom untuk kegagalan validasi.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'theme.required' => 'Tema projek wajib dipilih.',
+            'title.required' => 'Nama/judul projek wajib diisi.',
+            'description.required' => 'Deskripsi projek wajib diisi.',
+            'targets.required' => 'Minimal harus menambahkan 1 target dimensi/sub-elemen capaian projek.',
+            'targets.min' => 'Minimal harus menambahkan 1 target dimensi/sub-elemen capaian projek.',
+            'targets.*.sub_element.required' => 'Sub-elemen target projek tidak boleh kosong.',
+        ];
+    }
+}

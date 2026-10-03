@@ -35,6 +35,38 @@
                             {{ __('Pengumuman Kelas') }}
                         </x-nav-link>
                     @endif
+                    @if($isOperatorAdmin)
+                        <x-nav-link :href="route('admin.academic-years.index')"
+                            :active="request()->routeIs('admin.academic-years.*') || request()->routeIs('academic-years.*')">
+                            {{ __('Tahun Ajaran') }}
+                        </x-nav-link>
+                    @endif
+                    @if(in_array($roleLower, ['teacher', 'guru', 'guru_mapel', 'wali_kelas', 'manager_teacher', 'operator', 'admin', 'headmaster', 'kepala_sekolah', 'owner']))
+                        <x-nav-link :href="route('teacher.gradebook.index')"
+                            :active="request()->routeIs('teacher.gradebook.*') || request()->routeIs('gradebook.*')">
+                            {{ __('Buku Nilai') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('homeroom.reports.index')"
+                            :active="request()->routeIs('homeroom.reports.*')">
+                            {{ __('Rapor Siswa') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('p5.projects.index.all')"
+                            :active="request()->routeIs('p5.*')">
+                            {{ __('Projek P5') }}
+                        </x-nav-link>
+                    @endif
+                    @if(in_array($roleLower, ['siswa', 'student']))
+                        <x-nav-link :href="route('student.report-card')"
+                            :active="request()->routeIs('student.report-card*')">
+                            {{ __('Rapor Saya') }}
+                        </x-nav-link>
+                    @endif
+                    @if(in_array($roleLower, ['ortu', 'parent']))
+                        <x-nav-link :href="route('parent.report-card')"
+                            :active="request()->routeIs('parent.report-card*')">
+                            {{ __('Rapor Anak') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -156,6 +188,27 @@
                     <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Master
                         Mapel & KBM</div>
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.academic-years.index')"
+                    :active="request()->routeIs('admin.academic-years.*') || request()->routeIs('academic-years.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-check text-gray-400 w-4"></i> Tahun
+                        Ajaran & Semester</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('teacher.gradebook.index')"
+                    :active="request()->routeIs('teacher.gradebook.*') || request()->routeIs('gradebook.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-book-open text-gray-400 w-4"></i> Buku Nilai Guru</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('homeroom.reports.index')"
+                    :active="request()->routeIs('homeroom.reports.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-gray-400 w-4"></i> Rapor Siswa (Wali Kelas)</div>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('p5.projects.index.all')"
+                    :active="request()->routeIs('p5.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-shapes text-gray-400 w-4"></i> Projek P5 & P5RA</div>
+                </x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
                     <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate text-gray-400 w-4"></i> Siswa
@@ -165,6 +218,18 @@
                     :active="request()->routeIs('class-schedules.*')">
                     <div class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-gray-400 w-4"></i> Jadwal
                         KBM</div>
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('teacher.gradebook.index')"
+                    :active="request()->routeIs('teacher.gradebook.*') || request()->routeIs('gradebook.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-book-open text-gray-400 w-4"></i> Buku Nilai Guru</div>
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('homeroom.reports.index')"
+                    :active="request()->routeIs('homeroom.reports.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-gray-400 w-4"></i> Rapor Siswa (Wali Kelas)</div>
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('p5.projects.index.all')"
+                    :active="request()->routeIs('p5.*')">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-shapes text-gray-400 w-4"></i> Projek P5 & P5RA</div>
                 </x-responsive-nav-link>
             @endif
         </div>

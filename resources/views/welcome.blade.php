@@ -93,6 +93,11 @@
                     <a href="#keunggulan"
                         class="text-sm font-semibold hover:text-brand-primary transition-colors">Keunggulan</a>
                     <a href="#faq" class="text-sm font-semibold hover:text-brand-primary transition-colors">FAQ</a>
+                    <a href="{{ route('panduan.rapor') }}"
+                        class="text-sm font-bold text-brand-primary hover:text-brand-primary-hover flex items-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">menu_book</span>
+                        <span>Panduan Rapor</span>
+                    </a>
 
                     <div class="flex items-center gap-3 pl-4 border-l">
                         @auth
@@ -120,6 +125,10 @@
             <a href="#fitur" @click="mobileMenuOpen = false" class="block font-bold">Fitur</a>
             <a href="#keunggulan" @click="mobileMenuOpen = false" class="block font-bold">Keunggulan</a>
             <a href="#faq" @click="mobileMenuOpen = false" class="block font-bold">FAQ</a>
+            <a href="{{ route('panduan.rapor') }}" @click="mobileMenuOpen = false" class="block font-bold text-brand-primary flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">menu_book</span>
+                <span>Panduan Rapor</span>
+            </a>
             <hr>
             <a href="{{ route('login') }}"
                 class="block font-bold text-[#1A1516] border border-[#EAE2E3] p-3 rounded-xl text-center hover:bg-[#F4EFEB]">Masuk
@@ -710,7 +719,11 @@
                     <span class="font-black text-xl tracking-tighter">Hadir<span
                             class="text-brand-primary">Yuk</span></span>
                 </div>
-                <div class="flex gap-8">
+                <div class="flex flex-wrap items-center gap-6 md:gap-8">
+                    <a href="{{ route('panduan.rapor') }}" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-bold transition-colors flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">menu_book</span>
+                        <span>Panduan Rapor</span>
+                    </a>
                     <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Tentang Kami</a>
                     <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Syarat & Ketentuan</a>
                     <a href="#" class="text-[#6B5E60] hover:text-[#B81D24] text-sm font-medium transition-colors">Kebijakan Privasi</a>

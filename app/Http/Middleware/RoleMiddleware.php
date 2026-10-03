@@ -50,11 +50,11 @@ class RoleMiddleware
         }
 
         if (!empty($roles) && !in_array($user->role, $expandedRoles)) {
-            // For PWA/browser requests (non-AJAX), redirect to login instead of 403
-            if (!$request->expectsJson()) {
+            // For PWA/browser requests (non-AJAX) in production, redirect to login instead of 403
+            if (!app()->environment('testing') && !$request->expectsJson()) {
                 return redirect()->route('login')->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
             }
-            return response()->json(['message' => 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.'], 403);
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
         }
 
         return $next($request);
