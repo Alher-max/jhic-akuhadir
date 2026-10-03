@@ -186,8 +186,7 @@
                 </h1>
 
                 <p class="text-lg sm:text-xl text-brand-muted font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
-                    Solusi presensi 5 metode, dasbor 6 peran terpadu (Operator, Kepala Sekolah, Guru, Wali Kelas, Orang Tua & Siswa), cetak kartu siswa,
-                    hingga notifikasi WhatsApp otomatis tanpa biaya server mahal.
+                    Satu sistem untuk seluruh operasional sekolah: Presensi 5 metode, Modul Rapor Resmi (Kurikulum Merdeka, SMK &amp; Madrasah), integrasi ekspor Dapodik/e-Rapor, hingga notifikasi WhatsApp otomatis ke orang tua tanpa biaya server mahal.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -224,7 +223,7 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-[#1A1516]">Harga Termurah</h4>
-                        <p class="text-xs text-[#6B5E60]">Investasi sistem sekolah paling efisien di Indonesia.</p>
+                        <p class="text-xs text-[#6B5E60]">Investasi sistem sekolah paling efisien se-Indonesia.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-4 p-5 rounded-2xl bg-brand-bg border border-[#EAE2E3]">
@@ -233,18 +232,18 @@
                         <span class="material-symbols-outlined text-2xl font-bold">fingerprint</span>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-[#1A1516]">5 Metode Absensi</h4>
-                        <p class="text-xs text-[#6B5E60]">RFID, QR, Geofencing, Face AI, & Manual.</p>
+                        <h4 class="text-sm font-bold text-[#1A1516]">Presensi 5 Metode</h4>
+                        <p class="text-xs text-[#6B5E60]">RFID, QR, Geofencing GPS, Face AI, &amp; Manual.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-4 p-5 rounded-2xl bg-brand-bg border border-[#EAE2E3]">
                     <div
                         class="w-12 h-12 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-2xl font-bold">hub</span>
+                        <span class="material-symbols-outlined text-2xl font-bold">menu_book</span>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-[#1A1516]">All-in-One Ecosystem</h4>
-                        <p class="text-xs text-[#6B5E60]">Terintegrasi penuh untuk semua peran di sekolah.</p>
+                        <h4 class="text-sm font-bold text-[#1A1516]">Rapor Resmi Terintegrasi</h4>
+                        <p class="text-xs text-[#6B5E60]">Auto-pull presensi, Smart Narasi TP, &amp; Cetak A4 Zero Server Load.</p>
                     </div>
                 </div>
             </div>
@@ -265,8 +264,7 @@
                     Coba Akun Demo (Dewan Juri &amp; Pengunjung)
                 </h2>
                 <p class="text-brand-muted font-medium leading-relaxed">
-                    Jelajahi pengalaman HadirYuk dari enam peran berbeda. Klik salin untuk menyalin kredensial lengkap,
-                    atau masuk untuk mengisi kode sekolah dan email secara otomatis.
+                    Jelajahi pengalaman 6 peran berbeda. Masuk sebagai Guru untuk mencoba Smart Narasi Rapor, atau sebagai Wali Kelas untuk melihat Auto-Pull Presensi &amp; Cetak Rapor Resmi A4. Klik salin untuk menyalin kredensial lengkap, atau masuk untuk mengisi kode sekolah dan email secara otomatis.
                 </p>
                 <p class="mt-4 text-xs font-semibold text-slate-500 md:hidden">← Geser untuk peran lain →</p>
             </div>
@@ -453,136 +451,227 @@
     <!-- Fitur Utama -->
     <section id="fitur" class="py-24 bg-brand-bg relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-20">
+            <div class="text-center mb-16">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#EAE2E3] text-xs font-bold uppercase tracking-wider text-[#B81D24] mb-4">
+                    <span class="material-symbols-outlined text-base">auto_awesome</span>
+                    Ekosistem Lengkap Sekolah
+                </span>
                 <h2 class="text-2xl sm:text-4xl font-bold text-[#1A1516] tracking-tight mb-3">Fitur Dahsyat Untuk <span class="text-[#B81D24]">Sekolah Modern</span>
                 </h2>
-                <p class="text-brand-muted font-medium">Satu platform untuk menjawab semua kebutuhan operasional sekolah
-                    Anda.</p>
+                <p class="text-brand-muted font-medium max-w-2xl mx-auto">Satu platform untuk menjawab semua kebutuhan operasional sekolah Anda — dari presensi harian hingga cetak rapor resmi nasional.</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Pilar 1 -->
-                <div
-                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
-                        <span class="material-symbols-outlined text-4xl">sensors</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Kartu 1: Presensi Fleksibel Multi-Mode -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">sensors</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Presensi Fleksibel Multi-Mode</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">RFID, QR, Geofencing, Face AI, Presensi Guru &amp; Staf.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span>IoT RFID Scanner: Tap kartu tanpa butuh PC maupun operator</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span>QR Code Dynamic: Anti-fraud dan anti-titip absen cepat</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span>Geofencing GPS: Presensi via HP akurat dalam radius sekolah</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span>Face Recognition AI dengan verifikasi liveness</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span>Presensi Guru &amp; Staf, KBM per-mapel, &amp; ekstrakurikuler</span>
+                            </li>
+                        </ul>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Presensi Fleksibel & Multi-Mode</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            IoT RFID Scanner (Tap Kartu Tanpa PC/Operator)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            QR Code Dynamic (Anti-Fraud & Cepat)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Geofencing GPS (Presensi via HP di Area Sekolah)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Face Recognition AI (Verifikasi Liveness)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Presensi Harian, Per-Mapel, & Kegiatan Ekstra
-                        </li>
-                    </ul>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <span>5 Mode Presensi Terintegrasi</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
                 </div>
 
-                <!-- Pilar 2 -->
-                <div
-                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
-                        <span class="material-symbols-outlined text-4xl">dashboard</span>
+                <!-- Kartu 2: Dasbor Terpadu 6 Peran -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">dashboard</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Dasbor Terpadu 6 Peran</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">Operator, Kepala Sekolah, Guru, Wali Kelas, Siswa, Orang Tua.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Operator:</strong> Master data guru, siswa, jam &amp; jadwal sekolah</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Kepala Sekolah:</strong> Pantau kehadiran, analitik &amp; laporan real-time</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Guru:</strong> Input presensi KBM, jurnal mengajar, &amp; nilai mapel</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Wali Kelas:</strong> Rekap absensi kelas, catatan sikap, &amp; cetak rapor</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Siswa:</strong> Akses jadwal, riwayat presensi, tugas &amp; kartu digital</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Orang Tua:</strong> Pantau kehadiran &amp; rapor anak via HP</span>
+                            </li>
+                        </ul>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Dasbor Terintegrasi 6 Peran</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Operator: Kelola Data Guru, Siswa, Jam & Jadwal Sekolah
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Kepala Sekolah: Pantau Kehadiran, Analitik & Laporan Real-time
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Guru: Input Presensi KBM, Jurnal Mengajar & Agenda Belajar
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Wali Kelas: Rekap Absensi Kelas, Catatan Sikap & Pengumuman
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Orang Tua: Pantau Kehadiran & Agenda Belajar Anak via HP
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Siswa: Akses Jadwal, Tugas, Kartu Digital & Presensi Mandiri
-                        </li>
-                    </ul>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <span>Akses Multi-Role Lengkap</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
                 </div>
 
-                <!-- Pilar 3 -->
-                <div
-                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
-                        <span class="material-symbols-outlined text-4xl">send_and_archive</span>
+                <!-- Kartu 3 (Baru): Modul Rapor Kurikulum Merdeka & K13 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">assignment_turned_in</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Modul Rapor Kurikulum Merdeka &amp; K13</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">Smart Auto-Narasi TP, Leger Nilai, Cetak A4 Zero Server Load, QR Code Verifikasi SHA-256.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Smart Auto-Narasi TP:</strong> Generator otomatis narasi capaian kompetensi tertinggi &amp; terendah</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Leger Nilai Lengkap:</strong> Pengolahan nilai formatif, sumatif materi, &amp; sumatif akhir</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Cetak A4 Zero Server Load:</strong> Render cetak rapor resmi A4 langsung di peramban</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>QR Code Verifikasi SHA-256:</strong> Validasi keaslian dokumen tanda tangan digital resmi</span>
+                            </li>
+                        </ul>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Komunikasi Otomatis</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            WhatsApp Notification Ready (Integrasi Mudah)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Pengumuman Digital (Broadcast ke Ortu/Siswa)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Pengingat Barang Bawaan (Reminder Perlengkapan)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Manajemen Izin & Sakit Online (Digital Approval)
-                        </li>
-                    </ul>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <a href="{{ route('panduan.rapor') }}" class="hover:underline flex items-center gap-1">
+                            <span>Panduan Lengkap Rapor</span>
+                            <span class="material-symbols-outlined text-sm">menu_book</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Pilar 4 -->
-                <div
-                    class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-8 transition-transform group-hover:scale-105">
-                        <span class="material-symbols-outlined text-4xl">badge</span>
+                <!-- Kartu 4 (Baru): Kokurikuler P5/P5RA & Vokasi SMK -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">engineering</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Kokurikuler P5/P5RA &amp; Vokasi SMK</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">Rubrik Projek P5 &amp; P5RA Kemenag, Penilaian PKL terintegrasi Geofence industri, &amp; Transkrip UKK.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Rubrik Projek P5 &amp; P5RA Kemenag:</strong> Penilaian dimensi Profil Pelajar Pancasila &amp; Rahmatan Lil Alamin</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Penilaian Deskriptif Projek:</strong> Rekap capaian MB, SB, BSH, &amp; SAB otomatis</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Penilaian PKL Terintegrasi:</strong> Absensi geofence di lokasi mitra industri &amp; lembar magang</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Transkrip UKK:</strong> Transkrip Uji Kompetensi Keahlian SMK standar Ditjen Vokasi</span>
+                            </li>
+                        </ul>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1A1516] mb-6">Cetak Kartu & Laporan Instan</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Generate Kartu Siswa Otomatis (QR/RFID Ready)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Cetak Kartu Massal (Layout Profesional & Keren)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Ekspor Laporan Kehadiran (Excel & PDF Terformat)
-                        </li>
-                        <li class="flex items-start gap-3 font-bold text-brand-dark">
-                            <span class="material-symbols-outlined text-brand-secondary">check_circle</span>
-                            Statistik & Grafik Kehadiran Bulanan Otomatis
-                        </li>
-                    </ul>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <span>Standar Kurikulum Nasional &amp; Vokasi</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </div>
+
+                <!-- Kartu 5 (Baru): Auto-Pull Presensi & Ekspor Siap Setor -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">cloud_sync</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Auto-Pull Presensi &amp; Ekspor Siap Setor</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">Rekap Sakit/Izin/Alpa otomatis tanpa hitung manual, Ekspor 1-Klik e-Rapor SP, RDM Kemenag, &amp; Leger Dapodik.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Auto-Pull Presensi:</strong> Rekap Sakit/Izin/Alpa otomatis tanpa hitung manual ke rapor</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Ekspor 1-Klik e-Rapor SP:</strong> File tervalidasi siap impor ke aplikasi e-Rapor resmi dinas</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>RDM Kemenag:</strong> Format kompatibel Rapor Digital Madrasah Kementerian Agama</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Leger Dapodik:</strong> Ekspor leger nilai dan presensi sinkron tanpa dobel input</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <span>Efisiensi Operator Hingga 90%</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </div>
+
+                <!-- Kartu 6: Notifikasi WhatsApp & Hemat Sumber Daya -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#EAE2E3] group hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-[#F4EFEB] text-[#B81D24] flex items-center justify-center mb-6 transition-transform group-hover:scale-105">
+                            <span class="material-symbols-outlined text-3xl font-bold">send_and_archive</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1516] mb-4">Notifikasi WhatsApp &amp; Hemat Sumber Daya</h3>
+                        <p class="text-xs text-[#6B5E60] font-medium mb-4">Notifikasi penerbitan rapor otomatis ke orang tua &amp; arsitektur lean tanpa server mahal.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Notifikasi Penerbitan Rapor:</strong> Kirim link rapor digital otomatis ke orang tua via WhatsApp</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Broadcast Presensi Real-Time:</strong> Laporan absensi harian langsung ke wali murid</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Pengumuman &amp; Izin Sakit:</strong> Broadcast pesan sekolah &amp; approval digital tanpa kertas</span>
+                            </li>
+                            <li class="flex items-start gap-2.5 font-medium text-sm text-brand-dark">
+                                <span class="material-symbols-outlined text-[#B81D24] text-lg shrink-0 mt-0.5">check_circle</span>
+                                <span><strong>Arsitektur Lean Tanpa Server Mahal:</strong> Efisien, cepat, dan ramah anggaran operasional</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
+                        <span>Notifikasi Otomatis Terpercaya</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -610,28 +699,43 @@
                     <tbody class="divide-y font-bold text-sm sm:text-base">
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Metode Absensi</td>
-                            <td class="p-6 sm:p-8">Terbatas (Hanya 1-2)</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Terbatas (Hanya 1-2)</td>
                             <td class="p-6 sm:p-8 text-[#B81D24] italic">5 Metode (Lengkap!)</td>
                         </tr>
                         <tr>
+                            <td class="p-6 sm:p-8 bg-gray-50">Modul Rapor</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Harus sewa aplikasi e-rapor terpisah &amp; rawan server down</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Terintegrasi penuh dengan absensi &amp; Zero Server Load</td>
+                        </tr>
+                        <tr>
+                            <td class="p-6 sm:p-8 bg-gray-50">Administrasi Nilai</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Ketik narasi manual &amp; hitung absensi manual</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Smart Narasi otomatis &amp; Auto-Pull presensi HadirYuk</td>
+                        </tr>
+                        <tr>
+                            <td class="p-6 sm:p-8 bg-gray-50">Integrasi Data</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Ketik ulang ke aplikasi dinas</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Ekspor 1-klik kompatibel e-Rapor SP, RDM, &amp; Dapodik</td>
+                        </tr>
+                        <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Biaya Server</td>
-                            <td class="p-6 sm:p-8">Mahal (Jutaan/Bulan)</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Sangat Murah & Efisien</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Mahal (Jutaan/Bulan)</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Sangat Murah &amp; Efisien</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Akses Orang Tua</td>
-                            <td class="p-6 sm:p-8">Seringkali Tidak Ada</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Seringkali Tidak Ada</td>
                             <td class="p-6 sm:p-8 text-[#B81D24] italic">Dasbor Khusus Ortu</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Notifikasi WA</td>
-                            <td class="p-6 sm:p-8">Bayar Per Pesan / Mahal</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Tersedia & Terjangkau</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Bayar Per Pesan / Mahal</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Tersedia &amp; Terjangkau</td>
                         </tr>
                         <tr>
                             <td class="p-6 sm:p-8 bg-gray-50">Kecepatan Tap RFID</td>
-                            <td class="p-6 sm:p-8">Butuh PC & Operator</td>
-                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Stand-alone IoT (Tap & Go!)</td>
+                            <td class="p-6 sm:p-8 font-medium text-slate-600">Butuh PC &amp; Operator</td>
+                            <td class="p-6 sm:p-8 text-[#B81D24] italic">Stand-alone IoT (Tap &amp; Go!)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -650,11 +754,47 @@
                 <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
                     <button @click="active = active === 0 ? null : 0"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
-                        <span class="font-semibold text-[#1A1516] text-base">Apakah benar harga HadirYuk termurah di Indonesia?</span>
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah HadirYuk mendukung Rapor Kurikulum Merdeka, SMK, dan Madrasah?</span>
                         <span class="material-symbols-outlined transform transition-transform"
                             :class="active === 0 ? 'rotate-180' : ''">expand_more</span>
                     </button>
                     <div x-show="active === 0" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
+                        Sangat mendukung! Modul Rapor HadirYuk dirancang fleksibel untuk seluruh jenjang: Kurikulum Merdeka Fase A sampai F (SD/MI, SMP/MTs, SMA/MA), rubrik Kokurikuler Projek P5 &amp; P5RA Kemenag lengkap dengan skala capaian deskriptif, hingga Rapor Kejuruan SMK lengkap dengan penilaian Praktik Kerja Lapangan (PKL) terintegrasi Geofence industri serta Transkrip Uji Kompetensi Keahlian (UKK).
+                    </div>
+                </div>
+
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
+                    <button @click="active = active === 1 ? null : 1"
+                        class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah operator perlu menginput ulang nilai ke e-Rapor atau Dapodik?</span>
+                        <span class="material-symbols-outlined transform transition-transform"
+                            :class="active === 1 ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div x-show="active === 1" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
+                        Tidak perlu repot! HadirYuk menyediakan fitur Ekspor 1-Klik yang kompatibel dengan format resmi e-Rapor SP Kemendikbudristek, RDM (Rapor Digital Madrasah) Kemenag, dan Leger Dapodik. Rekap presensi masuk otomatis (Auto-Pull) dan data nilai tersusun rapi sehingga dapat langsung diimpor ke sistem dinas tanpa konversi kolom berbelit-belit.
+                    </div>
+                </div>
+
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
+                    <button @click="active = active === 2 ? null : 2"
+                        class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah server akan lambat saat seluruh guru mencetak rapor bersamaan?</span>
+                        <span class="material-symbols-outlined transform transition-transform"
+                            :class="active === 2 ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div x-show="active === 2" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
+                        Sama sekali tidak! HadirYuk mengusung arsitektur Zero Server Load Print Engine. Seluruh proses perataan tata letak (layout) dan render lembar cetak rapor resmi A4 dieksekusi secara instan di peramban pengguna (client-side), bukan di server pusat. Ratusan guru dan wali kelas dapat mencetak buku rapor secara serentak di akhir semester tanpa khawatir server down atau lambat.
+                    </div>
+                </div>
+
+                <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
+                    <button @click="active = active === 3 ? null : 3"
+                        class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="font-semibold text-[#1A1516] text-base">Apakah benar harga HadirYuk termurah di Indonesia?</span>
+                        <span class="material-symbols-outlined transform transition-transform"
+                            :class="active === 3 ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div x-show="active === 3" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         Ya, benar. Kami merancang HadirYuk dengan arsitektur cloud yang sangat efisien sehingga bisa
                         menekan biaya server seminimal mungkin. Fokus kami adalah membantu sekolah mendigitalisasi
                         operasionalnya tanpa beban biaya bulanan yang mencekik.
@@ -662,13 +802,13 @@
                 </div>
 
                 <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
-                    <button @click="active = active === 1 ? null : 1"
+                    <button @click="active = active === 4 ? null : 4"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
                         <span class="font-semibold text-[#1A1516] text-base">Apakah kami harus membeli alat RFID khusus?</span>
                         <span class="material-symbols-outlined transform transition-transform"
-                            :class="active === 1 ? 'rotate-180' : ''">expand_more</span>
+                            :class="active === 4 ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="active === 1" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
+                    <div x-show="active === 4" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         HadirYuk mendukung berbagai metode. Jika sekolah ingin menggunakan RFID, kami menyediakan skema
                         IoT yang sangat murah. Namun jika sekolah ingin GRATIS tanpa alat, Anda bisa menggunakan metode
                         QR Code atau Geofencing GPS yang hanya membutuhkan smartphone.
@@ -676,15 +816,15 @@
                 </div>
 
                 <div class="border border-[#EAE2E3] rounded-2xl bg-white shadow-sm overflow-hidden">
-                    <button @click="active = active === 2 ? null : 2"
+                    <button @click="active = active === 5 ? null : 5"
                         class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
                         <span class="font-semibold text-[#1A1516] text-base">Bagaimana jika guru atau admin kami gaptek?</span>
                         <span class="material-symbols-outlined transform transition-transform"
-                            :class="active === 2 ? 'rotate-180' : ''">expand_more</span>
+                            :class="active === 5 ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="active === 2" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
+                    <div x-show="active === 5" x-cloak class="p-6 pt-0 text-[#6B5E60] text-sm font-medium border-t border-[#EAE2E3]">
                         HadirYuk didesain dengan antarmuka yang sangat modern dan user-friendly. Kami mengadopsi prinsip
-                        "Sekali Lihat Langsung Paham". Selain itu, tim kami menyediakan dokumentasi lengkap dan
+                        "Sekali Lihat Langsung Paham". Selain itu, tim kami menyediakan dokumentasi lengkap, panduan rapor resmi, dan
                         konsultasi via WhatsApp jika dibutuhkan.
                     </div>
                 </div>
