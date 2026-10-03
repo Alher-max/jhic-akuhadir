@@ -17,7 +17,7 @@ class LandingPageTest extends TestCase
     }
 
     /**
-     * Test hero section copywriting and value badges.
+     * Test hero section copywriting, line-break nowrap, and value badges.
      */
     public function test_hero_section_contains_report_card_ecosystem_copy(): void
     {
@@ -26,6 +26,7 @@ class LandingPageTest extends TestCase
         $response->assertStatus(200)
             ->assertSee('Satu sistem untuk seluruh operasional sekolah: Presensi 5 metode, Modul Rapor Resmi (Kurikulum Merdeka, SMK &amp; Madrasah), integrasi ekspor Dapodik/e-Rapor, hingga notifikasi WhatsApp otomatis ke orang tua tanpa biaya server mahal.', false)
             ->assertSee('Harga Termurah')
+            ->assertSee('<span class="whitespace-nowrap">se-Indonesia.</span>', false)
             ->assertSee('Investasi sistem sekolah paling efisien se-Indonesia.')
             ->assertSee('Presensi 5 Metode')
             ->assertSee('RFID, QR, Geofencing GPS, Face AI, &amp; Manual.', false)
@@ -46,9 +47,9 @@ class LandingPageTest extends TestCase
     }
 
     /**
-     * Test 6 structured feature cards in the feature grid.
+     * Test 6 structured feature cards in the feature grid and links to panduan rapor.
      */
-    public function test_featured_grid_contains_all_six_structured_cards(): void
+    public function test_featured_grid_contains_all_six_structured_cards_and_guide_links(): void
     {
         $response = $this->get('/');
 
@@ -59,12 +60,14 @@ class LandingPageTest extends TestCase
             // Kartu 2: Dasbor Terpadu 6 Peran
             ->assertSee('Dasbor Terpadu 6 Peran')
             ->assertSee('Operator, Kepala Sekolah, Guru, Wali Kelas, Siswa, Orang Tua.')
-            // Kartu 3: Modul Rapor Kurikulum Merdeka & K13
+            // Kartu 3: Modul Rapor Kurikulum Merdeka & K13 (links to panduan)
             ->assertSee('Modul Rapor Kurikulum Merdeka &amp; K13', false)
             ->assertSee('Smart Auto-Narasi TP, Leger Nilai, Cetak A4 Zero Server Load, QR Code Verifikasi SHA-256.')
-            // Kartu 4: Kokurikuler P5/P5RA & Vokasi SMK
+            ->assertSee('Panduan Lengkap Rapor')
+            // Kartu 4: Kokurikuler P5/P5RA & Vokasi SMK (links to panduan)
             ->assertSee('Kokurikuler P5/P5RA &amp; Vokasi SMK', false)
             ->assertSee('Rubrik Projek P5 &amp; P5RA Kemenag, Penilaian PKL terintegrasi Geofence industri, &amp; Transkrip UKK.', false)
+            ->assertSee('Panduan Projek P5 &amp; Kurikulum', false)
             // Kartu 5: Auto-Pull Presensi & Ekspor Siap Setor
             ->assertSee('Auto-Pull Presensi &amp; Ekspor Siap Setor', false)
             ->assertSee('Rekap Sakit/Izin/Alpa otomatis tanpa hitung manual, Ekspor 1-Klik e-Rapor SP, RDM Kemenag, &amp; Leger Dapodik.', false)
@@ -126,5 +129,21 @@ class LandingPageTest extends TestCase
             ->assertSee('Yuk')
             ->assertSee('JHIC 2.0')
             ->assertSee('JAGOAN HOSTING INNOVATION COMPETITION');
+    }
+
+    /**
+     * Test there is no duplicate navbar and exactly one floating WhatsApp button with proper positioning.
+     */
+    public function test_no_duplicate_navbar_and_clean_single_floating_whatsapp(): void
+    {
+        $response = $this->get('/');
+        $content = $response->getContent();
+
+        // Exactly one <nav tag
+        $this->assertSame(1, substr_count($content, '<nav '));
+
+        // Exactly one floating WhatsApp button
+        $this->assertSame(1, substr_count($content, 'https://wa.me/'));
+        $this->assertStringContainsString('fixed bottom-6 right-6 z-50', $content);
     }
 }

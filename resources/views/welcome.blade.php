@@ -72,7 +72,7 @@
     </style>
 </head>
 
-<body class="bg-brand-bg text-brand-dark antialiased font-sans selection:bg-brand-primary selection:text-white pb-24 md:pb-12">
+<body class="bg-brand-bg text-brand-dark antialiased font-sans selection:bg-brand-primary selection:text-white pb-12">
 
     <!-- Navbar -->
     <nav x-data="{ mobileMenuOpen: false, scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
@@ -182,7 +182,7 @@
                 <h1
                     class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-5 sm:mb-6 text-brand-dark">
                     Sistem Sekolah <span class="text-[#B81D24]">Lengkap & Canggih</span>. <br>
-                    <span class="text-[#B81D24]">Harga Termurah</span> se-Indonesia.
+                    <span class="text-[#B81D24]">Harga Termurah</span> <span class="whitespace-nowrap">se-Indonesia.</span>
                 </h1>
 
                 <p class="text-lg sm:text-xl text-brand-muted font-medium mb-8 leading-relaxed max-w-3xl mx-auto">
@@ -603,8 +603,10 @@
                         </ul>
                     </div>
                     <div class="mt-6 pt-4 border-t border-[#F4EFEB] text-xs font-semibold text-[#B81D24] flex items-center gap-1">
-                        <span>Standar Kurikulum Nasional &amp; Vokasi</span>
-                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        <a href="{{ route('panduan.rapor') }}" class="hover:underline flex items-center gap-1">
+                            <span>Panduan Projek P5 &amp; Kurikulum</span>
+                            <span class="material-symbols-outlined text-sm">menu_book</span>
+                        </a>
                     </div>
                 </div>
 
@@ -877,7 +879,7 @@
     <!-- Floating WA -->
     <a href="https://wa.me/6281345557567?text=Halo%20HadirYuk%2C%20saya%20ingin%20konsultasi%20sistem%20presensi%20sekolah"
         target="_blank" rel="noopener noreferrer"
-        class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[60] bg-emerald-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group"
+        class="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all group"
         aria-label="Konsultasi via WhatsApp">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
         <span
